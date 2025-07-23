@@ -62,9 +62,9 @@ parameters:
                 - src/Dto/LocalClock.php
         -
             class: 'Symfony\Component\Routing\Attribute\Route'
-            message: 'Use Nektria\Util\Controller\Route instead'
+            message: 'Use Xgc\Symfony\Controller\Route instead'
             allowIn:
-                - src/Util/Controller/Route.php
+                - src/Symfony/Controller/Route.php
 
 rules:
     - Xgc\PHPStan\AllowComparingOnlyComparableTypesRule
