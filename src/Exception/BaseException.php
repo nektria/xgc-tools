@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xgc\Exception;
 
 use RuntimeException;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Throwable;
 
 class BaseException extends RuntimeException
@@ -45,10 +46,6 @@ class BaseException extends RuntimeException
     /** @noinspection SelfClassReferencingInspection */
     public static function convert(Throwable $e): self
     {
-        if ($e instanceof self) {
-            return $e;
-        }
-
         try {
             throw self::extends($e);
         } catch (BaseException $newException) {
@@ -58,6 +55,10 @@ class BaseException extends RuntimeException
 
     public static function extends(Throwable $e): self
     {
+        if ($e instanceof HandlerFailedException) {
+            $e = $e->getPrevious() ?? $e;
+        }
+
         if ($e instanceof self) {
             return $e;
         }
