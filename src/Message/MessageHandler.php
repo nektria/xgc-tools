@@ -6,7 +6,6 @@ namespace Xgc\Message;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Xgc\Utils\ContainerBox;
-use Xgc\Utils\ContainerBoxTrait;
 
 use function define;
 
@@ -14,17 +13,20 @@ define('MESSAGE_HANDLER_CONTAINER_BOX', new ContainerBox());
 
 readonly abstract class MessageHandler
 {
-    use ContainerBoxTrait;
-
     public const ContainerBox CONTAINER_BOX = MESSAGE_HANDLER_CONTAINER_BOX;
 
     public function set(ContainerInterface $container): void
     {
-        self::CONTAINER_BOX->set($container);
+        self::CONTAINER_BOX->setContainer($container);
     }
 
-    protected function containerBox(): ContainerBox
+    /**
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
+     */
+    protected function get(string $class): object
     {
-        return self::CONTAINER_BOX;
+        return self::CONTAINER_BOX->get($class);
     }
 }

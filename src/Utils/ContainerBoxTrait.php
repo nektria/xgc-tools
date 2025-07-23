@@ -7,18 +7,13 @@ namespace Xgc\Utils;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Xgc\Exception\BaseException;
 
-use function define;
-
-define('MESSAGE_HANDLER_CONTAINER_BOX', new ContainerBox());
-
 trait ContainerBoxTrait
 {
-    /** @var (ContainerInterface|null)[] */
-    private const array CONTAINERS = [null];
+    private ?ContainerInterface $container = null;
 
     public function setContainer(?ContainerInterface $container): void
     {
-        self::CONTAINERS[0] = $container;
+        $this->container = $container;
     }
 
     /**
@@ -28,15 +23,12 @@ trait ContainerBoxTrait
      */
     private function get(string $class): object
     {
-        /** @var ContainerInterface|null $container */
-        $container = self::CONTAINERS[0];
-
-        if ($container === null) {
+        if ($this->container === null) {
             throw new BaseException('Container not set.');
         }
 
         /** @var T $service */
-        $service = $container->get($class);
+        $service = $this->container->get($class);
 
         return $service;
     }
