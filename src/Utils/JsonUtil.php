@@ -25,7 +25,7 @@ class JsonUtil
         try {
             return json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -38,7 +38,7 @@ class JsonUtil
 
             return self::decode($serializer->serialize($data, 'json'));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -49,7 +49,7 @@ class JsonUtil
         try {
             return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR | $prettyFlag);
         } catch (JsonException $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 

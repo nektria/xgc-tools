@@ -35,7 +35,7 @@ abstract class RedisCache
         try {
             $this->init()->decr($key);
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -49,7 +49,7 @@ abstract class RedisCache
         try {
             $this->init()->incr($key);
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -80,7 +80,7 @@ abstract class RedisCache
 
             return [$count, $size * $count];
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -107,7 +107,7 @@ abstract class RedisCache
 
             $redis->select(0);
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
 
         self::$connection = $redis;

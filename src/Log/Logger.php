@@ -73,7 +73,7 @@ readonly class Logger implements LoggerInterface
             return;
         }
 
-        $error = BaseException::convert($throwable);
+        $error = BaseException::extendAndThrow($throwable);
 
         if (!$error->convertToLog) {
             return;

@@ -32,7 +32,7 @@ class Clock
         try {
             return new self(new DateTimeImmutable($dateTime)->setTimezone(new DateTimeZone('UTC')));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -45,7 +45,7 @@ class Clock
         try {
             return new self(new DateTimeImmutable($dateTime)->setTimezone(new DateTimeZone('UTC')));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -91,7 +91,7 @@ class Clock
 
             return $ret;
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -100,7 +100,7 @@ class Clock
         try {
             return $this->microDateTimeString();
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -228,7 +228,7 @@ class Clock
         try {
             return new self($this->dateTime->modify($modifier));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -255,7 +255,7 @@ class Clock
                 $seconds ?? $currentSeconds,
             ));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 

@@ -44,16 +44,7 @@ class BaseException extends RuntimeException
     }
 
     /** @noinspection SelfClassReferencingInspection */
-    public static function convert(Throwable $e): self
-    {
-        try {
-            throw self::extends($e);
-        } catch (BaseException $newException) {
-            return $newException;
-        }
-    }
-
-    public static function extends(Throwable $e): self
+    public static function extend(Throwable $e): self
     {
         if ($e instanceof HandlerFailedException) {
             $e = $e->getPrevious() ?? $e;
@@ -64,5 +55,14 @@ class BaseException extends RuntimeException
         }
 
         return new self($e->getMessage(), extras: [], previous: $e);
+    }
+
+    public static function extendAndThrow(Throwable $e): self
+    {
+        try {
+            throw self::extend($e);
+        } catch (BaseException $newException) {
+            return $newException;
+        }
     }
 }

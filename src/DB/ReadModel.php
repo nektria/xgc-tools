@@ -52,7 +52,7 @@ abstract class ReadModel
 
             return $results[array_key_first($results)] ?? null;
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -102,7 +102,7 @@ abstract class ReadModel
 
             return $results;
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 

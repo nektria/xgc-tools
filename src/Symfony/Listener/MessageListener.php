@@ -83,7 +83,7 @@ abstract class MessageListener implements EventSubscriberInterface
             }
 
             $maxRetries = 1;
-            $error = BaseException::convert($event->getThrowable());
+            $error = BaseException::extendAndThrow($event->getThrowable());
             $this->decreaseCounter($message);
 
             $transport = null;

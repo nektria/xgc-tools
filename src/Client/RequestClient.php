@@ -251,7 +251,7 @@ readonly class RequestClient
                 $cookies
             );
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
 
         if ($status >= 400 && ($options['errorIfFails'] ?? true)) {
@@ -340,7 +340,7 @@ readonly class RequestClient
                 $cookies
             );
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
 
         if ($status >= 400 && ($options['errorIfFails'] ?? true)) {
@@ -430,7 +430,7 @@ readonly class RequestClient
                 $cookies,
             );
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
 
         if ($status >= 400 && ($options['errorIfFails'] ?? true)) {

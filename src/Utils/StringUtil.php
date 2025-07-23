@@ -116,7 +116,7 @@ class StringUtil
                 random_int(0, 0xFFFF),
             );
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 }

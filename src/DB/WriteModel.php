@@ -227,11 +227,11 @@ abstract class WriteModel
                 } catch (Throwable) {
                     $this->resetManager();
 
-                    throw BaseException::extends($e);
+                    throw BaseException::extend($e);
                 }
             }
 
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -273,7 +273,7 @@ abstract class WriteModel
 
             $this->manager = $manager;
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 }

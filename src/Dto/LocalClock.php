@@ -37,7 +37,7 @@ class LocalClock
             }
             $this->dateTime = $dateTime ?? new DateTimeImmutable()->setTimezone(new DateTimeZone($timezone));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
         $this->timezone = $timezone;
     }
@@ -52,7 +52,7 @@ class LocalClock
         try {
             return new self(self::realTimezone($timezone), new DateTimeImmutable($dateTime));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -115,7 +115,7 @@ class LocalClock
 
             return $ret;
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -157,7 +157,7 @@ class LocalClock
 
             return new self($this->timezone(), $this->dateTime->modify("- {$amount} {$in}"));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -286,7 +286,7 @@ class LocalClock
         try {
             return new self($this->timezone, $this->dateTime->modify($modifier));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -308,7 +308,7 @@ class LocalClock
                 $seconds ?? $currentSeconds,
             ));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
@@ -340,7 +340,7 @@ class LocalClock
         try {
             return new self($this->timezone(), $this->dateTime->modify("{$days[$weekDay]} this week"));
         } catch (Throwable $e) {
-            throw BaseException::extends($e);
+            throw BaseException::extend($e);
         }
     }
 
