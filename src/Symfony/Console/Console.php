@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Throwable;
 use Xgc\Dto\Document;
+use Xgc\Dto\DocumentInterface;
 use Xgc\Exception\BaseException;
 use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
@@ -171,10 +172,11 @@ abstract class Console extends BaseCommand
     /**
      * @template T of Document
      * @param Query<T> $query
+     * @return T
      */
     protected function dispatchQuery(
         Query $query,
-    ): Document {
+    ): DocumentInterface {
         return $this->bus()->dispatchQuery($query);
     }
 
