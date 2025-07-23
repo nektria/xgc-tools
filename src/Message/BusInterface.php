@@ -6,6 +6,7 @@ namespace Xgc\Message;
 
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Xgc\Dto\Document;
+use Xgc\Dto\DocumentInterface;
 
 interface BusInterface
 {
@@ -27,5 +28,5 @@ interface BusInterface
      * @template T of Document
      * @param Query<T> $query
      */
-    public function dispatchQuery(Query $query): Document;
+    public function dispatchQuery(Query $query): DocumentInterface;
 }
