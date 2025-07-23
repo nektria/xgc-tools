@@ -1,0 +1,84 @@
+includes:
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-symfony/extension.neon'
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-symfony/rules.neon'
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-mockery/extension.neon'
+    - '%currentWorkingDirectory%/vendor/phpstan/phpstan-strict-rules/rules.neon'
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-phpunit/extension.neon'
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-phpunit/rules.neon'
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-doctrine/extension.neon'
+    #- '%currentWorkingDirectory%/vendor/phpstan/phpstan-doctrine/rules.neon'
+    - '%currentWorkingDirectory%/vendor/phpstan/phpstan/conf/bleedingEdge.neon'
+    - '%currentWorkingDirectory%/vendor/spaze/phpstan-disallowed-calls/extension.neon'
+    #- '%currentWorkingDirectory%/vendor/ergebnis/phpstan-rules/rules.neon'
+
+parameters:
+    level: 8
+    paths:
+        - ../../src
+        #- ../../tests
+
+    excludePaths:
+        - '%currentWorkingDirectory%/vendor'
+
+    disallowedFunctionCalls:
+        -
+            function: 'dump()'
+            message: 'Do not use dump() in production code'
+        -
+            function: 'echo()'
+            message: 'Do not use echo() in production code'
+        -
+            function: 'var_dump()'
+            message: 'Do not use var_dump() in production code'
+        -
+            function: 'print()'
+            message: 'Do not use print() in production code'
+        -
+            function: 'printf()'
+            message: 'Do not use printf in production code'
+        -
+            function: 'print_r()'
+            message: 'Do not use print_r in production code'
+        -
+            function: 'die()'
+            message: 'Do not use die in production code'
+
+
+    #symfony:
+        #containerXmlPath: '%currentWorkingDirectory%/var/cache/dev/Nektria_KernelDevDebugContainer.xml'
+
+    disallowedNamespaces:
+        -
+            class: 'DateTime'
+            message: 'Use Clock or LocalClock instead of DateTime'
+            allowIn:
+                - src/Dto/Clock.php
+                - src/Dto/LocalClock.php
+        -
+            class: 'DateTimeImmutable'
+            message: 'Use Clock or LocalClock instead of DateTime'
+            allowIn:
+                - src/Dto/Clock.php
+                - src/Dto/LocalClock.php
+        -
+            class: 'Symfony\Component\Routing\Attribute\Route'
+            message: 'Use Nektria\Util\Controller\Route instead'
+            allowIn:
+                - src/Util/Controller/Route.php
+
+rules:
+    - Xgc\PHPStan\AllowComparingOnlyComparableTypesRule
+
+services:
+    -
+        class: Xgc\PHPStan\ValidateClassFieldReturnsNotNullExtension
+        tags:
+            - phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
+    -
+        class: Xgc\PHPStan\ValidateClassFieldsReturnsNotNullExtension
+        tags:
+            - phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
+    -
+        class: Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+        tags:
+            - phpstan.rules.rule

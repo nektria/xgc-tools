@@ -1,0 +1,59 @@
+{
+  "name": "xgc/php-tools",
+  "type": "library",
+  "description": "Xgc PHP tools",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "Xgc\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Javier Gonzalez Cuadrado",
+      "email": "xgc1986@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.4",
+    "ext-fileinfo": "*",
+    "ext-redis": "*",
+    "doctrine/orm": "^3.0",
+    "symfony/console": "^7.0",
+    "symfony/dependency-injection": "^7.0",
+    "symfony/http-client": "^7.0",
+    "symfony/http-foundation": "^7.0",
+    "symfony/http-kernel": "^7.0",
+    "symfony/messenger": "^7.0",
+    "symfony/serializer": "^7.0",
+    "symfony/amqp-messenger": "^7.0"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^v3.0",
+    "ergebnis/phpstan-rules": "^2.0",
+    "phpstan/phpstan": "^2.0",
+    "phpstan/phpstan-doctrine": "^2.0",
+    "phpstan/phpstan-mockery": "^2.0",
+    "phpstan/phpstan-phpunit": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
+    "phpstan/phpstan-symfony": "^2.0",
+    "phpunit/phpunit": "^12.0",
+    "roave/security-advisories": "dev-master",
+    "shipmonk/phpstan-rules": "^4.0",
+    "spaze/phpstan-disallowed-calls": "^v4.0",
+    "squizlabs/php_codesniffer": "^3.0",
+    "symfony/browser-kit": "^7.0",
+    "symfony/var-dumper": "^7.0"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "symfony/runtime": true
+    }
+  }
+}

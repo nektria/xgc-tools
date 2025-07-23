@@ -1,0 +1,14 @@
+*.DS_Store
+*.iws
+.fleet
+.idea/tasks.xml
+.idea/workspace.xml
+.php-cs-fixer.cache
+.php_cs.cache
+.phpactor.json
+.phpunit.result.cache
+/phpunit.xml
+/tmp
+!/tmp/.gitkeep
+/var/
+/vendor/

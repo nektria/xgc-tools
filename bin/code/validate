@@ -1,0 +1,222 @@
+#!/usr/bin/env php
+<?php
+
+// bin/code/validate --fix --v --docker=DOCKER --phpstan=bin/code/phpstan.neon --php-cs-fixer=bin/code/php-cs-fixer.php
+
+declare(strict_types=1);
+
+class Runner
+{
+    private string $GRAY_DIMM = "\033[90m";
+    private string $GREEN = "\033[32m";
+    private string $LINE_UP = "\x1b[1A";
+    private string $RED = "\033[31m";
+    private string $RESET = "\033[0m";
+
+    /**
+     * @var string[]
+     */
+    private array $lastCommands = [];
+
+    public function __construct(
+        private readonly bool $fix = false,
+        private readonly bool $verbose = false,
+        private readonly ?string $docker = null,
+        private readonly ?string $phpstan = null,
+        private readonly ?string $phpCsFixer = null,
+    )
+    {
+    }
+
+    public function execute(string $program): void
+    {
+        $this->lastCommands = [];
+        $name = str_pad($program, 12);
+        echo "{$name}\n";
+
+        $result = match ($program) {
+            'PHP-CS-Fixer' => $this->executePhpCSFixer(),
+            'PHPCS' => $this->executePhpCS(),
+            'PHPStan' => $this->executePhpStan(),
+            default => throw new RuntimeException('Unknown program'),
+        };
+
+        echo $this->LINE_UP;
+
+        if ($this->verbose) {
+            foreach ($this->lastCommands as $command) {
+                echo $this->LINE_UP;
+            }
+        }
+
+        if (count($result) > 0) {
+            echo "{$name} {$this->RED}FAIL{$this->RESET}\n";
+        } else {
+            echo "{$name} {$this->GREEN}OK{$this->RESET}\n";
+        }
+
+        if ($this->verbose) {
+            foreach ($this->lastCommands as $command) {
+                echo "{$this->GRAY_DIMM}{$command}{$this->RESET}\n";
+            }
+        }
+        foreach ($result as $line) {
+            echo "{$line}\n";
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    private function executePhpCS(): array
+    {
+        $result = 0;
+        $output = [];
+
+        $command = 'vendor/bin/phpcs src --standard=PSR12';
+        if ($this->fix) {
+            $this->run('vendor/bin/phpcbf src --standard=PSR12');
+        }
+
+        $this->run($command, $output, $result);
+
+        if ($result === 0) {
+            return [];
+        }
+
+        if (!$this->verbose) {
+            $errors = [];
+            foreach ($output as $line) {
+                $parts = explode('FILE: ', $line);
+                if (count($parts) !== 2) {
+                    continue;
+                }
+
+                $line = explode('/src/', $line)[1];
+                $errors[] = "  - src/{$line}";
+            }
+
+            if (count($errors) > 0) {
+                return $errors;
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function executePhpCSFixer(): array
+    {
+        $result = 0;
+        $output = [];
+
+        if ($this->fix) {
+            $this->run('vendor/bin/php-cs-fixer fix src --allow-risky=yes --using-cache=no --show-progress=none --config=bin/code/php-cs-fixer.php 2>/dev/null');
+        }
+
+        $this->run('vendor/bin/php-cs-fixer fix src --allow-risky=yes --using-cache=no --show-progress=none --dry-run --config=bin/code/php-cs-fixer.php 2>/dev/null', $output, $result);
+
+        if ($result === 0) {
+            return [];
+        }
+
+        if (!$this->verbose) {
+            $errors = [];
+
+            foreach ($output as $line) {
+                if (str_ends_with($line, '.php')) {
+                    $line = explode(') ', $line)[1];
+                    $errors[] = "  - {$line}";
+                }
+            }
+
+            if (count($errors) > 0) {
+                return $errors;
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function executePhpStan(): array
+    {
+        $result = 0;
+        $output = [];
+        $this->run('php -d memory_limit=-1 vendor/bin/phpstan analyze -c bin/code/phpstan.neon --no-progress', $output, $result);
+
+        if ($result === 0) {
+            return [];
+        }
+
+        if (!$this->verbose) {
+            $errors = [];
+            foreach ($output as $line) {
+                if (str_starts_with($line, '  Line  ')) {
+                    $line = explode('  Line   ', $line)[1];
+                    $errors[] = "  - src/{$line}";
+                }
+            }
+
+            if (count($errors) > 0) {
+                return $errors;
+            }
+
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param string[] $output
+     */
+    private function run(string $command, ?array &$output = null, ?int &$result = null): void
+    {
+        $this->lastCommands []= $command;
+
+        if ($this->docker === null) {
+            exec($command, $output, $result);
+        } else {
+            exec("docker exec -it {$this->docker} \"{$command}\"", $output, $result);
+        }
+
+        if ($this->verbose) {
+            echo "{$this->GRAY_DIMM}{$command}{$this->RESET}\n";
+        }
+    }
+}
+
+$fix = false;
+$verbose = false;
+$docker = null;
+$phpStan = null;
+$phpCsFixer = null;
+
+foreach ($argv as $arg) {
+    if ($arg === '--fix') {
+        $fix = true;
+    } elseif ($arg === '--v') {
+        $verbose = true;
+    } elseif (str_starts_with($arg, '--docker=')) {
+        $docker = explode('=', $arg)[1];
+    } elseif (str_starts_with($arg, '--phpstan=')) {
+        $phpStan = explode('=', $arg)[1];
+    } elseif (str_starts_with($arg, '--php-cs-fixer=')) {
+        $phpCsFixer = explode('=', $arg)[1];
+    }
+}
+
+$runner = new Runner(
+    fix: $fix,
+    verbose: $verbose,
+    docker: $docker,
+    phpstan: $phpStan,
+    phpCsFixer: $phpCsFixer,
+);
+$runner->execute('PHP-CS-Fixer');
+$runner->execute('PHPCS');
+$runner->execute('PHPStan');
