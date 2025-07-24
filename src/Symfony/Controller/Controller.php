@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Xgc\Symfony\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -18,12 +17,12 @@ use Xgc\Dto\Document;
 use Xgc\Dto\DocumentInterface;
 use Xgc\Exception\BaseException;
 use Xgc\Exception\MissingArgumentException;
-use Xgc\Log\ProcessRegistry;
 use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
 use Xgc\Utils\ArrayDataFetcher;
+use Xgc\Utils\ContainerBox;
 use Xgc\Utils\JsonUtil;
 
 readonly class Controller
@@ -33,15 +32,10 @@ readonly class Controller
     protected ArrayDataFetcher $requestData;
 
     public function __construct(
-        protected ProcessRegistry $processRegistry,
-        protected ContextInterface $context,
-        protected BusInterface $bus,
-        protected ContainerInterface $container,
-        private Environment $twig,
-        RequestStack $requestStack,
+        protected ContainerBox $containerBox,
+        RequestStack $requestStack
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
-        $body = [];
 
         try {
             $data = [];
@@ -53,10 +47,11 @@ readonly class Controller
             } else {
                 $data = JsonUtil::decode($content);
             }
-            $body = $data;
-        } catch (Throwable) {
+
+            $this->requestData = new ArrayDataFetcher([...$this->request->query->all(), ...$data]);
+        } catch (Throwable $e) {
+            throw BaseException::extend($e);
         }
-        $this->requestData = new ArrayDataFetcher(array_merge($this->request->query->all(), $body));
     }
 
     protected function command(
@@ -65,7 +60,7 @@ readonly class Controller
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        $this->bus->dispatchCommand($command, $transport, $delayMs, $retryOptions);
+        $this->containerBox->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
     protected function documentResponse(Document $document, int $status = 200): DocumentResponse
@@ -75,7 +70,11 @@ readonly class Controller
 
     protected function emptyResponse(): DocumentResponse
     {
-        return new DocumentResponse(new ArrayDocument([]), $this->context, Response::HTTP_NO_CONTENT);
+        return new DocumentResponse(
+            new ArrayDocument(),
+            $this->containerBox->get(ContextInterface::class),
+            Response::HTTP_NO_CONTENT
+        );
     }
 
     protected function getFile(string $field): ?string
@@ -96,7 +95,7 @@ readonly class Controller
      */
     protected function queryResponse(Query $query): DocumentResponse
     {
-        return $this->documentResponse($this->bus->dispatchQuery($query));
+        return $this->documentResponse($this->containerBox->get(BusInterface::class)->dispatchQuery($query));
     }
 
     /**
@@ -107,14 +106,17 @@ readonly class Controller
         $fixedParameters = [];
         foreach ($parameters as $key => $value) {
             if ($value instanceof DocumentInterface) {
-                $fixedParameters[$key] = $value->toArray($this->context);
+                $fixedParameters[$key] = $value->toArray($this->containerBox->get(ContextInterface::class));
             } else {
                 $fixedParameters[$key] = $value;
             }
         }
 
         try {
-            return new WebResponse($this->twig->render($view, $fixedParameters), $fixedParameters);
+            return new WebResponse(
+                $this->containerBox->get(Environment::class)->render($view, $fixedParameters),
+                $fixedParameters
+            );
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
@@ -122,7 +124,7 @@ readonly class Controller
 
     protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
     {
-        return new DocumentResponse($document, $this->context, $status);
+        return new DocumentResponse($document, $this->containerBox->get(ContextInterface::class), $status);
     }
 
     protected function retrieveFile(string $field): string

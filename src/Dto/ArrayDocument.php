@@ -6,11 +6,17 @@ namespace Xgc\Dto;
 
 readonly class ArrayDocument extends Document
 {
-    public function __construct(public mixed $data)
+    /**
+     * @param mixed[] $data
+     */
+    public function __construct(public array $data = [])
     {
     }
 
-    public function data(): mixed
+    /**
+     * @return mixed[]
+     */
+    public function data(): array
     {
         return $this->data;
     }
