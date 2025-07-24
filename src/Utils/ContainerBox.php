@@ -9,11 +9,15 @@ use Xgc\Exception\BaseException;
 
 class ContainerBox
 {
+    private static ?self $instance = null;
+
     private ?ContainerInterface $container = null;
 
     final public static function instance(): self
     {
-        return new self();
+        self::$instance ??= new self();
+
+        return self::$instance;
     }
 
     /**
