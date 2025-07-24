@@ -166,53 +166,16 @@ abstract class Console extends BaseCommand
         $this->input = $input;
         $this->output = $output;
 
-        $output->getFormatter()->setStyle('red', new OutputFormatterStyle('red', null, []));
-        $output->getFormatter()->setStyle('red1', new OutputFormatterStyle('red', null, ['bold']));
-        $output->getFormatter()->setStyle('red2', new OutputFormatterStyle('red', null, ['dim']));
-        $output->getFormatter()->setStyle('red3', new OutputFormatterStyle('red', null, ['italic']));
-        $output->getFormatter()->setStyle('red4', new OutputFormatterStyle('red', null, ['underscore']));
+        $colors = ['red', 'blue', 'green', 'black', 'yellow', 'magenta', 'cyan', 'white'];
 
-        $output->getFormatter()->setStyle('blue', new OutputFormatterStyle('blue', null, []));
-        $output->getFormatter()->setStyle('blue1', new OutputFormatterStyle('blue', null, ['bold']));
-        $output->getFormatter()->setStyle('blue2', new OutputFormatterStyle('blue', null, ['dim']));
-        $output->getFormatter()->setStyle('blue3', new OutputFormatterStyle('blue', null, ['italic']));
-        $output->getFormatter()->setStyle('blue4', new OutputFormatterStyle('blue', null, ['underscore']));
-
-        $output->getFormatter()->setStyle('green', new OutputFormatterStyle('green', null, []));
-        $output->getFormatter()->setStyle('green1', new OutputFormatterStyle('green', null, ['bold']));
-        $output->getFormatter()->setStyle('green2', new OutputFormatterStyle('green', null, ['dim']));
-        $output->getFormatter()->setStyle('green3', new OutputFormatterStyle('green', null, ['italic']));
-        $output->getFormatter()->setStyle('green4', new OutputFormatterStyle('green', null, ['underscore']));
-
-        $output->getFormatter()->setStyle('black', new OutputFormatterStyle('black', null, []));
-        $output->getFormatter()->setStyle('black1', new OutputFormatterStyle('black', null, ['bold']));
-        $output->getFormatter()->setStyle('black2', new OutputFormatterStyle('black', null, ['dim']));
-        $output->getFormatter()->setStyle('black3', new OutputFormatterStyle('black', null, ['italic']));
-        $output->getFormatter()->setStyle('black4', new OutputFormatterStyle('black', null, ['underscore']));
-
-        $output->getFormatter()->setStyle('yellow', new OutputFormatterStyle('yellow', null, []));
-        $output->getFormatter()->setStyle('yellow1', new OutputFormatterStyle('yellow', null, ['bold']));
-        $output->getFormatter()->setStyle('yellow2', new OutputFormatterStyle('yellow', null, ['dim']));
-        $output->getFormatter()->setStyle('yellow3', new OutputFormatterStyle('yellow', null, ['italic']));
-        $output->getFormatter()->setStyle('yellow4', new OutputFormatterStyle('yellow', null, ['underscore']));
-
-        $output->getFormatter()->setStyle('magenta', new OutputFormatterStyle('magenta', null, []));
-        $output->getFormatter()->setStyle('magenta1', new OutputFormatterStyle('magenta', null, ['bold']));
-        $output->getFormatter()->setStyle('magenta2', new OutputFormatterStyle('magenta', null, ['dim']));
-        $output->getFormatter()->setStyle('magenta3', new OutputFormatterStyle('magenta', null, ['italic']));
-        $output->getFormatter()->setStyle('magenta4', new OutputFormatterStyle('magenta', null, ['underscore']));
-
-        $output->getFormatter()->setStyle('cyan', new OutputFormatterStyle('cyan', null, []));
-        $output->getFormatter()->setStyle('cyan1', new OutputFormatterStyle('cyan', null, ['bold']));
-        $output->getFormatter()->setStyle('cyan2', new OutputFormatterStyle('cyan', null, ['dim']));
-        $output->getFormatter()->setStyle('cyan3', new OutputFormatterStyle('cyan', null, ['italic']));
-        $output->getFormatter()->setStyle('cyan4', new OutputFormatterStyle('cyan', null, ['underscore']));
-
-        $output->getFormatter()->setStyle('white', new OutputFormatterStyle('white', null, []));
-        $output->getFormatter()->setStyle('white1', new OutputFormatterStyle('white', null, ['bold']));
-        $output->getFormatter()->setStyle('white2', new OutputFormatterStyle('white', null, ['dim']));
-        $output->getFormatter()->setStyle('white3', new OutputFormatterStyle('white', null, ['italic']));
-        $output->getFormatter()->setStyle('white4', new OutputFormatterStyle('white', null, ['underscore']));
+        foreach ($colors as $color) {
+            $output->getFormatter()->setStyle("{$color}", new OutputFormatterStyle("{$color}", null, []));
+            $output->getFormatter()->setStyle("{$color}1", new OutputFormatterStyle("{$color}", null, ['bold']));
+            $output->getFormatter()->setStyle("{$color}2", new OutputFormatterStyle("{$color}", null, ['underscore']));
+            $output->getFormatter()->setStyle("{$color}3", new OutputFormatterStyle("{$color}", null, ['blink']));
+            $output->getFormatter()->setStyle("{$color}4", new OutputFormatterStyle("{$color}", null, ['reverse']));
+            $output->getFormatter()->setStyle("{$color}5", new OutputFormatterStyle("{$color}", null, ['conceal']));
+        }
 
         $this->play();
 
