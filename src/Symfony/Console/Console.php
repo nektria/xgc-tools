@@ -9,10 +9,8 @@ use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Throwable;
 use Xgc\Dto\Document;
@@ -22,6 +20,7 @@ use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\StringUtil;
 
 use function count;
@@ -31,7 +30,7 @@ use const PHP_EOL;
 
 abstract class Console extends BaseCommand
 {
-    private ?ContainerInterface $container;
+    use ContainerBoxTrait;
 
     private ?InputInterface $input;
 
@@ -40,17 +39,8 @@ abstract class Console extends BaseCommand
     public function __construct(string $name)
     {
         parent::__construct($name);
-        $this->container = null;
         $this->input = null;
         $this->output = null;
-    }
-
-    public function inject(
-        ContainerInterface $container
-    ): void {
-        $this->container = $container;
-
-        $this->addOption('clean', 'c', InputOption::VALUE_NONE, 'Hide execution time');
     }
 
     /**
@@ -121,10 +111,7 @@ abstract class Console extends BaseCommand
 
     protected function bus(): BusInterface
     {
-        /** @var BusInterface $bus */
-        $bus = $this->container()->get(BusInterface::class);
-
-        return $bus;
+        return $this->get(BusInterface::class);
     }
 
     protected function clear(): void
@@ -136,15 +123,6 @@ abstract class Console extends BaseCommand
     {
         $this->cursor()->moveUp();
         $this->cursor()->clearLine();
-    }
-
-    protected function container(): ContainerInterface
-    {
-        if ($this->container === null) {
-            throw new BaseException('container not injected.');
-        }
-
-        return $this->container;
     }
 
     protected function copy(string $text): bool
