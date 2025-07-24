@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Xgc\Utils;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Xgc\Exception\BaseException;
 
+use function define;
+
+define('CONTAINER_BOX', ContainerBox::instance());
 trait ContainerBoxTrait
 {
-    private ?ContainerInterface $container = null;
+    public const ContainerBox CONTAINER = CONTAINER_BOX;
 
     public function setContainer(?ContainerInterface $container): void
     {
-        $this->container = $container;
+        self::CONTAINER->setContainer($container);
     }
 
     /**
@@ -23,13 +25,6 @@ trait ContainerBoxTrait
      */
     private function get(string $class): object
     {
-        if ($this->container === null) {
-            throw new BaseException('Container not set.');
-        }
-
-        /** @var T $service */
-        $service = $this->container->get($class);
-
-        return $service;
+        return self::CONTAINER->get($class);
     }
 }

@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace Xgc\Utils;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Xgc\Exception\BaseException;
 
 class ContainerBox
 {
-    use ContainerBoxTrait;
+    private ?ContainerInterface $container = null;
+
+    final public static function instance(): self
+    {
+        return new self();
+    }
 
     /**
      * @template T of object
@@ -25,5 +31,10 @@ class ContainerBox
         $service = $this->container->get($class);
 
         return $service;
+    }
+
+    public function setContainer(?ContainerInterface $container): void
+    {
+        $this->container = $container;
     }
 }

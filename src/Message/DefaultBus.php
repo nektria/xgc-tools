@@ -14,7 +14,7 @@ use Xgc\Dto\DocumentInterface;
 use Xgc\Exception\BaseException;
 use Xgc\Utils\ContainerBoxTrait;
 
-class DefaultBus implements BusInterface
+readonly class DefaultBus implements BusInterface
 {
     use ContainerBoxTrait;
 
