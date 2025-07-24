@@ -17,6 +17,16 @@ use const PHP_INT_MIN;
 class RandomUtil
 {
     /**
+     * @param string $text
+     * @return string
+     */
+    public static function character(string $text): string
+    {
+        $length = strlen($text);
+        return $text[self::int(0, $length - 1)];
+    }
+
+    /**
      * @template T
      * @param T[] $list
      * @return T
