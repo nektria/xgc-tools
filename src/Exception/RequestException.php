@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Xgc\Exception;
 
-use Xgc\Symfony\Controller\RequestResponse;
+use Xgc\Client\RequestResponse;
 
 class RequestException extends BaseException
 {

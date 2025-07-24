@@ -7,9 +7,11 @@ declare(strict_types=1);
 
 class Runner
 {
+    private string $CLEAR_LINE = "\x1b[2K";
     private string $GRAY_DIMM = "\033[90m";
     private string $GREEN = "\033[32m";
     private string $LINE_UP = "\x1b[1A";
+    private string $LINE_UP_AND_CLEAR_LINE = "\x1b[1A\x1b[2K";
     private string $RED = "\033[31m";
     private string $RESET = "\033[0m";
 
@@ -41,25 +43,25 @@ class Runner
             default => throw new RuntimeException('Unknown program'),
         };
 
-        echo $this->LINE_UP;
+        echo $this->LINE_UP_AND_CLEAR_LINE;
 
         if ($this->verbose) {
             foreach ($this->lastCommands as $command) {
-                echo $this->LINE_UP;
+                echo $this->LINE_UP_AND_CLEAR_LINE;
             }
         }
 
         if (count($result) > 0) {
             echo "{$name} {$this->RED}FAIL{$this->RESET}\n";
+            if ($this->verbose) {
+                foreach ($this->lastCommands as $command) {
+                    echo "{$this->GRAY_DIMM}{$command}{$this->RESET}\n";
+                }
+            }
         } else {
             echo "{$name} {$this->GREEN}OK{$this->RESET}\n";
         }
 
-        if ($this->verbose) {
-            foreach ($this->lastCommands as $command) {
-                echo "{$this->GRAY_DIMM}{$command}{$this->RESET}\n";
-            }
-        }
         foreach ($result as $line) {
             echo "{$line}\n";
         }

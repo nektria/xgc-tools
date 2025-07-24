@@ -8,7 +8,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 use Xgc\Exception\BaseException;
 use Xgc\Exception\RequestException;
-use Xgc\Symfony\Controller\RequestResponse;
 use Xgc\Utils\FileUtil;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;

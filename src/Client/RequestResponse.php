@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Xgc\Symfony\Controller;
+namespace Xgc\Client;
 
 use Throwable;
 use Xgc\Exception\BaseException;
