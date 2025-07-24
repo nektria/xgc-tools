@@ -15,7 +15,7 @@ readonly abstract class MessageHandler
 {
     public const ContainerBox CONTAINER_BOX = MESSAGE_HANDLER_CONTAINER_BOX;
 
-    public function set(ContainerInterface $container): void
+    public function setContainer(ContainerInterface $container): void
     {
         self::CONTAINER_BOX->setContainer($container);
     }
