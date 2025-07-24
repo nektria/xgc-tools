@@ -7,7 +7,9 @@ namespace Xgc\Utils;
 use Random\RandomException;
 use Xgc\Exception\BaseException;
 
+use function count;
 use function sprintf;
+use function strlen;
 
 use const PHP_FLOAT_MAX;
 use const PHP_FLOAT_MIN;
@@ -16,13 +18,10 @@ use const PHP_INT_MIN;
 
 class RandomUtil
 {
-    /**
-     * @param string $text
-     * @return string
-     */
     public static function character(string $text): string
     {
         $length = strlen($text);
+
         return $text[self::int(0, $length - 1)];
     }
 
@@ -33,7 +32,7 @@ class RandomUtil
      */
     public static function element(array $list): mixed
     {
-        return $list[self::int(0, $list - 1)];
+        return $list[self::int(0, count($list) - 1)];
     }
 
     public static function float(float $min = PHP_FLOAT_MIN, float $max = PHP_FLOAT_MAX): float

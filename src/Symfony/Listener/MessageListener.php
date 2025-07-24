@@ -22,7 +22,7 @@ use Xgc\Dto\Clock;
 use Xgc\Dto\ContextInterface;
 use Xgc\Enums\LogLevel;
 use Xgc\Exception\BaseException;
-use Xgc\Log\Logger;
+use Xgc\Log\LoggerInterface;
 use Xgc\Log\ProcessRegistry;
 use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
@@ -30,6 +30,7 @@ use Xgc\Message\ContextStamp;
 use Xgc\Message\Event;
 use Xgc\Message\MessageInterface;
 use Xgc\Message\RetryStamp;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
 
@@ -37,20 +38,16 @@ use function in_array;
 
 abstract class MessageListener implements EventSubscriberInterface
 {
+    use ContainerBoxTrait;
+
     private float $executionStartedAt;
 
     private string $messageCompletedAt;
 
     private string $messageStartedAt;
 
-    public function __construct(
-        private readonly AlertInterface $alertService,
-        private readonly BusInterface $bus,
-        private readonly ContextInterface $context,
-        private readonly Logger $logger,
-        private readonly ProcessRegistry $processRegistry,
-        private readonly SharedVariableCache $sharedVariableCache,
-    ) {
+    public function __construct()
+    {
         $this->executionStartedAt = microtime(true);
         $this->messageCompletedAt = Clock::now()->iso8601String();
         $this->messageStartedAt = $this->messageCompletedAt;
@@ -71,6 +68,11 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onMessengerException(WorkerMessageFailedEvent $event): void
     {
+        $bus = $this->get(BusInterface::class);
+        $logger = $this->get(LoggerInterface::class);
+        $alertService = $this->get(AlertInterface::class);
+        $processRegistry = $this->get(ProcessRegistry::class);
+
         try {
             $retryStamp = $event->getEnvelope()->last(RetryStamp::class);
             $transportStamp = $event->getEnvelope()->last(TransportNamesStamp::class);
@@ -102,13 +104,13 @@ abstract class MessageListener implements EventSubscriberInterface
                 }
 
                 if ($message instanceof Command) {
-                    $this->bus->dispatchCommand(
+                    $bus->dispatchCommand(
                         $message,
                         transport: $transport,
                         retryOptions: new RetryStamp($nextTry, $maxRetries, $intervalMs),
                     );
                 } else {
-                    $this->bus->dispatchEvent(
+                    $bus->dispatchEvent(
                         $message,
                         transport: $transport,
                         retryOptions: new RetryStamp($nextTry, $maxRetries, $intervalMs),
@@ -146,8 +148,8 @@ abstract class MessageListener implements EventSubscriberInterface
                 $exchangeName = $exchangeStamp->getAmqpEnvelope()->getExchangeName();
             }
 
-            $this->logger->temporalLogs();
-            $this->logger->exception(
+            $logger->temporalLogs();
+            $logger->exception(
                 throwable: $exception,
                 input: new ArrayDocument([
                     'context' => 'messenger',
@@ -171,7 +173,7 @@ abstract class MessageListener implements EventSubscriberInterface
             ];
 
             if (!in_array($exception->getMessage(), $ignoreMessages, true)) {
-                $this->alertService->publishThrowable(
+                $alertService->publishThrowable(
                     $event->getThrowable(),
                     input: new ArrayDocument([
                         'message' => $this->normalizeClass($class),
@@ -180,7 +182,7 @@ abstract class MessageListener implements EventSubscriberInterface
                 );
             }
 
-            $this->processRegistry->clear();
+            $processRegistry->clear();
             $this->cleanMemory();
             gc_collect_cycles();
         } catch (Throwable) {
@@ -198,6 +200,9 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onWorkerMessageHandled(WorkerMessageHandledEvent $event): void
     {
+        $logger = $this->get(LoggerInterface::class);
+        $processRegistry = $this->get(ProcessRegistry::class);
+
         $this->messageCompletedAt = Clock::now()->iso8601String();
         $message = $event->getEnvelope()->getMessage();
 
@@ -223,11 +228,11 @@ abstract class MessageListener implements EventSubscriberInterface
 
             $time = max(0.001, round(microtime(true) - $this->executionStartedAt, 3)) . 's';
 
-            $this->processRegistry->addValue('context', 'messenger');
-            $this->processRegistry->addValue('path', $this->normalizeClass($message::class));
-            $this->processRegistry->addValue('queue', $exchangeName);
+            $processRegistry->addValue('context', 'messenger');
+            $processRegistry->addValue('path', $this->normalizeClass($message::class));
+            $processRegistry->addValue('queue', $exchangeName);
 
-            $this->logger->log(
+            $logger->log(
                 $logLevel,
                 [
                     'body' => $data,
@@ -246,13 +251,16 @@ abstract class MessageListener implements EventSubscriberInterface
             );
         }
 
-        $this->processRegistry->clear();
+        $processRegistry->clear();
         $this->cleanMemory();
         gc_collect_cycles();
     }
 
     public function onWorkerMessageReceived(WorkerMessageReceivedEvent $event): void
     {
+        $processRegistry = $this->get(ProcessRegistry::class);
+        $context = $this->get(ContextInterface::class);
+
         $message = $event->getEnvelope()->getMessage();
         $exchangeName = '?';
         $exchangeStamp = $event->getEnvelope()->last(AmqpReceivedStamp::class);
@@ -260,10 +268,10 @@ abstract class MessageListener implements EventSubscriberInterface
             $exchangeName = $exchangeStamp->getAmqpEnvelope()->getExchangeName() ?? '?';
         }
 
-        $this->processRegistry->clear();
-        $this->processRegistry->getMetadata()->updateField('context', 'messenger');
-        $this->processRegistry->getMetadata()->updateField('path', $this->normalizeClass($message::class));
-        $this->processRegistry->getMetadata()->updateField('queue', $exchangeName);
+        $processRegistry->clear();
+        $processRegistry->getMetadata()->updateField('context', 'messenger');
+        $processRegistry->getMetadata()->updateField('path', $this->normalizeClass($message::class));
+        $processRegistry->getMetadata()->updateField('queue', $exchangeName);
 
         $message = $event->getEnvelope()->getMessage();
         if ($message instanceof MessageInterface) {
@@ -274,8 +282,8 @@ abstract class MessageListener implements EventSubscriberInterface
         /** @var ContextStamp|null $contextStamp */
         $contextStamp = $event->getEnvelope()->last(ContextStamp::class);
         if ($contextStamp !== null) {
-            $this->context->setTraceId($contextStamp->traceId);
-            $this->context->setMetadata($contextStamp->data);
+            $context->setTraceId($contextStamp->traceId);
+            $context->setMetadata($contextStamp->data);
         }
 
         $this->messageStartedAt = Clock::now()->iso8601String();
@@ -290,70 +298,82 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function decreaseCounter(MessageInterface $message): void
     {
-        $project = $this->context->project();
+        $context = $this->get(ContextInterface::class);
+        $sharedVariableCache = $this->get(SharedVariableCache::class);
+
+        $project = $context->project();
         $clzz = $message::class;
-        $data = JsonUtil::decode($this->sharedVariableCache->readString('bus_messages', '[]'));
+        $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages', '[]'));
         $key = "{$project}_{$clzz}";
         if (!in_array($key, $data, true)) {
             $data[] = $key;
         }
         sort($data);
-        $this->sharedVariableCache->saveString('bus_messages', JsonUtil::encode($data), 60);
+        $sharedVariableCache->saveString('bus_messages', JsonUtil::encode($data), 60);
 
-        // $this->sharedVariableCache->beginTransaction();
-        $times = max($this->sharedVariableCache->readInt("bus_messages_{$key}") - 1, 0);
-        $this->sharedVariableCache->saveInt("bus_messages_{$key}", $times, ttl: 60);
-        // $this->sharedVariableCache->closeTransaction();
+        // $sharedVariableCache->beginTransaction();
+        $times = max($sharedVariableCache->readInt("bus_messages_{$key}") - 1, 0);
+        $sharedVariableCache->saveInt("bus_messages_{$key}", $times, ttl: 60);
+        // $sharedVariableCache->closeTransaction();
     }
 
     private function decreasePendingCounter(MessageInterface $message): void
     {
-        $project = $this->context->project();
+        $context = $this->get(ContextInterface::class);
+        $sharedVariableCache = $this->get(SharedVariableCache::class);
+
+        $project = $context->project();
         $clzz = $message::class;
-        $data = JsonUtil::decode($this->sharedVariableCache->readString('bus_messages_pending', '[]'));
+        $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages_pending', '[]'));
         $key = "{$project}_{$clzz}";
         if (!in_array($key, $data, true)) {
             $data[] = $key;
         }
         sort($data);
-        $this->sharedVariableCache->saveString('bus_messages_pending', JsonUtil::encode($data), 60);
+        $sharedVariableCache->saveString('bus_messages_pending', JsonUtil::encode($data), 60);
 
-        // $this->sharedVariableCache->beginTransaction();
-        $times = max($this->sharedVariableCache->readInt("bus_messages_pending_{$key}") - 1, 0);
-        $this->sharedVariableCache->saveInt("bus_messages_pending_{$key}", $times, ttl: 60);
-        // $this->sharedVariableCache->closeTransaction();
+        // $sharedVariableCache->beginTransaction();
+        $times = max($sharedVariableCache->readInt("bus_messages_pending_{$key}") - 1, 0);
+        $sharedVariableCache->saveInt("bus_messages_pending_{$key}", $times, ttl: 60);
+        // $sharedVariableCache->closeTransaction();
     }
 
     private function increaseCounter(MessageInterface $message): void
     {
-        $project = $this->context->project();
+        $context = $this->get(ContextInterface::class);
+        $sharedVariableCache = $this->get(SharedVariableCache::class);
+
+        $project = $context->project();
         $clzz = $message::class;
-        $data = JsonUtil::decode($this->sharedVariableCache->readString('bus_messages', '[]'));
+        $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages', '[]'));
         $key = str_replace('\\', '_', "{$project}_{$clzz}");
         if (!in_array($key, $data, true)) {
             $data[] = $key;
         }
         sort($data);
-        $this->sharedVariableCache->saveString('bus_messages', JsonUtil::encode($data), 60);
+        $sharedVariableCache->saveString('bus_messages', JsonUtil::encode($data), 60);
 
-        $times = min(100_000, $this->sharedVariableCache->readInt("bus_messages_{$key}") + 1);
-        $this->sharedVariableCache->saveInt("bus_messages_{$key}", $times, ttl: 60);
+        $times = min(100_000, $sharedVariableCache->readInt("bus_messages_{$key}") + 1);
+        $sharedVariableCache->saveInt("bus_messages_{$key}", $times, ttl: 60);
     }
 
     private function increasePendingCounter(MessageInterface $message): void
     {
-        $project = $this->context->project();
+        $context = $this->get(ContextInterface::class);
+        $sharedVariableCache = $this->get(SharedVariableCache::class);
+
+        $project = $context->project();
         $clzz = $message::class;
         $key = "{$project}_{$clzz}";
-        $data = JsonUtil::decode($this->sharedVariableCache->readString('bus_messages_pending', '[]'));
+        $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages_pending', '[]'));
         if (!in_array($key, $data, true)) {
             $data[] = $key;
         }
         sort($data);
-        $this->sharedVariableCache->saveString('bus_messages_pending', JsonUtil::encode($data), 60);
+        $sharedVariableCache->saveString('bus_messages_pending', JsonUtil::encode($data), 60);
 
-        $times = min(1_000_000, $this->sharedVariableCache->readInt("bus_messages_pending_{$key}") + 1);
-        $this->sharedVariableCache->saveInt("bus_messages_pending_{$key}", $times, ttl: 60);
+        $times = min(1_000_000, $sharedVariableCache->readInt("bus_messages_pending_{$key}") + 1);
+        $sharedVariableCache->saveInt("bus_messages_pending_{$key}", $times, ttl: 60);
     }
 
     private function normalizeClass(string $class): string
