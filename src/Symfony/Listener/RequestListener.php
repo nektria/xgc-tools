@@ -8,6 +8,7 @@ use DomainException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -26,6 +27,7 @@ use Xgc\Dto\ContextInterface;
 use Xgc\Dto\DocumentCollection;
 use Xgc\Dto\FileDocument;
 use Xgc\Dto\ThrowableDocument;
+use Xgc\Exception\RedirectWebException;
 use Xgc\Log\LoggerInterface;
 use Xgc\Log\ProcessRegistry;
 use Xgc\Symfony\Controller\DocumentResponse;
@@ -117,13 +119,21 @@ abstract class RequestListener implements EventSubscriberInterface
 
     public function onKernelException(ExceptionEvent $event): void
     {
-        $document = new ThrowableDocument($event->getThrowable());
+        $throwable = $event->getThrowable();
+        if ($throwable instanceof RedirectWebException) {
+            $event->setResponse(new RedirectResponse(
+                $throwable->path,
+                $throwable->status,
+            ));
+        } else {
+            $document = new ThrowableDocument($throwable);
 
-        $event->setResponse(new DocumentResponse(
-            $document,
-            $this->context,
-            $document->status,
-        ));
+            $event->setResponse(new DocumentResponse(
+                $document,
+                $this->context,
+                $document->status,
+            ));
+        }
 
         $this->setHeaders($event);
     }
@@ -152,6 +162,7 @@ abstract class RequestListener implements EventSubscriberInterface
     public function onKernelResponse(ResponseEvent $event): void
     {
         $response = $event->getResponse();
+
         if ($response instanceof DocumentResponse && $response->document instanceof FileDocument) {
             $this->originalResponse = $response;
             $fileResponse = new BinaryFileResponse(
