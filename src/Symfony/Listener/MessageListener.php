@@ -20,7 +20,6 @@ use Xgc\Cache\SharedVariableCache;
 use Xgc\Dto\ArrayDocument;
 use Xgc\Dto\Clock;
 use Xgc\Dto\ContextInterface;
-use Xgc\Dto\MutableMetadata;
 use Xgc\Enums\LogLevel;
 use Xgc\Exception\BaseException;
 use Xgc\Log\Logger;
@@ -108,7 +107,7 @@ abstract class MessageListener implements EventSubscriberInterface
                         transport: $transport,
                         retryOptions: new RetryStamp($nextTry, $maxRetries, $intervalMs),
                     );
-                } elseif ($message instanceof Event) {
+                } else {
                     $this->bus->dispatchEvent(
                         $message,
                         transport: $transport,
@@ -276,7 +275,7 @@ abstract class MessageListener implements EventSubscriberInterface
         $contextStamp = $event->getEnvelope()->last(ContextStamp::class);
         if ($contextStamp !== null) {
             $this->context->setTraceId($contextStamp->traceId);
-            $this->context->setMetadata(new MutableMetadata($contextStamp->data));
+            $this->context->setMetadata($contextStamp->data);
         }
 
         $this->messageStartedAt = Clock::now()->iso8601String();

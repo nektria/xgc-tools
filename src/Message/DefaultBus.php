@@ -30,7 +30,7 @@ class DefaultBus implements BusInterface
             new ContextStamp(
                 traceId: $context->traceId(),
                 context: '',
-                data: $context->metadata()->data()
+                data: $context->extras()
             ),
         ];
 
@@ -68,7 +68,7 @@ class DefaultBus implements BusInterface
             new ContextStamp(
                 traceId: $context->traceId(),
                 context: '',
-                data: $context->metadata()->data()
+                data: $context->extras()
             ),
         ];
 
@@ -105,7 +105,7 @@ class DefaultBus implements BusInterface
             new ContextStamp(
                 traceId: $context->traceId(),
                 context: '',
-                data: $context->metadata()->data()
+                data: $context->extras()
             ),
         ];
 

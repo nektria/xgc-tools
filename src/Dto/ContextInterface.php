@@ -6,11 +6,12 @@ namespace Xgc\Dto;
 
 interface ContextInterface
 {
-    public function asyncDisabled(): void;
-
-    public function disableAsync(): void;
-
     public function env(): string;
+
+    /**
+     * @return mixed[]
+     */
+    public function extras(): array;
 
     public function isDebug(): bool;
 
@@ -20,17 +21,12 @@ interface ContextInterface
 
     public function isTest(): bool;
 
-    /**
-     * @return MutableMetadata<string>
-     */
-    public function metadata(): MutableMetadata;
-
     public function project(): string;
 
     /**
-     * @param MutableMetadata<string> $metadata
+     * @param mixed[] $extras
      */
-    public function setMetadata(MutableMetadata $metadata): void;
+    public function setMetadata(array $extras): void;
 
     public function setTraceId(string $traceId): void;
 

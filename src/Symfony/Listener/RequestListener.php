@@ -83,10 +83,6 @@ abstract class RequestListener implements EventSubscriberInterface
         $request = $event->getRequest();
         $method = $request->getMethod();
 
-        if ($request->headers->has('X-sync')) {
-            $this->context->disableAsync();
-        }
-
         if (
             $method === 'GET'
             || $method === 'PUT'
