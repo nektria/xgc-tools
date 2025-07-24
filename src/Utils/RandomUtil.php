@@ -16,6 +16,16 @@ use const PHP_INT_MIN;
 
 class RandomUtil
 {
+    /**
+     * @template T
+     * @param T[] $list
+     * @return T
+     */
+    public static function element(array $list): mixed
+    {
+        return $list[self::int(0, $list - 1)];
+    }
+
     public static function float(float $min = PHP_FLOAT_MIN, float $max = PHP_FLOAT_MAX): float
     {
         return $min + (self::int() / PHP_INT_MAX) * ($max - $min);
