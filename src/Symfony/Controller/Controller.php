@@ -11,10 +11,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Throwable;
+use Twig\Environment;
 use Xgc\Dto\ArrayDocument;
 use Xgc\Dto\ContextInterface;
 use Xgc\Dto\Document;
 use Xgc\Dto\DocumentInterface;
+use Xgc\Exception\BaseException;
 use Xgc\Exception\MissingArgumentException;
 use Xgc\Log\ProcessRegistry;
 use Xgc\Message\BusInterface;
@@ -35,6 +37,7 @@ readonly class Controller
         protected ContextInterface $context,
         protected BusInterface $bus,
         protected ContainerInterface $container,
+        private Environment $twig,
         RequestStack $requestStack,
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
@@ -94,6 +97,27 @@ readonly class Controller
     protected function queryResponse(Query $query): DocumentResponse
     {
         return $this->documentResponse($this->bus->dispatchQuery($query));
+    }
+
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    protected function render(string $view, array $parameters): WebResponse
+    {
+        $fixedParameters = [];
+        foreach ($parameters as $key => $value) {
+            if ($value instanceof DocumentInterface) {
+                $fixedParameters[$key] = $value->toArray($this->context);
+            } else {
+                $fixedParameters[$key] = $value;
+            }
+        }
+
+        try {
+            return new WebResponse($this->twig->render($view, $fixedParameters), $fixedParameters);
+        } catch (Throwable $e) {
+            throw BaseException::extend($e);
+        }
     }
 
     protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
