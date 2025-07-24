@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xgc\Dto;
 
 use Xgc\Utils\ContainerBoxTrait;
+use Xgc\Utils\RandomUtil;
 
 class DefaultContext implements ContextInterface
 {
@@ -19,6 +20,8 @@ class DefaultContext implements ContextInterface
         private readonly string $env,
         private readonly string $project,
     ) {
+        $this->traceId = RandomUtil::uuid4();
+        $this->metadata = [];
     }
 
     public function env(): string
