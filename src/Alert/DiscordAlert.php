@@ -77,7 +77,7 @@ readonly class DiscordAlert implements AlertInterface
         protected RequestClient $requestClient,
         protected InternalVariableCache $internalVariableCache,
         protected string $alertsToken,
-        protected string $errorChannelId,
+        protected string $discordErrorChannelId,
     ) {
         $this->tokens = explode(',', $this->alertsToken);
     }
@@ -140,7 +140,7 @@ readonly class DiscordAlert implements AlertInterface
         MESSAGE;
 
         try {
-            $this->internalPublishMessage($this->errorChannelId, $content);
+            $this->internalPublishMessage($this->discordErrorChannelId, $content);
         } catch (RequestException) {
             // TODO only if body too large
             $this->publishShortThrowable($error);
@@ -151,6 +151,10 @@ readonly class DiscordAlert implements AlertInterface
         string $channelId,
         string $message,
     ): void {
+        if ($channelId === 'none') {
+            return;
+        }
+
         $eol = self::EMPTY_LINE;
         $content = <<<MESSAGE
             {$eol}
@@ -198,7 +202,7 @@ readonly class DiscordAlert implements AlertInterface
             Trace: {$this->context->traceId()}
         MESSAGE;
 
-        $this->publishMessage($this->errorChannelId, $content);
+        $this->publishMessage($this->discordErrorChannelId, $content);
     }
 
     private function publishShortThrowable(BaseException $error): void
@@ -221,7 +225,7 @@ readonly class DiscordAlert implements AlertInterface
         MESSAGE;
 
         try {
-            $this->internalPublishMessage($this->errorChannelId, $content);
+            $this->internalPublishMessage($this->discordErrorChannelId, $content);
         } catch (RequestException) {
             // TODO only if body too large
             $this->publishEvenShorterThrowable($error);
