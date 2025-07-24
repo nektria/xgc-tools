@@ -54,6 +54,19 @@ readonly class Controller
         }
     }
 
+    /**
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
+     */
+    public function get(string $class): object
+    {
+        /** @var T $service */
+        $service = $this->containerBox->get($class);
+
+        return $service;
+    }
+
     protected function command(
         Command $command,
         ?string $transport = null,
