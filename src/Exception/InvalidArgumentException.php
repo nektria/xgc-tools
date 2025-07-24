@@ -18,6 +18,7 @@ class InvalidArgumentException extends BaseException
             extras: [
                 'field' => $field,
                 'value' => $value,
+                'type' => 'INVALID_FIELD'
             ]
         );
     }

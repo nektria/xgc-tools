@@ -10,6 +10,6 @@ class RedirectWebException extends BaseException
         public readonly string $path,
         int $status = 302
     ) {
-        parent::__construct($path, $status);
+        parent::__construct($path, status: $status);
     }
 }
