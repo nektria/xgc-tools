@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Xgc\Symfony\Controller;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -23,10 +24,13 @@ use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
 use Xgc\Utils\ArrayDataFetcher;
 use Xgc\Utils\ContainerBox;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
 readonly class Controller
 {
+    use ContainerBoxTrait;
+
     protected Request $request;
 
     protected ArrayDataFetcher $requestData;
@@ -59,13 +63,17 @@ readonly class Controller
      * @param class-string<T> $class
      * @return T
      */
-    public function get(string $class): object
+    public function getService(string $class): object
     {
         /** @var T $service */
-        $service = $this->containerBox->get($class);
+        $service = self::CONTAINER->get($class);
 
         return $service;
     }
+
+    // public function setContainer(ContainerInterface $container): void {
+    //    $this->containerBox->setContainer($container);
+    // }
 
     protected function command(
         Command $command,

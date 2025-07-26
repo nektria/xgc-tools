@@ -11,7 +11,7 @@ use function define;
 define('CONTAINER_BOX', ContainerBox::instance());
 trait ContainerBoxTrait
 {
-    public const ContainerBox CONTAINER = CONTAINER_BOX;
+    private const ContainerBox CONTAINER = CONTAINER_BOX;
 
     public function setContainer(?ContainerInterface $container): void
     {
