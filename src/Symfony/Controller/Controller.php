@@ -84,6 +84,16 @@ readonly class Controller
         $this->containerBox->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
+    /**
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
+     */
+    protected function container(string $class): object
+    {
+        return self::CONTAINER->get($class);
+    }
+
     protected function documentResponse(Document $document, int $status = 200): DocumentResponse
     {
         return $this->response($document, $status);
