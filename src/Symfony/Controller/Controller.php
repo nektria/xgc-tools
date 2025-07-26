@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Xgc\Symfony\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -58,6 +57,21 @@ readonly class Controller
         }
     }
 
+    public function getDeviceType(): string
+    {
+        $ua = $this->request->headers->get('User-Agent') ?? '';
+
+        if (preg_match('/tablet|ipad|playbook|silk/i', $ua) !== false) {
+            return 'tablet';
+        }
+
+        if (preg_match('/mobi|android|touch|iphone/i', $ua) !== false) {
+            return 'mobile';
+        }
+
+        return 'desktop';
+    }
+
     /**
      * @template T of object
      * @param class-string<T> $class
@@ -70,10 +84,6 @@ readonly class Controller
 
         return $service;
     }
-
-    // public function setContainer(ContainerInterface $container): void {
-    //    $this->containerBox->setContainer($container);
-    // }
 
     protected function command(
         Command $command,
