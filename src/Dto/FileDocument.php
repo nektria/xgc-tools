@@ -42,7 +42,7 @@ readonly class FileDocument extends Document
         $this->mime = $mime;
     }
 
-    public function toArray(ContextInterface $context): array
+    public function toArray(?ContextInterface $context): array
     {
         return [
             'path' => $this->file,

@@ -42,7 +42,7 @@ class ThrowableDocument implements DocumentInterface
         self::$validPrefixTraceFiles[] = $filePrefix;
     }
 
-    public function toArray(ContextInterface $context): array
+    public function toArray(?ContextInterface $context): array
     {
         $message = $this->throwable->getMessage();
         $extras = null;
@@ -51,7 +51,7 @@ class ThrowableDocument implements DocumentInterface
             $extras = $this->throwable->extras;
         }
 
-        if ($this->status >= 500 && $context->isProd()) {
+        if ($this->status >= 500 && $context?->isProd() === true) {
             $extras = null;
             $message = 'Internal Server Error';
         }
@@ -61,7 +61,7 @@ class ThrowableDocument implements DocumentInterface
             'message' => $message,
         ];
 
-        if ($context->isDebug()) {
+        if ($context?->isDebug() === true) {
             $data['file'] = str_replace('/app/', '', $this->throwable->getFile());
             $data['line'] = $this->throwable->getLine();
             $data['trace'] = $this->trace();

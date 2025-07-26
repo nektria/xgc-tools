@@ -21,7 +21,7 @@ readonly class ArrayDocument extends Document
         return $this->data;
     }
 
-    public function toArray(ContextInterface $context): array
+    public function toArray(?ContextInterface $context): array
     {
         return $this->data;
     }
