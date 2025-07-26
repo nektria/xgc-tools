@@ -145,7 +145,7 @@ readonly class Controller
 
         try {
             return new WebResponse(
-                $this->containerBox->get(Environment::class)->render($view, $fixedParameters),
+                self::CONTAINER->get(Environment::class)->render($view, $fixedParameters),
                 $fixedParameters
             );
         } catch (Throwable $e) {
