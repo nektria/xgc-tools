@@ -57,34 +57,6 @@ readonly class Controller
         }
     }
 
-    public function getDeviceType(): string
-    {
-        $ua = $this->request->headers->get('User-Agent') ?? '';
-
-        if (preg_match('/tablet|ipad|playbook|silk/i', $ua) !== false) {
-            return 'tablet';
-        }
-
-        if (preg_match('/mobi|android|touch|iphone/i', $ua) !== false) {
-            return 'mobile';
-        }
-
-        return 'desktop';
-    }
-
-    /**
-     * @template T of object
-     * @param class-string<T> $class
-     * @return T
-     */
-    public function getService(string $class): object
-    {
-        /** @var T $service */
-        $service = self::CONTAINER->get($class);
-
-        return $service;
-    }
-
     protected function command(
         Command $command,
         ?string $transport = null,
@@ -118,6 +90,21 @@ readonly class Controller
         );
     }
 
+    protected function getDeviceType(): string
+    {
+        $ua = $this->request->headers->get('User-Agent') ?? '';
+
+        if (preg_match('/tablet|ipad|playbook|silk/i', $ua) !== false) {
+            return 'tablet';
+        }
+
+        if (preg_match('/mobi|android|touch|iphone/i', $ua) !== false) {
+            return 'mobile';
+        }
+
+        return 'desktop';
+    }
+
     protected function getFile(string $field): ?string
     {
         /** @var UploadedFile|null $file */
@@ -128,6 +115,19 @@ readonly class Controller
         }
 
         return $file->getRealPath();
+    }
+
+    /**
+     * @template T of object
+     * @param class-string<T> $class
+     * @return T
+     */
+    protected function getService(string $class): object
+    {
+        /** @var T $service */
+        $service = self::CONTAINER->get($class);
+
+        return $service;
     }
 
     /**
