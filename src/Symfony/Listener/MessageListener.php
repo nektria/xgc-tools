@@ -283,7 +283,7 @@ abstract class MessageListener implements EventSubscriberInterface
         $contextStamp = $event->getEnvelope()->last(ContextStamp::class);
         if ($contextStamp !== null) {
             $context->setTraceId($contextStamp->traceId);
-            $context->setMetadata($contextStamp->data);
+            $context->setExtras($contextStamp->data);
         }
 
         $this->messageStartedAt = Clock::now()->iso8601String();

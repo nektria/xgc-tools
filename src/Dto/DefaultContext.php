@@ -65,7 +65,7 @@ class DefaultContext implements ContextInterface
     /**
      * @param mixed[] $extras
      */
-    public function setMetadata(array $extras): void
+    public function setExtras(array $extras): void
     {
         $this->metadata = $extras;
     }
