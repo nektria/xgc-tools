@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Xgc\Symfony\Listener;
 
 use DomainException;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,47 +19,32 @@ use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Throwable;
 use Xgc\Alert\AlertInterface;
-use Xgc\Cache\InternalVariableCache;
 use Xgc\Dto\ArrayDocument;
 use Xgc\Dto\Clock;
 use Xgc\Dto\ContextInterface;
 use Xgc\Dto\DocumentCollection;
 use Xgc\Dto\FileDocument;
 use Xgc\Dto\ThrowableDocument;
+use Xgc\Enums\LogLevel;
 use Xgc\Exception\RedirectWebException;
 use Xgc\Log\LoggerInterface;
 use Xgc\Log\ProcessRegistry;
 use Xgc\Symfony\Controller\DocumentResponse;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
 use function in_array;
 
 abstract class RequestListener implements EventSubscriberInterface
 {
-    public const string LOG_LEVEL_DEBUG = 'DEBUG';
-
-    public const string LOG_LEVEL_INFO = 'INFO';
-
-    public const string LOG_LEVEL_NONE = 'NONE';
-
-    /** @var string[] */
-    private readonly array $allowedCors;
+    use ContainerBoxTrait;
 
     private float $executionTime;
 
     private ?Response $originalResponse;
 
-    public function __construct(
-        protected readonly ContextInterface $context,
-        protected readonly LoggerInterface $logger,
-        protected readonly InternalVariableCache $internalVariableCache,
-        protected readonly ProcessRegistry $processRegistry,
-        protected readonly AlertInterface $alertService,
-        ContainerInterface $container
-    ) {
-        /** @var string[] $cors */
-        $cors = $container->getParameter('allowed_cors');
-        $this->allowedCors = $cors;
+    public function __construct()
+    {
         $this->executionTime = 0;
         $this->originalResponse = null;
     }
@@ -131,7 +115,7 @@ abstract class RequestListener implements EventSubscriberInterface
 
             $event->setResponse(new DocumentResponse(
                 $document,
-                $this->context,
+                self::CONTAINER->get(ContextInterface::class),
                 $document->status,
             ));
         }
@@ -156,7 +140,7 @@ abstract class RequestListener implements EventSubscriberInterface
 
         $tracer = $request->headers->get('X-Trace');
         if ($tracer !== null) {
-            $this->context->setTraceId($tracer);
+            self::CONTAINER->get(ContextInterface::class)->setTraceId($tracer);
         }
     }
 
@@ -173,7 +157,7 @@ abstract class RequestListener implements EventSubscriberInterface
             $fileResponse->headers->set('Content-Type', $response->document->mime);
             if ($response->document->maxAge !== null) {
                 $fileResponse->headers->set('Cache-Control', "public, max-age={$response->document->maxAge}");
-                $clock = Clock::now()->add($response->document->maxAge, 'seconds');
+                $clock = Clock::now()->add($response->document->maxAge);
                 $fileResponse->headers->set('Expires', $clock->rfc1123String());
             }
             $fileResponse->setContentDisposition(
@@ -210,7 +194,7 @@ abstract class RequestListener implements EventSubscriberInterface
             }
         }
 
-        if ($this->context->isTest()) {
+        if (self::CONTAINER->get(ContextInterface::class)->isTest()) {
             return;
         }
 
@@ -251,7 +235,7 @@ abstract class RequestListener implements EventSubscriberInterface
                 $responseContent = [];
             }
         } else {
-            $responseContent = $document->toArray($this->context);
+            $responseContent = $document->toArray(self::CONTAINER->get(ContextInterface::class));
         }
 
         $queryBody = [];
@@ -301,26 +285,26 @@ abstract class RequestListener implements EventSubscriberInterface
                 $key = substr($key, 0, -2);
             }
 
-            $this->processRegistry->addValue($key, $value);
+            self::CONTAINER->get(ProcessRegistry::class)->addValue($key, $value);
         }
 
-        $this->processRegistry->addValue('path', $route);
-        $this->processRegistry->addValue('context', 'request');
+        self::CONTAINER->get(ProcessRegistry::class)->addValue('path', $route);
+        self::CONTAINER->get(ProcessRegistry::class)->addValue('context', 'request');
 
-        if ($logLevel !== self::LOG_LEVEL_NONE) {
+        if ($logLevel !== LogLevel::NONE) {
             if ($status < 400) {
                 if ($event->getRequest()->getMethod() !== Request::METHOD_GET) {
                     $isDebug = false;
                 } else {
-                    $isDebug = $this->context->isDebug();
+                    $isDebug = self::CONTAINER->get(ContextInterface::class)->isDebug();
                 }
 
                 if ($logLevel !== null) {
-                    $isDebug = $logLevel === self::LOG_LEVEL_DEBUG;
+                    $isDebug = $logLevel === LogLevel::DEBUG;
                 }
 
                 if ($isDebug) {
-                    $this->logger->debug(
+                    self::CONTAINER->get(LoggerInterface::class)->debug(
                         [
                             'headers' => $headers,
                             'httpRequest' => [
@@ -338,7 +322,7 @@ abstract class RequestListener implements EventSubscriberInterface
                         in_array($route, $this->ignoreLogs(), true)
                     );
                 } else {
-                    $this->logger->info([
+                    self::CONTAINER->get(LoggerInterface::class)->info([
                         'headers' => $headers,
                         'httpRequest' => [
                             'requestMethod' => $event->getRequest()->getMethod(),
@@ -352,7 +336,7 @@ abstract class RequestListener implements EventSubscriberInterface
                     ], [], $resume);
                 }
             } elseif ($status < 500) {
-                $this->logger->warning([
+                self::CONTAINER->get(LoggerInterface::class)->warning([
                     'headers' => $headers,
                     'httpRequest' => [
                         'requestMethod' => $event->getRequest()->getMethod(),
@@ -365,8 +349,8 @@ abstract class RequestListener implements EventSubscriberInterface
                     'size' => $length,
                 ], [], $resume);
             } else {
-                $this->logger->temporalLogs();
-                $this->logger->error([
+                self::CONTAINER->get(LoggerInterface::class)->temporalLogs();
+                self::CONTAINER->get(LoggerInterface::class)->error([
                     'headers' => $headers,
                     'httpRequest' => [
                         'requestMethod' => $event->getRequest()->getMethod(),
@@ -389,7 +373,7 @@ abstract class RequestListener implements EventSubscriberInterface
             }
 
             if ($document->status >= 500) {
-                $this->alertService->publishThrowable(
+                self::CONTAINER->get(AlertInterface::class)->publishThrowable(
                     $document->throwable,
                     input: new ArrayDocument($requestContent),
                 );
@@ -397,7 +381,7 @@ abstract class RequestListener implements EventSubscriberInterface
         }
     }
 
-    protected function assignLogLevel(Request $request): ?string
+    protected function assignLogLevel(Request $request): ?LogLevel
     {
         return null;
     }
@@ -459,6 +443,9 @@ abstract class RequestListener implements EventSubscriberInterface
             return true;
         }
 
-        return in_array('*', $this->allowedCors, true) || in_array($origin, $this->allowedCors, true);
+        $rawAllowedCors = $this->getParameter('allowed_cors') ?? '[]';
+        $allowedCors = JsonUtil::decode($rawAllowedCors);
+
+        return in_array('*', $allowedCors, true) || in_array($origin, $allowedCors, true);
     }
 }

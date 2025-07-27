@@ -27,4 +27,9 @@ trait ContainerBoxTrait
     {
         return self::CONTAINER->get($class);
     }
+
+    private function getParameter(string $name): ?string
+    {
+        return self::CONTAINER->getParameter($name);
+    }
 }
