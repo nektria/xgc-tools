@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Xgc\Symfony\Controller;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -55,6 +56,11 @@ readonly class Controller
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
+    }
+
+    public function setContainer(ContainerInterface $container): void
+    {
+        self::CONTAINER->setContainer($container);
     }
 
     protected function command(
