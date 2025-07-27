@@ -37,7 +37,7 @@ class SetupResourceConsole extends Console
 
     protected function play(): void
     {
-        $this->copyDir('vendor/nektria/php-sdk/assets/entity', '.');
+        $this->copyDir('vendor/nektria/php-tools/assets/entity', '.');
         $this->output()->writeln('done');
     }
 

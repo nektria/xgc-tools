@@ -3,7 +3,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd"
          colors="true"
-         bootstrap="../../vendor/nektria/php-sdk/tests/bootstrap.php">
+         bootstrap="../../vendor/nektria/php-tools/tests/bootstrap.php">
     <php>
         <env name="KERNEL_CLASS" value="App\Kernel"/>
         <env name="APP_ENV" value="test"/>
