@@ -1,0 +1,23 @@
+version: '2'
+services:
+
+  postgres:
+    hostname: postgres
+    image: docker.io/postgres:15-alpine
+    environment:
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: test
+      POSTGRES_USER: user
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+networks:
+  default:
+    external:
+      name: cloudbuild

@@ -1,0 +1,24 @@
+#!/bin/bash
+trap "exit 1" ERR
+
+USE_GOOGLE=''
+
+print_usage() {
+  printf "Usage: bin/php-cs-fixer [-g] \n"
+}
+
+while getopts 'g' flag; do
+  case "$flag" in
+    g) USE_GOOGLE='1';;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ "$USE_GOOGLE" = '1' ]; then
+  php -d memory_limit=-1 /builder/home/.composer/vendor/bin/php-cs-fixer fix src tests --allow-risky=yes --dry-run --config=server/__PROJECT__-dev/php-cs-fixer.dist.php
+else
+  docker exec -i __PROJECT__ rm .php-cs-fixer.cache &>/dev/null || true
+  docker exec -i __PROJECT__ /root/.composer/vendor/bin/php-cs-fixer fix src tests --allow-risky=yes --config=server/__PROJECT__-dev/php-cs-fixer.dist.php
+  docker exec -i __PROJECT__ rm .php-cs-fixer.cache &>/dev/null || true
+fi

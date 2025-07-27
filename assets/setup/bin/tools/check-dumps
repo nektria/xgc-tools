@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# checks if $2 is $1
+check_usages() {
+  ERRORS=$(grep -R "$1" "$2" | wc -l | xargs )
+  if [ "$ERRORS" != 0 ]; then
+     echo "Has been found $ERRORS" uses of "$1" in "$2 ."
+     grep -R "$1" "$2"
+     exit 1
+  fi
+}
+
+check_usages ' printf(' src
+check_usages ' echo' src
+check_usages ' dd' src
+check_usages 'dump(' src
+
+check_usages ' printf(' tests
+check_usages ' echo' tests
+check_usages ' dd' tests
+check_usages 'dump(' tests

@@ -1,0 +1,71 @@
+steps:
+
+  - id: Load PHP image
+    name: gcr.io/cloud-builders/docker
+    args: [ "pull", "-q", "eu.gcr.io/nektria/php:8.4" ]
+
+  - id: Load test services
+    name: 'docker/compose'
+    entrypoint: sh
+    args:
+      - '-c'
+      - >
+
+        set -e
+
+        echo "Building tests services"
+
+        docker-compose -f server/pipeline/cloudbuild-services.yml up -d 
+
+  - id: validating code
+    name: eu.gcr.io/nektria/php:8.4
+    entrypoint: sh
+    args:
+      - '-c'
+      - >
+        
+        set -e
+
+        unset APP_ENV
+
+        composer.phar install --no-interaction >/dev/null 2>&1
+
+        composer.phar global require phpstan/phpstan phpstan/phpstan-mockery phpstan/phpstan-phpunit phpstan/phpstan-strict-rules shipmonk/phpstan-rules phpstan/phpstan-symfony phpstan/phpstan-doctrine spaze/phpstan-disallowed-calls ergebnis/phpstan-rules --no-interaction
+
+        composer.phar global require friendsofphp/php-cs-fixer:dev-master --no-interaction
+
+        composer.phar global require squizlabs/php_codesniffer --no-interaction
+
+        bin/console debug:version "$1" --clean > NK_VERSION
+
+        bin/validate -g
+
+        bin/tools/phpunit -g
+
+        rm -Rf var/logs var/cache tests pipeline services upload-image
+
+
+  - id: Push new __PROJECT__ image
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - '-c'
+      - >
+
+        set -e  >/dev/null 2>&1
+
+        SERIAL_NUMBER=$(TZ="Europe/Madrid" date +"%y%m%d.%H%M")
+
+        if [ "$BRANCH_NAME" = "$_BRANCH" ];then TAG=v$$SERIAL_NUMBER; else TAG="v$$SERIAL_NUMBER-$BRANCH_NAME"; fi; >/dev/null 2>&1
+
+        IMAGE=eu.gcr.io/$PROJECT_ID/$_APP:$$TAG  >/dev/null 2>&1
+
+        docker build -t $$IMAGE -f /workspace/server/pipeline/Dockerfile .
+
+        docker push $$IMAGE  >/dev/null 2>&1
+
+        echo Version: eu.gcr.io/nektria/$_APP:$$TAG
+
+substitutions:
+  _BRANCH: main
+  _APP: __PROJECT__

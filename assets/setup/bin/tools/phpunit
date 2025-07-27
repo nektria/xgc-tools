@@ -1,0 +1,27 @@
+#!/bin/bash
+trap "exit 1" ERR
+
+USE_GOOGLE=''
+
+print_usage() {
+  printf "Usage: bin/phpstan [-g] \n"
+}
+
+while getopts 'g' flag; do
+  case "$flag" in
+    g) USE_GOOGLE='1';;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ "$USE_GOOGLE" = '1' ]; then
+  bin/console > /dev/null
+  vendor/bin/phpunit --stop-on-failure --stop-on-error --testdox --configuration /workspace/server/pipeline/phpunit.xml.dist
+else
+  docker exec -it __PROJECT__ bin/console > /dev/null
+  docker exec -it __PROJECT__ /app/vendor/bin/phpunit --stop-on-failure --stop-on-error --configuration /app/server/__PROJECT__-dev/phpunit.xml.dist "$@"
+fi
+
+rm -Rf server/pipeline/.phpunit.result.cache
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd"
+         colors="true"
+         bootstrap="../../vendor/nektria/php-sdk/tests/bootstrap.php">
+    <php>
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_DEBUG" value="1"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+        <env name="DATABASE_URL" value="postgresql://user:1234@postgres:5432/test"/>
+        <env name="COMPASS_URL" value="http://compass"/>
+        <env name="GOOGLE_CLOUD_CREDENTIALS_PATH" value="/app/config/google_credentials.json"/>
+        <env name="REDIS_URL" value="redis://redis/0"/>
+        <env name="RABBIT_URL" value="amqp://user:1234@rabbit:5672"/>
+        <env name="RABBITMQ_URL" value="amqp://user:1234@rabbit:5672"/>
+        <env name="YIELDMANAGERBO_HOST" value="http://yieldmanagerbo"/>
+        <env name="ROUTEMANAGER_HOST" value="http://routemanager"/>
+        <env name="YIELDMANAGER_HOST" value="http://yieldmanager"/>
+        <env name="PICKINGMANAGER_HOST" value="http://pickingmanager"/>
+        <env name="METRICS_HOST" value="http://metrics"/>
+        <env name="FIREBASE_TENANT" value="none"/>
+    </php>
+    <testsuites>
+        <testsuite name="__PROJECT__ Test Suite">
+            <directory>../../tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

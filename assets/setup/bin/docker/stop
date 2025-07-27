@@ -1,0 +1,2 @@
+#!/bin/bash
+docker compose -f server/__PROJECT__-dev/docker-compose.yml stop

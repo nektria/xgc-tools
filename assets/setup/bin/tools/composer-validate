@@ -1,0 +1,22 @@
+#!/bin/bash
+trap "exit 1" ERR
+
+USE_GOOGLE=''
+
+print_usage() {
+  printf "Usage: bin/composer-validate [-g] \n"
+}
+
+while getopts 'g' flag; do
+  case "$flag" in
+    g) USE_GOOGLE='1';;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ "$USE_GOOGLE" = '1' ]; then
+  composer.phar validate
+else
+  docker exec -i __PROJECT__ composer.phar validate
+fi

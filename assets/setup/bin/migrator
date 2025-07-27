@@ -1,0 +1,63 @@
+#!/usr/bin/env php
+<?php
+
+$basedir = './config/migrations';
+
+if (!is_dir($basedir)) {
+    return;
+}
+
+$files = scandir($basedir);
+
+foreach ($files as $file) {
+    if (!str_contains($file, 'Version')) {
+        continue;
+    }
+
+    $migrationFile = explode("\n", file_get_contents($basedir . DIRECTORY_SEPARATOR . $file));
+
+    $up = $down = '';
+    $isRollback = false;
+
+    foreach ($migrationFile as $line) {
+
+        if (str_contains($line, 'public function down')) {
+            $isRollback = true;
+        }
+
+        if (str_contains($line, 'public function up')) {
+            $isRollback = false;
+        }
+
+        if (!str_contains($line, '$this->addSql(')) {
+            continue;
+        }
+
+        $bit = substr(explode('$this->addSql', $line)[1], 2, -3) . ';';
+
+        if ($isRollback) {
+            $down .= $bit . "\n";
+            continue;
+        }
+
+        $up .= $bit . "\n";
+    }
+
+    $version = trim($file, 'Version');
+    $version = trim($version, '.ph');
+    $version = 'DoctrineMigrations\Version' . $version;
+    $up .= "INSERT INTO doctrine_migration_versions (version, executed_at, execution_time) VALUES ('$version', NOW(), 0);\n";
+    $down .= "DELETE FROM doctrine_migration_versions WHERE version = '$version';\n";
+    $up = str_replace('\\\'', '\'', $up);
+    $down = str_replace('\\\'', '\'', $down);
+
+    file_put_contents(
+        $basedir . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . trim($file, '.ph') . '.sql',
+        $up,
+    );
+
+    file_put_contents(
+        $basedir . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . 'Rollback' . trim($file, '.ph') . '.sql',
+        $down,
+    );
+}

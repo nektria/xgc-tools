@@ -1,0 +1,3 @@
+#!/bin/bash
+#bin/docker/stop
+docker compose -f server/__PROJECT__-dev/docker-compose.yml up -d --remove-orphans

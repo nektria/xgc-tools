@@ -1,0 +1,23 @@
+#!/bin/bash
+trap "exit 1" ERR
+
+USE_GOOGLE=''
+
+print_usage() {
+  printf "Usage: bin/phpcs [-g] \n"
+}
+
+while getopts 'g' flag; do
+  case "$flag" in
+    g) USE_GOOGLE='1';;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ "$USE_GOOGLE" = '1' ]; then
+  php -d memory_limit=-1 /builder/home/.composer/vendor/bin/phpcs src tests --standard=PSR12
+else
+  docker exec -i __PROJECT__ /root/.composer/vendor/bin/phpcbf src tests --colors --standard=PSR12
+  docker exec -i __PROJECT__ /root/.composer/vendor/bin/phpcs src tests --colors --standard=PSR12
+fi

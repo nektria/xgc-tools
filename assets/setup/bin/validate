@@ -1,0 +1,38 @@
+#!/bin/bash
+bin/console &> /dev/null
+
+trap "exit 1" ERR
+
+print_usage() {
+  printf "Usage: bin/validate [-g] \n"
+}
+
+while getopts 'gd' flag; do
+  case "$flag" in
+    g) USE_GOOGLE='1';;
+    d) true;;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+bin/tools/check-dumps
+
+if [ "$USE_GOOGLE" = '1' ]; then
+  bin/tools/composer-validate -g
+  bin/tools/doctrine -g
+  bin/tools/phpstan -g
+  bin/tools/php-cs-fixer -g
+  bin/tools/phpcs -g
+  bin/console debug:static-analysis -c
+  bin/console debug:messages:validate
+else
+  docker exec -i __PROJECT__ composer.phar global update
+  bin/tools/doctrine
+  bin/tools/phpstan
+  bin/tools/php-cs-fixer
+  bin/tools/phpcs
+  bin/console debug:static-analysis -c
+  bin/console debug:messages:validate
+fi
+

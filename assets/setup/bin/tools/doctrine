@@ -1,0 +1,45 @@
+#!/bin/bash
+trap "exit 1" ERR
+
+PROJECT='__PROJECT__'
+
+if [ "$PROJECT" = 'proxy-dia' ]; then
+  exit 0
+fi
+
+if [ "$PROJECT" = 'proxy-carrefour' ]; then
+  exit 0
+fi
+
+if [ "$PROJECT" = 'proxy-fontvella' ]; then
+  exit 0
+fi
+
+if [ "$PROJECT" = 'proxy-sertradis' ]; then
+  exit 0
+fi
+
+if [ "$PROJECT" = 'hub' ]; then
+  exit 0
+fi
+
+print_usage() {
+  printf "Usage: bin/doctrine [-g] \n"
+}
+
+while getopts 'g' flag; do
+  case "$flag" in
+    g) USE_GOOGLE='1';;
+    *) print_usage
+       exit 1 ;;
+  esac
+done
+
+if [ "$USE_GOOGLE" = '1' ]; then
+  bin/console doctrine:migrations:migrate -n -e test
+  bin/console debug:migrarions:fix -e test -c
+  bin/console doctrine:schema:validate -e test
+else
+  bin/docker/console debug:migrarions:fix -c
+  bin/docker/console doctrine:schema:validate
+fi
