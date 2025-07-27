@@ -23,7 +23,6 @@ use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
 use Xgc\Utils\ArrayDataFetcher;
-use Xgc\Utils\ContainerBox;
 use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
@@ -36,7 +35,6 @@ readonly class Controller
     protected ArrayDataFetcher $requestData;
 
     public function __construct(
-        protected ContainerBox $containerBox,
         RequestStack $requestStack
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
@@ -69,7 +67,7 @@ readonly class Controller
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        $this->containerBox->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
+        self::CONTAINER->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
     /**
@@ -91,7 +89,7 @@ readonly class Controller
     {
         return new DocumentResponse(
             new ArrayDocument(),
-            $this->containerBox->get(ContextInterface::class),
+            self::CONTAINER->get(ContextInterface::class),
             Response::HTTP_NO_CONTENT
         );
     }
@@ -142,7 +140,7 @@ readonly class Controller
      */
     protected function queryResponse(Query $query): DocumentResponse
     {
-        return $this->documentResponse($this->containerBox->get(BusInterface::class)->dispatchQuery($query));
+        return $this->documentResponse(self::CONTAINER->get(BusInterface::class)->dispatchQuery($query));
     }
 
     /**
@@ -153,7 +151,7 @@ readonly class Controller
         $fixedParameters = [];
         foreach ($parameters as $key => $value) {
             if ($value instanceof DocumentInterface) {
-                $fixedParameters[$key] = $value->toArray($this->containerBox->get(ContextInterface::class));
+                $fixedParameters[$key] = $value->toArray(self::CONTAINER->get(ContextInterface::class));
             } else {
                 $fixedParameters[$key] = $value;
             }
@@ -172,7 +170,7 @@ readonly class Controller
 
     protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
     {
-        return new DocumentResponse($document, $this->containerBox->get(ContextInterface::class), $status);
+        return new DocumentResponse($document, self::CONTAINER->get(ContextInterface::class), $status);
     }
 
     protected function retrieveFile(string $field): string
