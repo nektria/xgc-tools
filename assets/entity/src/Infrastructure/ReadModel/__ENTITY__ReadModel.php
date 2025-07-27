@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Infrastructure\ReadModel;
 
 use App\Document\__ENTITY__;
-use Nektria\Document\Document;
-use Nektria\Dto\Clock;
-use Nektria\Exception\ResourceNotFoundException;
-use Nektria\Infrastructure\ReadModel;
+use Xgc\DB\ReadModel;
+use Xgc\Dto\Clock;
+use Xgc\Dto\Document;
+use Xgc\Exception\ResourceNotFoundException;
 
 /**
  * @extends ReadModel<__ENTITY__>

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Document;
 
-use Nektria\Document\Document;
-use Nektria\Dto\Clock;
-use Nektria\Service\ContextService;
+use Xgc\Dto\Clock;
+use Xgc\Dto\ContextInterface;
+use Xgc\Dto\Document;
 
 readonly class __ENTITY__ extends Document
 {
@@ -17,7 +17,7 @@ readonly class __ENTITY__ extends Document
     ) {
     }
 
-    public function toArray(ContextService $context): array
+    public function toArray(?ContextInterface $context): array
     {
         return [
             'id' => $this->id,

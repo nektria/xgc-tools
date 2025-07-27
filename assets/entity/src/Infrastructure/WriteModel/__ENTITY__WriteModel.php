@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\WriteModel;
 
 use App\Entity\__ENTITY__;
-use Nektria\Infrastructure\WriteModel;
+use Xgc\DB\WriteModel;
 
 /**
  * @extends WriteModel<__ENTITY__>
