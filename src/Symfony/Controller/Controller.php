@@ -152,6 +152,7 @@ readonly class Controller
                 $fixedParameters[$key] = $value;
             }
         }
+        $fixedParameters['__locale__'] = $this->request->getLocale();
 
         try {
             return new WebResponse(
