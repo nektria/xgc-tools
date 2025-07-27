@@ -49,7 +49,6 @@ class SetupMessageConsole extends Console
             'c',
             InputOption::VALUE_NONE,
             'if it is a collection message.',
-            '',
         );
     }
 
