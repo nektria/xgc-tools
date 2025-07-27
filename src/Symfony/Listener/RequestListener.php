@@ -119,6 +119,7 @@ abstract class RequestListener implements EventSubscriberInterface
 
     public function onKernelException(ExceptionEvent $event): void
     {
+
         $throwable = $event->getThrowable();
         if ($throwable instanceof RedirectWebException) {
             $event->setResponse(new RedirectResponse(
@@ -433,18 +434,7 @@ abstract class RequestListener implements EventSubscriberInterface
     {
     }
 
-    private function isCorsNeeded(RequestEvent | ResponseEvent $event): bool
-    {
-        $origin = $event->getRequest()->server->get('HTTP_ORIGIN');
-
-        if ($origin === null) {
-            return true;
-        }
-
-        return in_array('*', $this->allowedCors, true) || in_array($origin, $this->allowedCors, true);
-    }
-
-    private function setHeaders(RequestEvent | ResponseEvent $event): void
+    protected function setHeaders(RequestEvent | ResponseEvent $event): void
     {
         $response = $event->getResponse();
 
@@ -459,5 +449,16 @@ abstract class RequestListener implements EventSubscriberInterface
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
             $response->headers->set('Access-Control-Allow-Headers', implode(', ', $this->getAllowedCorsHeaders()));
         }
+    }
+
+    private function isCorsNeeded(RequestEvent | ResponseEvent $event): bool
+    {
+        $origin = $event->getRequest()->server->get('HTTP_ORIGIN');
+
+        if ($origin === null) {
+            return true;
+        }
+
+        return in_array('*', $this->allowedCors, true) || in_array($origin, $this->allowedCors, true);
     }
 }
