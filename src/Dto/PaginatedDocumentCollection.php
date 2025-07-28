@@ -14,19 +14,19 @@ readonly class PaginatedDocumentCollection extends Document
      */
     public function __construct(
         public DocumentCollection $list,
-        public int $offset,
-        public int $total,
-        public int $limit,
+        public int $page,
+        public int $totalPages,
+        public int $pageSize,
     ) {
     }
 
     public function toArray(?ContextInterface $context = null): array
     {
         return [
-            'limit' => $this->limit,
+            'pageSize' => $this->pageSize,
             'list' => $this->list->toArray($context),
-            'offset' => $this->offset,
-            'total' => $this->total,
+            'page' => $this->page,
+            'totalPages' => $this->totalPages,
         ];
     }
 }
