@@ -103,7 +103,10 @@ class SetupMessageConsole extends Console
             );
         } else {
             $this->copyFile("{$fromPath}/__MESSAGE__.php", "./src/Message/{$resource}/{$message}.php");
-            $this->copyFile("{$fromPath}/__MESSAGE__Handler.php", "./src/Message/{$resource}/{$message}Handler.php");
+            $this->copyFile(
+                "{$fromPathHandler}/__MESSAGE__Handler.php",
+                "./src/Message/{$resource}/{$message}Handler.php"
+            );
         }
     }
 
