@@ -16,12 +16,14 @@ readonly class PaginatedDocumentCollection extends Document
         public DocumentCollection $list,
         public int $offset,
         public int $total,
+        public int $limit,
     ) {
     }
 
     public function toArray(?ContextInterface $context = null): array
     {
         return [
+            'limit' => $this->limit,
             'list' => $this->list->toArray($context),
             'offset' => $this->offset,
             'total' => $this->total,
