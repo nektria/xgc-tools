@@ -38,7 +38,6 @@ readonly class Logger implements LoggerInterface
         string $message,
         bool $ignoreRedis = false,
     ): void {
-
         if (!$ignoreRedis && !$this->context->isDebug()) {
             $this->sharedLogCache->addLog([
                 'labels' => $labels,
@@ -188,7 +187,7 @@ readonly class Logger implements LoggerInterface
         $data = [
             'message' => $message,
             'logName' => "projects/nektria/logs/{$this->context->project()}",
-            'severity' => $level,
+            'severity' => $level->name,
             'logging.googleapis.com/labels' => [...$labels, ...$this->registry->getMetadata()->data(), ...[
                 'app' => $this->context->project(),
                 'env' => $this->context->env(),
