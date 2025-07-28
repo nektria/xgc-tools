@@ -170,7 +170,7 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     /**
      * @return mixed[]
      */
-    public function toArray(?ContextInterface $context): array
+    public function toArray(?ContextInterface $context = null): array
     {
         $list = [];
 

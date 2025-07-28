@@ -9,5 +9,5 @@ interface DocumentInterface
     /**
      * @return mixed[]
      */
-    public function toArray(?ContextInterface $context): array;
+    public function toArray(?ContextInterface $context = null): array;
 }

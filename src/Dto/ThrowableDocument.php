@@ -42,7 +42,7 @@ class ThrowableDocument implements DocumentInterface
         self::$validPrefixTraceFiles[] = $filePrefix;
     }
 
-    public function toArray(?ContextInterface $context): array
+    public function toArray(?ContextInterface $context = null): array
     {
         $message = $this->throwable->getMessage();
         $extras = null;
