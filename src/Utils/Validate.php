@@ -6,6 +6,7 @@ namespace Xgc\Utils;
 
 use Throwable;
 use Xgc\Dto\Clock;
+use Xgc\Dto\LocalClock;
 use Xgc\Exception\InvalidArgumentException;
 
 use function count;
@@ -14,6 +15,9 @@ use function strlen;
 
 use const FILTER_VALIDATE_EMAIL;
 
+/**
+ * @phpstan-import-type CtTimeFormat from Clock
+ */
 class Validate
 {
     /*
@@ -62,6 +66,42 @@ class Validate
         }
     }
 
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterOrEqualThanClock(
+        string $field,
+        Clock $value,
+        Clock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value->isBefore($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: ">= {$limit->dateTimeString()}"
+            );
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterOrEqualThanLocalClock(
+        string $field,
+        LocalClock $value,
+        LocalClock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value->isBefore($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: ">= {$limit->dateTimeString()}"
+            );
+        }
+    }
+
     public static function greaterThan(
         string $field,
         int | float | string $value,
@@ -69,6 +109,42 @@ class Validate
     ): void {
         if ((string) $value <= (string) $limit) {
             throw new InvalidArgumentException($field, $value, condition: "> {$limit}");
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterThanClock(
+        string $field,
+        Clock $value,
+        Clock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value->isBeforeOrEqual($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: "> {$limit->dateTimeString()}"
+            );
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterThanLocalClock(
+        string $field,
+        LocalClock $value,
+        LocalClock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value->isBeforeOrEqual($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: "> {$limit->dateTimeString()}"
+            );
         }
     }
 
@@ -98,10 +174,74 @@ class Validate
         }
     }
 
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessOrEqualThanClock(string $field, Clock $value, Clock $limit, string $in = 'seconds'): void
+    {
+        if ($value->isAfter($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: "<= {$limit->dateTimeString()}"
+            );
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessOrEqualThanLocalClock(
+        string $field,
+        LocalClock $value,
+        LocalClock $limit,
+        string $in = 'seconds'
+    ): void {
+        if ($value->isAfter($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: "<= {$limit->dateTimeString()}"
+            );
+        }
+    }
+
     public static function lessThan(string $field, int | float $value, int | float $limit): void
     {
         if ($value >= $limit) {
             throw new InvalidArgumentException($field, $value, condition: "< {$limit}");
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessThanClock(string $field, Clock $value, Clock $limit, string $in = 'seconds'): void
+    {
+        if ($value->isAfterOrEqual($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: "< {$limit->dateTimeString()}"
+            );
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessThanLocalClock(
+        string $field,
+        LocalClock $value,
+        LocalClock $limit,
+        string $in = 'seconds'
+    ): void {
+        if ($value->isAfterOrEqual($limit, $in)) {
+            throw new InvalidArgumentException(
+                $field,
+                $value->dateTimeString(),
+                condition: "< {$limit->dateTimeString()}"
+            );
         }
     }
 
