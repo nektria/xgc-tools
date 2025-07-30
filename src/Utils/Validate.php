@@ -298,6 +298,13 @@ class Validate
         self::minStringLength($field, $value, 1);
     }
 
+    public static function notNull(string $field, mixed $value, string $condition): void
+    {
+        if ($value === null) {
+            throw new InvalidArgumentException($field, $value, condition: $condition);
+        }
+    }
+
     public static function percentileNumber(string $field, int | float $number): void
     {
         self::greaterOrEqualThan($field, $number, 0);

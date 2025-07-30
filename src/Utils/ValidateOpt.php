@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Xgc\Utils;
 
+use Xgc\Dto\Clock;
+use Xgc\Dto\LocalClock;
+
+/**
+ * @phpstan-import-type CtTimeFormat from Clock
+ */
 readonly class ValidateOpt
 {
-    // dates
-
     public static function color(string $field, ?string $value): void
     {
         if ($value !== null) {
             Validate::color($field, $value);
         }
     }
-
-    // numbers
 
     public static function date(string $field, ?string $date): void
     {
@@ -31,10 +33,40 @@ readonly class ValidateOpt
         }
     }
 
+    // numbers
+
     public static function greaterOrEqualThan(string $field, int | float | null $number, int | float $limit): void
     {
         if ($number !== null) {
             Validate::greaterOrEqualThan($field, $number, $limit);
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterOrEqualThanClock(
+        string $field,
+        ?Clock $value,
+        ?Clock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::greaterOrEqualThanClock($field, $value, $limit, $in);
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterOrEqualThanLocalClock(
+        string $field,
+        ?LocalClock $value,
+        ?LocalClock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::greaterOrEqualThanLocalClock($field, $value, $limit, $in);
         }
     }
 
@@ -45,7 +77,33 @@ readonly class ValidateOpt
         }
     }
 
-    // Strings
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterThanClock(
+        string $field,
+        ?Clock $value,
+        ?Clock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::greaterThanClock($field, $value, $limit, $in);
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function greaterThanLocalClock(
+        string $field,
+        ?LocalClock $value,
+        ?LocalClock $limit,
+        string $in = 'seconds',
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::greaterThanLocalClock($field, $value, $limit, $in);
+        }
+    }
 
     /**
      * @param string[] $validValues
@@ -64,10 +122,62 @@ readonly class ValidateOpt
         }
     }
 
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessOrEqualThanClock(
+        string $field,
+        ?Clock $value,
+        ?Clock $limit,
+        string $in = 'seconds'
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::lessOrEqualThanClock($field, $value, $limit, $in);
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessOrEqualThanLocalClock(
+        string $field,
+        ?LocalClock $value,
+        ?LocalClock $limit,
+        string $in = 'seconds'
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::lessOrEqualThanLocalClock($field, $value, $limit, $in);
+        }
+    }
+
     public static function lessThan(string $field, int | float | null $number, int | float $limit): void
     {
         if ($number !== null) {
             Validate::lessThan($field, $number, $limit);
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessThanClock(string $field, ?Clock $value, ?Clock $limit, string $in = 'seconds'): void
+    {
+        if ($value !== null && $limit !== null) {
+            Validate::lessThanClock($field, $value, $limit, $in);
+        }
+    }
+
+    /**
+     * @param CtTimeFormat $in
+     */
+    public static function lessThanLocalClock(
+        string $field,
+        ?LocalClock $value,
+        ?LocalClock $limit,
+        string $in = 'seconds'
+    ): void {
+        if ($value !== null && $limit !== null) {
+            Validate::lessThanLocalClock($field, $value, $limit, $in);
         }
     }
 
