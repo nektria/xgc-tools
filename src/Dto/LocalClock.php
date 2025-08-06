@@ -119,7 +119,7 @@ class LocalClock
         }
     }
 
-    public static function setDefaultTimezone(string $timezone): void
+    public static function setDefaultTimezone(?string $timezone): void
     {
         self::$globalTimezone = $timezone;
     }
