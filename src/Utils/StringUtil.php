@@ -8,6 +8,8 @@ use Random\Randomizer;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 use Throwable;
 
+use function strlen;
+
 use const STR_PAD_LEFT;
 
 class StringUtil
@@ -101,5 +103,27 @@ class StringUtil
     public static function uuid4(): string
     {
         return RandomUtil::uuid4();
+    }
+
+    public static function fixEmail(string $email): string
+    {
+        Validate::email('email', $email);
+
+        $parts = explode('@', $email);
+
+        $fixedEmail = '';
+        $ignore = false;
+        for ($c = 0; $c < strlen($parts[0]); ++$c) {
+            $char = $parts[0][$c];
+            if ($char === '+') {
+                $ignore = true;
+            }
+
+            if (!$ignore && $char !== '.') {
+                $fixedEmail .= $char;
+            }
+        }
+
+        return strtolower("{$fixedEmail}@{$parts[1]}");
     }
 }
