@@ -44,7 +44,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
         }
     }
 
-    public function removeItem(string $key): void
+    protected function removeItem(string $key): void
     {
         try {
             $this->init()->del("{$this->fqn}:{$key}");

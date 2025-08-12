@@ -69,7 +69,7 @@ abstract class InternalRedisCache extends RedisCache
     /**
      * @return T|null
      */
-    public function getItem(string $key): mixed
+    protected function getItem(string $key): mixed
     {
         try {
             $item = $this->init()->get("{$this->fqn}:{$key}");
@@ -104,7 +104,7 @@ abstract class InternalRedisCache extends RedisCache
      * @return array<string, T|null>
      * @return ($returnMissing is true ? array<string, T|null> : array<string, T>)
      */
-    public function getItems(array $keys, bool $returnMissing = false): array
+    protected function getItems(array $keys, bool $returnMissing = false): array
     {
         try {
             $realKeys = array_map(fn (string $key) => "{$this->fqn}:{$key}", $keys);
@@ -129,7 +129,7 @@ abstract class InternalRedisCache extends RedisCache
         return $results;
     }
 
-    public function removeItem(string $key): void
+    protected function removeItem(string $key): void
     {
         try {
             $this->init()->del("{$this->fqn}:{$key}");
@@ -147,7 +147,7 @@ abstract class InternalRedisCache extends RedisCache
     /**
      * @param T $item
      */
-    public function setItem(string $key, $item, Clock | int $ttl = 300): void
+    protected function setItem(string $key, $item, Clock | int $ttl = 300): void
     {
         if ($ttl instanceof Clock) {
             $ttl = $ttl->diff(Clock::now());

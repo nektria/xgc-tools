@@ -30,7 +30,7 @@ abstract class RedisCache
         $this->redisDsn = $redisDsn;
     }
 
-    public function decr(string $key): void
+    protected function decr(string $key): void
     {
         try {
             $this->init()->decr($key);
@@ -44,7 +44,7 @@ abstract class RedisCache
         // empty
     }
 
-    public function incr(string $key): void
+    protected function incr(string $key): void
     {
         try {
             $this->init()->incr($key);
