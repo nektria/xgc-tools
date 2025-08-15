@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xgc\Dto;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 use Xgc\Exception\BaseException;
 
@@ -27,6 +28,8 @@ class ThrowableDocument implements DocumentInterface
     ) {
         if ($throwable instanceof BaseException) {
             $this->status = $throwable->status;
+        } elseif ($throwable instanceof HttpException) {
+            $this->status = $throwable->getStatusCode();
         } else {
             $this->status = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
