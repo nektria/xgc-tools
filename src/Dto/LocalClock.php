@@ -422,9 +422,9 @@ class LocalClock
         return $this->dateTime->format('W');
     }
 
-    public function weekDay(): string
+    public function weekDay(): int
     {
-        return $this->dateTime->format('w');
+        return (int) $this->dateTime->format('w');
     }
 
     /**
