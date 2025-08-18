@@ -312,6 +312,16 @@ class LocalClock
         }
     }
 
+    public function setTimeString(string $time): self
+    {
+        $parts = explode(':', $time);
+        $hours = (int) $parts[0];
+        $minutes = (int) ($parts[1] ?? '0');
+        $seconds = (int) ($parts[2] ?? '0');
+
+        return $this->setTime($hours, $minutes, $seconds);
+    }
+
     public function setTimestamp(int $timestamp): self
     {
         return new self($this->timezone(), $this->dateTime->setTimestamp($timestamp));
