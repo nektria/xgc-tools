@@ -34,11 +34,16 @@ class LocalClock
         try {
             if ($dateTime instanceof DateTime) {
                 $dateTime = DateTimeImmutable::createFromMutable($dateTime)->setTimezone(new DateTimeZone($timezone));
+            } elseif ($dateTime instanceof DateTimeImmutable) {
+                $dateTime = $dateTime->setTimezone(new DateTimeZone($timezone));
+            } else {
+                $dateTime = new DateTimeImmutable()->setTimezone(new DateTimeZone($timezone));
             }
-            $this->dateTime = $dateTime ?? new DateTimeImmutable()->setTimezone(new DateTimeZone($timezone));
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
+
+        $this->dateTime = $dateTime;
         $this->timezone = $timezone;
     }
 
