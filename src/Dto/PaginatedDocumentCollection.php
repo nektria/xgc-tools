@@ -9,6 +9,8 @@ namespace Xgc\Dto;
  */
 readonly class PaginatedDocumentCollection extends Document
 {
+    public readonly int $pageSize;
+
     /**
      * @param DocumentCollection<T> $list
      */
@@ -16,8 +18,8 @@ readonly class PaginatedDocumentCollection extends Document
         public DocumentCollection $list,
         public int $page,
         public int $totalPages,
-        public int $pageSize,
     ) {
+        $this->pageSize = $list->count();
     }
 
     public function toArray(?ContextInterface $context = null): array
