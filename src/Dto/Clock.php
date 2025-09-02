@@ -290,7 +290,17 @@ class Clock
     {
         $timezone ??= LocalClock::defaultTimezone();
 
-        return LocalClock::fromString($this->dateTimeString(), $timezone);
+        if ($timezone === null) {
+            throw new BaseException('Timezone is not set.');
+        }
+
+        try {
+            $dateTimeString = $this->dateTime->setTimezone(new DateTimeZone($timezone))->format('Y-m-d\TH:i:s');
+        } catch (Throwable $e) {
+            throw BaseException::extend($e);
+        }
+
+        return LocalClock::fromString($dateTimeString, $timezone);
     }
 
     public function week(): string

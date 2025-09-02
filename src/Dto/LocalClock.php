@@ -55,7 +55,9 @@ class LocalClock
     public static function fromString(string $dateTime, ?string $timezone = null): self
     {
         try {
-            return new self(self::realTimezone($timezone), new DateTimeImmutable($dateTime));
+            $timezone = self::realTimezone($timezone);
+
+            return new self($timezone, new DateTimeImmutable($dateTime, new DateTimeZone($timezone)));
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
@@ -88,11 +90,9 @@ class LocalClock
 
     public static function now(?string $timezone = null): self
     {
-        if (($timezone ?? self::$globalTimezone) === null) {
-            throw new BaseException('Timezone is not set.');
-        }
+        $timezone = self::realTimezone($timezone);
 
-        return Clock::now()->toLocal($timezone ?? self::$globalTimezone);
+        return Clock::now()->toLocal($timezone);
     }
 
     /**
