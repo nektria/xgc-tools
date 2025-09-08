@@ -217,7 +217,7 @@ readonly class ArrayDataFetcher
         }
 
         try {
-            return LocalClock::fromString($value)->setTimezone('UTC');
+            return LocalClock::fromString($value);
         } catch (Throwable) {
             throw new InvalidArgumentException($field, $value, 'datetime');
         }
