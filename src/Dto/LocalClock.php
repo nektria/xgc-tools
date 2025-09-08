@@ -400,9 +400,13 @@ class LocalClock
         return "$count {$name}s ago";
     }
 
-    public function timeString(): string
+    public function timeString(bool $withSeconds = false): string
     {
-        return $this->dateTime->format('H:i:s');
+        if ($withSeconds) {
+            return $this->dateTime->format('H:i:s');
+        }
+
+        return $this->dateTime->format('H:i');
     }
 
     /**
