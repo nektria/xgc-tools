@@ -146,12 +146,16 @@ readonly class Controller
     /**
      * @param array<string, mixed> $parameters
      */
-    protected function render(string $view, array $parameters): WebResponse
+    protected function render(string $view, array $parameters, bool $ignoreContext = false): WebResponse
     {
         $fixedParameters = [];
         foreach ($parameters as $key => $value) {
             if ($value instanceof DocumentInterface) {
-                $fixedParameters[$key] = $value->toArray(self::CONTAINER->get(ContextInterface::class));
+                $fixedParameters[$key] = $value->toArray(
+                    $ignoreContext ?
+                        null :
+                        self::CONTAINER->get(ContextInterface::class)
+                );
             } else {
                 $fixedParameters[$key] = $value;
             }
