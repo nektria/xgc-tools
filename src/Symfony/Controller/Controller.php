@@ -146,7 +146,7 @@ readonly class Controller
     /**
      * @param array<string, mixed> $parameters
      */
-    protected function render(string $view, array $parameters, bool $ignoreContext = false): WebResponse
+    protected function render(string $view, array $parameters = [], bool $ignoreContext = false): WebResponse
     {
         $fixedParameters = [];
         foreach ($parameters as $key => $value) {
