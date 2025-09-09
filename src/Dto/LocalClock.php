@@ -213,7 +213,12 @@ class LocalClock
         return $diff->invert === 1 ? $absDiff : -$absDiff;
     }
 
-    public function hour(): string
+    public function hour(): int
+    {
+        return (int) $this->dateTime->format('H');
+    }
+
+    public function hourString(): string
     {
         return $this->dateTime->format('H');
     }
@@ -281,7 +286,12 @@ class LocalClock
         return $this->dateTime->format('Y-m-d\TH:i:s.u');
     }
 
-    public function minute(): string
+    public function minute(): int
+    {
+        return (int) $this->dateTime->format('i');
+    }
+
+    public function minuteString(): string
     {
         return $this->dateTime->format('i');
     }
@@ -303,8 +313,8 @@ class LocalClock
     public function setTime(?int $hours = null, ?int $minutes = null, ?int $seconds = null): self
     {
         try {
-            $currentHours = (int) $this->hour();
-            $currentMinutes = (int) $this->minute();
+            $currentHours = $this->hour();
+            $currentMinutes = $this->minute();
             $currentSeconds = (int) $this->dateTime->format('s');
 
             return new self($this->timezone, $this->dateTime->setTime(
