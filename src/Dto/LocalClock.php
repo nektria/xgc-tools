@@ -305,7 +305,12 @@ class LocalClock
         }
     }
 
-    public function month(): string
+    public function month(): int
+    {
+        return (int) $this->dateTime->format('m');
+    }
+
+    public function monthString(): string
     {
         return $this->dateTime->format('m');
     }
