@@ -80,6 +80,11 @@ readonly class Controller
         return self::CONTAINER->get($class);
     }
 
+    protected function documentResponse(Document $document, int $status = 200): DocumentResponse
+    {
+        return $this->response($document, $status);
+    }
+
     protected function emptyResponse(): DocumentResponse
     {
         return new DocumentResponse(
@@ -104,6 +109,18 @@ readonly class Controller
         return 'desktop';
     }
 
+    protected function getFile(string $field): ?string
+    {
+        /** @var UploadedFile|null $file */
+        $file = $this->request->files->get($field);
+
+        if ($file === null) {
+            return null;
+        }
+
+        return $file->getRealPath();
+    }
+
     /**
      * @template T of object
      * @param class-string<T> $class
@@ -126,21 +143,6 @@ readonly class Controller
         return $this->documentResponse(self::CONTAINER->get(BusInterface::class)->dispatchQuery($query));
     }
 
-    protected function documentResponse(Document $document, int $status = 200): DocumentResponse
-    {
-        return $this->response($document, $status);
-    }
-
-    protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
-    {
-        return new DocumentResponse($document, self::CONTAINER->get(ContextInterface::class), $status);
-    }
-
-    protected function setMessage(string $message): void
-    {
-        $this->request->getSession()->set('__message__', $message);
-    }
-
     /**
      * @param array<string, mixed> $parameters
      */
@@ -161,9 +163,19 @@ readonly class Controller
 
         $fixedParameters['__locale__'] = $this->request->getLocale();
         $fixedParameters['__message__'] = '';
+        $fixedParameters['__warning__'] = '';
+        $fixedParameters['__error__'] = '';
 
         if ($this->request->getSession()->has('__message__')) {
             $fixedParameters['__message__'] = $this->request->getSession()->get('__message__');
+        }
+
+        if ($this->request->getSession()->has('__warning__')) {
+            $fixedParameters['__warning__'] = $this->request->getSession()->get('__warning__');
+        }
+
+        if ($this->request->getSession()->has('__error__')) {
+            $fixedParameters['__error__'] = $this->request->getSession()->get('__error__');
         }
 
         try {
@@ -174,6 +186,11 @@ readonly class Controller
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
+    }
+
+    protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
+    {
+        return new DocumentResponse($document, self::CONTAINER->get(ContextInterface::class), $status);
     }
 
     protected function retrieveFile(string $field): string
@@ -187,15 +204,18 @@ readonly class Controller
         return $file;
     }
 
-    protected function getFile(string $field): ?string
+    protected function setError(string $message): void
     {
-        /** @var UploadedFile|null $file */
-        $file = $this->request->files->get($field);
+        $this->request->getSession()->set('__error__', $message);
+    }
 
-        if ($file === null) {
-            return null;
-        }
+    protected function setMessage(string $message): void
+    {
+        $this->request->getSession()->set('__message__', $message);
+    }
 
-        return $file->getRealPath();
+    protected function setWarning(string $message): void
+    {
+        $this->request->getSession()->set('__warning__', $message);
     }
 }
