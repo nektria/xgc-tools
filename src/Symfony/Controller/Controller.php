@@ -36,7 +36,8 @@ readonly class Controller
 
     public function __construct(
         RequestStack $requestStack
-    ) {
+    )
+    {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
 
         try {
@@ -62,11 +63,12 @@ readonly class Controller
     }
 
     protected function command(
-        Command $command,
-        ?string $transport = null,
+        Command     $command,
+        ?string     $transport = null,
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
-    ): void {
+    ): void
+    {
         self::CONTAINER->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
@@ -177,6 +179,10 @@ readonly class Controller
         if ($this->request->getSession()->has('__error__')) {
             $fixedParameters['__error__'] = $this->request->getSession()->get('__error__');
         }
+
+        $this->request->getSession()->remove('__message__');
+        $this->request->getSession()->remove('__warning__');
+        $this->request->getSession()->remove('__error__');
 
         try {
             return new WebResponse(
