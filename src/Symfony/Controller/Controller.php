@@ -200,9 +200,9 @@ readonly class Controller
             $fixedParameters['__error__'] = $this->request->getSession()->get('__error__');
         }
 
-        // $this->request->getSession()->remove('__message__');
-        // $this->request->getSession()->remove('__warning__');
-        // $this->request->getSession()->remove('__error__');
+        $this->request->getSession()->remove('__message__');
+        $this->request->getSession()->remove('__warning__');
+        $this->request->getSession()->remove('__error__');
 
         try {
             return new WebResponse(
