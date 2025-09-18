@@ -12,6 +12,7 @@ use DomainException;
 use IntlDateFormatter;
 use Throwable;
 use Xgc\Exception\BaseException;
+use Xgc\Utils\StringUtil;
 
 use const DATE_ATOM;
 
@@ -285,7 +286,7 @@ class LocalClock
     public function localDate(string $locale): string
     {
         $formatter = new IntlDateFormatter(
-            $locale,
+            StringUtil::localeToIcu($locale),
             IntlDateFormatter::LONG,
             IntlDateFormatter::NONE
         );
