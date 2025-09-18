@@ -13,7 +13,8 @@ class WebResponse extends Response
      */
     public function __construct(
         string $content,
-        public readonly array $parameters = []
+        public readonly int $status = 200,
+        public readonly array $parameters = [],
     ) {
         parent::__construct($content);
     }

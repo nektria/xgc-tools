@@ -26,6 +26,10 @@ use Xgc\Utils\ArrayDataFetcher;
 use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
+use function sprintf;
+
+use const ENT_QUOTES;
+
 readonly class Controller
 {
     use ContainerBoxTrait;
@@ -36,8 +40,7 @@ readonly class Controller
 
     public function __construct(
         RequestStack $requestStack
-    )
-    {
+    ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
 
         try {
@@ -63,12 +66,11 @@ readonly class Controller
     }
 
     protected function command(
-        Command     $command,
-        ?string     $transport = null,
+        Command $command,
+        ?string $transport = null,
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
-    ): void
-    {
+    ): void {
         self::CONTAINER->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
@@ -145,6 +147,25 @@ readonly class Controller
         return $this->documentResponse(self::CONTAINER->get(BusInterface::class)->dispatchQuery($query));
     }
 
+    protected function redirect(string $url, bool $permanent = true): WebResponse
+    {
+        $content = sprintf(
+            '
+            <!DOCTYPE html><html><head><meta charset="UTF-8" /><meta http-equiv="refresh" content="0;url=\'%1$s\'" />
+            <title>Redirecting to %1$s</title></head><body>Redirecting to <a href="%1$s">%1$s</a>.</body></html>',
+            htmlspecialchars($url, ENT_QUOTES, 'UTF-8')
+        );
+
+        $response = new WebResponse(
+            $content,
+            status: $permanent ? Response::HTTP_MOVED_PERMANENTLY : Response::HTTP_FOUND
+        );
+        $response->headers->set('Location', $url);
+        $response->headers->set('Content-Type', 'text/html; charset=utf-8');
+
+        return $response;
+    }
+
     /**
      * @param array<string, mixed> $parameters
      */
@@ -180,14 +201,14 @@ readonly class Controller
             $fixedParameters['__error__'] = $this->request->getSession()->get('__error__');
         }
 
-        $this->request->getSession()->remove('__message__');
-        $this->request->getSession()->remove('__warning__');
-        $this->request->getSession()->remove('__error__');
+        // $this->request->getSession()->remove('__message__');
+        // $this->request->getSession()->remove('__warning__');
+        // $this->request->getSession()->remove('__error__');
 
         try {
             return new WebResponse(
                 self::CONTAINER->get(Environment::class)->render($view, $fixedParameters),
-                $fixedParameters
+                parameters: $fixedParameters
             );
         } catch (Throwable $e) {
             throw BaseException::extend($e);
