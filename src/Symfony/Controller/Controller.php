@@ -150,8 +150,7 @@ readonly class Controller
     protected function redirect(string $url, bool $permanent = true): WebResponse
     {
         $content = sprintf(
-            '
-            <!DOCTYPE html><html><head><meta charset="UTF-8" /><meta http-equiv="refresh" content="0;url=\'%1$s\'" />
+            '<!DOCTYPE html><html><head><meta charset="UTF-8" /><meta http-equiv="refresh" content="0;url=\'%1$s\'" />
             <title>Redirecting to %1$s</title></head><body>Redirecting to <a href="%1$s">%1$s</a>.</body></html>',
             htmlspecialchars($url, ENT_QUOTES, 'UTF-8')
         );
