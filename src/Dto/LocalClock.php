@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use DomainException;
+use IntlDateFormatter;
 use Throwable;
 use Xgc\Exception\BaseException;
 
@@ -279,6 +280,23 @@ class LocalClock
         $diff = abs($this->diff($clock, $in));
 
         return $diff <= $offset;
+    }
+
+    public function localDate(string $locale): string
+    {
+        $formatter = new IntlDateFormatter(
+            $locale,
+            IntlDateFormatter::LONG,
+            IntlDateFormatter::NONE
+        );
+
+        $format = $formatter->format($this->dateTime);
+
+        if ($format === false) {
+            throw new BaseException('Failed to format date.');
+        }
+
+        return $format;
     }
 
     public function microDateTimeString(): string
