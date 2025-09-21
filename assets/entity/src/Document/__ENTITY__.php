@@ -12,12 +12,13 @@ readonly class __ENTITY__ extends Document
 {
     public function __construct(
         public string $id,
-        public Clock $createdAt,
-        public Clock $updatedAt,
-    ) {
+        public Clock  $createdAt,
+        public Clock  $updatedAt,
+    )
+    {
     }
 
-    public function toArray(?ContextInterface $context): array
+    public function toArray(?ContextInterface $context = null): array
     {
         return [
             'id' => $this->id,
