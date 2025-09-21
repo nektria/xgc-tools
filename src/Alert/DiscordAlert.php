@@ -111,8 +111,10 @@ readonly class DiscordAlert implements AlertInterface
         $input ??= new ArrayDocument([]);
         $error = BaseException::extendAndThrow($throwable);
 
-        if (!$error->convertToAlert || $this->internalVariableCache->hasKey($error->hash)) {
-            return;
+        if (!$this->context->isDev()) {
+            if (!$error->convertToAlert || $this->internalVariableCache->hasKey($error->hash)) {
+                return;
+            }
         }
 
         $this->internalVariableCache->saveKey($error->hash, ttl: 300);
