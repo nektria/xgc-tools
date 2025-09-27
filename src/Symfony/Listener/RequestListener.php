@@ -174,7 +174,9 @@ abstract class RequestListener implements EventSubscriberInterface
         $this->setHeaders($event);
         $this->executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
 
-        $this->onResponseCreated($response);
+        if ($response instanceof DocumentResponse) {
+            $this->onResponseCreated($response);
+        }
     }
 
     public function onKernelTerminate(TerminateEvent $event): void
@@ -420,7 +422,7 @@ abstract class RequestListener implements EventSubscriberInterface
     {
     }
 
-    protected function onResponseCreated(Response $response): void
+    protected function onResponseCreated(DocumentResponse $response): void
     {
     }
 
