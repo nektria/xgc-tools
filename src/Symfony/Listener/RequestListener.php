@@ -173,6 +173,8 @@ abstract class RequestListener implements EventSubscriberInterface
 
         $this->setHeaders($event);
         $this->executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
+
+        $this->onResponseCreated($response);
     }
 
     public function onKernelTerminate(TerminateEvent $event): void
@@ -415,6 +417,10 @@ abstract class RequestListener implements EventSubscriberInterface
     }
 
     protected function onRequestReceived(Request $request): void
+    {
+    }
+
+    protected function onResponseCreated(Response $response): void
     {
     }
 
