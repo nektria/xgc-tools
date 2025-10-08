@@ -447,7 +447,7 @@ class LocalClock
      */
     public function timestamp(string $in = 'seconds'): int
     {
-        $ts = $this->dateTime->getTimestamp();
+        $ts = $this->dateTime->getTimestamp() + $this->dateTime->getOffset();
 
         return match ($in) {
             'seconds' => $ts,
