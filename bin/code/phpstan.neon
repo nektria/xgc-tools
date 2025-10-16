@@ -46,6 +46,8 @@ parameters:
 
     #symfony:
         #containerXmlPath: '%currentWorkingDirectory%/var/cache/dev/Nektria_KernelDevDebugContainer.xml'
+    ignoreErrors:
+        - identifier: encapsedStringPart.nonString
 
     disallowedNamespaces:
         -
