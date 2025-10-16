@@ -33,6 +33,16 @@ class OutputService
         $this->cursor = new Cursor($this->output);
     }
 
+    public function log(string | int | float | bool $output): void
+    {
+        $this->writeln($this->fixMessage($output));
+    }
+
+    public function writeln(string | int | float | bool $output): void
+    {
+        $this->write($this->fixMessage($output) . PHP_EOL);
+    }
+
     public function write(string | int | float | bool $output): void
     {
         $output = $this->fixMessage($output);
@@ -48,14 +58,17 @@ class OutputService
         }
     }
 
-    public function writeln(string | int | float | bool $output): void
+    private function fixMessage(string | int | float | bool $output): string
     {
-        $this->write($this->fixMessage($output) . PHP_EOL);
-    }
+        if ($output === true) {
+            $output = 'true';
+        }
 
-    public function log(string | int | float | bool $output): void
-    {
-        $this->writeln($this->fixMessage($output));
+        if ($output === false) {
+            $output = 'false';
+        }
+
+        return (string) $output;
     }
 
     public function info(string | int | float | bool $output): void
@@ -73,29 +86,7 @@ class OutputService
         $this->writeln("<error>{$this->fixMessage($output)}</error>");
     }
 
-    private function fixMessage(string | int | float | bool $output): string
-    {
-        if ($output === true) {
-            $output = 'true';
-        }
-
-        if ($output === false) {
-            $output = 'false';
-        }
-
-        return (string) $output;
-    }
-
-    protected function clearLine(): void
-    {
-        if ($this->cursor === null) {
-            return;
-        }
-
-        $this->cursor->clearLine();
-    }
-
-    protected function clearPreviousLine(bool $clearCurrentLine = true): void
+    public function clearPreviousLine(bool $clearCurrentLine = true): void
     {
         if ($this->cursor === null) {
             return;
@@ -106,6 +97,15 @@ class OutputService
         }
 
         $this->cursor->moveUp();
+        $this->cursor->clearLine();
+    }
+
+    public function clearLine(): void
+    {
+        if ($this->cursor === null) {
+            return;
+        }
+
         $this->cursor->clearLine();
     }
 }
