@@ -9,7 +9,7 @@ namespace Xgc\Dto;
  */
 readonly class PaginatedDocumentCollection extends Document
 {
-    public readonly int $pageSize;
+    public int $pageSize;
 
     /**
      * @param DocumentCollection<T> $list
@@ -18,6 +18,7 @@ readonly class PaginatedDocumentCollection extends Document
         public DocumentCollection $list,
         public int $page,
         public int $totalPages,
+        public int $total,
     ) {
         $this->pageSize = $list->count();
     }
@@ -28,6 +29,7 @@ readonly class PaginatedDocumentCollection extends Document
             'pageSize' => $this->pageSize,
             'list' => $this->list->toArray($context),
             'page' => $this->page,
+            'total' => $this->total,
             'totalPages' => $this->totalPages,
         ];
     }
