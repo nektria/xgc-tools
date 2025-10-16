@@ -7,7 +7,6 @@ namespace Xgc\Symfony\Service;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Xgc\Dto\Clock;
-
 use const FILE_APPEND;
 use const PHP_EOL;
 
@@ -35,7 +34,7 @@ class OutputService
 
     public function log(string | int | float | bool $output): void
     {
-        $this->writeln($this->fixMessage($output));
+        $this->writeln("<white>{$this->fixMessage($output)}</white>");
     }
 
     public function writeln(string | int | float | bool $output): void
@@ -48,13 +47,13 @@ class OutputService
         $output = $this->fixMessage($output);
 
         $now = Clock::now()->toLocal('Europe/Madrid');
-        $cleanOutput = preg_replace('/<\/?\w+\d*>/', '', ['']);
+        $cleanOutput = preg_replace('/<\/?\w+\d*>/', '', $output);
 
         $formattedOutput = "[{$now->microDateTimeString()}] {$cleanOutput}";
         file_put_contents($this->logFile, $formattedOutput, FILE_APPEND);
 
         if ($this->output !== null) {
-            file_put_contents($this->logFile, $output, FILE_APPEND);
+            $this->output->write($output);
         }
     }
 
@@ -73,17 +72,17 @@ class OutputService
 
     public function info(string | int | float | bool $output): void
     {
-        $this->writeln("<info>{$this->fixMessage($output)}</info>");
+        $this->writeln("<white1>{$this->fixMessage($output)}</white1>");
     }
 
     public function warning(string | int | float | bool $output): void
     {
-        $this->writeln("<warning>{$this->fixMessage($output)}</warning>");
+        $this->writeln("<yellow>{$this->fixMessage($output)}</yellow>");
     }
 
     public function error(string | int | float | bool $output): void
     {
-        $this->writeln("<error>{$this->fixMessage($output)}</error>");
+        $this->writeln("<red1>{$this->fixMessage($output)}</red1>");
     }
 
     public function clearPreviousLine(bool $clearCurrentLine = true): void
