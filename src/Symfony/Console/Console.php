@@ -32,7 +32,7 @@ abstract class Console extends BaseCommand
     {
         parent::__construct($name);
         $this->input = null;
-        $this->output = new OutputService();
+        $this->output = new OutputService('.');
     }
 
     protected function beep(): void

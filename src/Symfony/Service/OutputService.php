@@ -7,6 +7,7 @@ namespace Xgc\Symfony\Service;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Xgc\Dto\Clock;
+
 use const FILE_APPEND;
 use const PHP_EOL;
 
@@ -18,10 +19,11 @@ class OutputService
 
     private ?OutputInterface $output;
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly string $projectDir
+    ) {
         $createdAt = Clock::now()->toLocal('Europe/Madrid');
-        $this->logFile = "tmp/{$createdAt->dateTimeString()}.log";
+        $this->logFile = "{$this->projectDir}/tmp/{$createdAt->dateTimeString()}.log";
         $this->cursor = null;
         $this->output = null;
     }
