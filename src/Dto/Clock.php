@@ -49,6 +49,15 @@ class Clock
         }
     }
 
+    public static function fromTimestamp(int $timestamp): self
+    {
+        try {
+            return new self(new DateTimeImmutable("@{$timestamp}"));
+        } catch (Throwable $e) {
+            throw BaseException::extend($e);
+        }
+    }
+
     /**
      * @param CtTimeFormat $in
      */
