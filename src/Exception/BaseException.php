@@ -50,7 +50,7 @@ class BaseException extends RuntimeException
             $e = $e->getPrevious() ?? $e;
         }
 
-        if ($e instanceof BaseException) {
+        if ($e instanceof self) {
             return $e;
         }
 
@@ -61,7 +61,7 @@ class BaseException extends RuntimeException
     {
         try {
             throw self::extend($e);
-        } catch (self $newException) {
+        } catch (BaseException $newException) {
             return $newException;
         }
     }
