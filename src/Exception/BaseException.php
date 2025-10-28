@@ -50,7 +50,7 @@ class BaseException extends RuntimeException
             $e = $e->getPrevious() ?? $e;
         }
 
-        if ($e instanceof self) {
+        if ($e instanceof BaseException) {
             return $e;
         }
 
