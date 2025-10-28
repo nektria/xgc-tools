@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Xgc\Alert;
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use Xgc\Cache\InternalVariableCache;
 use Xgc\Client\RequestClient;
@@ -110,6 +111,10 @@ readonly class DiscordAlert implements AlertInterface
     ): void {
         $input ??= new ArrayDocument([]);
         $error = BaseException::extendAndThrow($throwable);
+
+        if ($error->getPrevious() instanceof NotFoundHttpException) {
+            return;
+        }
 
         if (!$this->context->isDev()) {
             if (!$error->convertToAlert || $this->internalVariableCache->hasKey($error->hash)) {
