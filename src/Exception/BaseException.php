@@ -46,7 +46,7 @@ class BaseException extends RuntimeException
     /** @noinspection SelfClassReferencingInspection */
     public static function extend(Throwable $e): self
     {
-        if ($e instanceof HandlerFailedException) {
+        while ($e instanceof HandlerFailedException) {
             $e = $e->getPrevious() ?? $e;
         }
 
@@ -61,7 +61,7 @@ class BaseException extends RuntimeException
     {
         try {
             throw self::extend($e);
-        } catch (BaseException $newException) {
+        } catch (self $newException) {
             return $newException;
         }
     }
