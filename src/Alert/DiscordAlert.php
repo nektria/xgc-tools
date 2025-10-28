@@ -177,6 +177,7 @@ readonly class DiscordAlert implements AlertInterface
             data: $discordMessage,
             headers: [
                 'Authorization' => "Bot {$token}",
+                'Content-Type' => 'application/json',
             ],
             options: ['errorIfFails' => false],
         );
