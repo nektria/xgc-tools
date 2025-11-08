@@ -6,6 +6,7 @@ namespace Xgc\Symfony\Service;
 
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 use Xgc\Dto\Clock;
 
 use const FILE_APPEND;
@@ -48,13 +49,16 @@ class OutputService
     {
         $output = $this->fixMessage($output);
 
-        $now = Clock::now()->toLocal('Europe/Madrid');
-        $cleanOutput = preg_replace('/<\/?\w+\d*>/', '', $output);
+        if ($this->output === null) {
+            $now = Clock::now()->toLocal('Europe/Madrid');
+            $cleanOutput = preg_replace('/<\/?\w+\d*>/', '', $output);
+            $formattedOutput = "[{$now->microDateTimeString()}] {$cleanOutput}";
 
-        $formattedOutput = "[{$now->microDateTimeString()}] {$cleanOutput}";
-        file_put_contents($this->logFile, $formattedOutput, FILE_APPEND);
-
-        if ($this->output !== null) {
+            try {
+                file_put_contents($this->logFile, $formattedOutput, FILE_APPEND);
+            } catch (Throwable) {
+            }
+        } else {
             $this->output->write($output);
         }
     }
