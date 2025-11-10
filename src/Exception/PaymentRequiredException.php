@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Xgc\Exception;
 
-class PayumentRequiredException extends BaseException
+class PaymentRequiredException extends BaseException
 {
     public function __construct()
     {
