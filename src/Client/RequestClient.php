@@ -11,12 +11,12 @@ use Xgc\Exception\RequestException;
 use Xgc\Utils\FileUtil;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
-
 use function is_string;
 
 /**
  * @phpstan-type RequestOptions array{
  *     errorIfFails?: bool,
+ *     doNotEncodeBody?: bool,
  * }
  */
 readonly class RequestClient
@@ -370,10 +370,11 @@ readonly class RequestClient
         ];
 
         if ($method === 'POST' || $method === 'PATCH') {
-            if (is_string($data)) {
+            if (is_string($data) || ($options['doNotEncodeBody'] ?? false)) {
                 $body = $data;
             } else {
                 $body = JsonUtil::encode($data);
+                $body = $data;
             }
             $requestOptions['body'] = $body;
         } elseif (is_string($data)) {
