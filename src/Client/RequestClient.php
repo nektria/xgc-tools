@@ -11,13 +11,13 @@ use Xgc\Exception\RequestException;
 use Xgc\Utils\FileUtil;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
-
 use function is_string;
 
 /**
  * @phpstan-type RequestOptions array{
  *     errorIfFails?: bool,
  *     doNotEncodeBody?: bool,
+ *     timeout?: int,
  * }
  */
 readonly class RequestClient
@@ -198,6 +198,8 @@ readonly class RequestClient
             'verify_peer' => false,
             'verify_host' => false,
             'headers' => $headers,
+            'timeout' => $options['timeout'] ?? 30,
+            'max_duration' => $options['timeout'] ?? 30,
         ];
 
         try {
@@ -368,6 +370,8 @@ readonly class RequestClient
             'verify_peer' => false,
             'verify_host' => false,
             'headers' => $headers,
+            'timeout' => $options['timeout'] ?? 30,
+            'max_duration' => $options['timeout'] ?? 30,
         ];
 
         if ($method === 'POST' || $method === 'PATCH') {
