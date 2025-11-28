@@ -11,6 +11,7 @@ use Xgc\Exception\RequestException;
 use Xgc\Utils\FileUtil;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
+
 use function is_string;
 
 /**

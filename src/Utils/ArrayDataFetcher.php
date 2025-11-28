@@ -52,6 +52,47 @@ readonly class ArrayDataFetcher
         return $value;
     }
 
+    public function getArrayDataFetcher(string $field): ?self
+    {
+        $value = $this->getValue($field);
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_array($value)) {
+            throw new InvalidArgumentException($field, $value, 'array');
+        }
+
+        return new self($value);
+    }
+
+    /**
+     * @return ArrayDataFetcher[]|null
+     */
+    public function getArrayDataFetchers(string $field): ?array
+    {
+        $value = $this->getValue($field);
+
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_array($value)) {
+            throw new InvalidArgumentException($field, $value, 'array');
+        }
+
+        $result = [];
+        foreach ($value as $key => $val) {
+            if (!is_array($val)) {
+                throw new InvalidArgumentException("{$field}.{$key}", $value, 'array');
+            }
+            $result[] = new self($val);
+        }
+
+        return $result;
+    }
+
     public function getBool(string $field): ?bool
     {
         $value = $this->getValue($field);
@@ -283,6 +324,31 @@ readonly class ArrayDataFetcher
     public function retrieveArray(string $field): array
     {
         $value = $this->getArray($field);
+
+        if ($value === null) {
+            throw new MissingArgumentException($field);
+        }
+
+        return $value;
+    }
+
+    public function retrieveArrayDataFetcher(string $field): self
+    {
+        $value = $this->getArrayDataFetcher($field);
+
+        if ($value === null) {
+            throw new MissingArgumentException($field);
+        }
+
+        return $value;
+    }
+
+    /**
+     * @return ArrayDataFetcher[]
+     */
+    public function retrieveArrayDataFetchers(string $field): array
+    {
+        $value = $this->getArrayDataFetchers($field);
 
         if ($value === null) {
             throw new MissingArgumentException($field);
