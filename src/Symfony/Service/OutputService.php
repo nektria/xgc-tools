@@ -8,6 +8,7 @@ use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 use Xgc\Dto\Clock;
+use Xgc\Exception\BaseException;
 
 use const FILE_APPEND;
 use const PHP_EOL;
@@ -35,14 +36,56 @@ class OutputService
         $this->cursor = new Cursor($this->output);
     }
 
+    public function clearLine(): void
+    {
+        if ($this->cursor === null) {
+            return;
+        }
+
+        $this->cursor->clearLine();
+    }
+
+    public function clearPreviousLine(bool $clearCurrentLine = true): void
+    {
+        if ($this->cursor === null) {
+            return;
+        }
+
+        if ($clearCurrentLine) {
+            $this->cursor->clearLine();
+        }
+
+        $this->cursor->moveUp();
+        $this->cursor->clearLine();
+    }
+
+    public function error(string | int | float | bool $output): void
+    {
+        $this->writeln("<red1>{$this->fixMessage($output)}</red1>");
+    }
+
+    public function info(string | int | float | bool $output): void
+    {
+        $this->writeln("<white1>{$this->fixMessage($output)}</white1>");
+    }
+
+    public function interface(): OutputInterface
+    {
+        if ($this->output === null) {
+            throw new BaseException('OutputInterface not assigned.');
+        }
+
+        return $this->output;
+    }
+
     public function log(string | int | float | bool $output): void
     {
         $this->writeln("<white>{$this->fixMessage($output)}</white>");
     }
 
-    public function writeln(string | int | float | bool $output): void
+    public function warning(string | int | float | bool $output): void
     {
-        $this->write($this->fixMessage($output) . PHP_EOL);
+        $this->writeln("<yellow>{$this->fixMessage($output)}</yellow>");
     }
 
     public function write(string | int | float | bool $output): void
@@ -63,6 +106,11 @@ class OutputService
         }
     }
 
+    public function writeln(string | int | float | bool $output): void
+    {
+        $this->write($this->fixMessage($output) . PHP_EOL);
+    }
+
     private function fixMessage(string | int | float | bool $output): string
     {
         if ($output === true) {
@@ -74,43 +122,5 @@ class OutputService
         }
 
         return (string) $output;
-    }
-
-    public function info(string | int | float | bool $output): void
-    {
-        $this->writeln("<white1>{$this->fixMessage($output)}</white1>");
-    }
-
-    public function warning(string | int | float | bool $output): void
-    {
-        $this->writeln("<yellow>{$this->fixMessage($output)}</yellow>");
-    }
-
-    public function error(string | int | float | bool $output): void
-    {
-        $this->writeln("<red1>{$this->fixMessage($output)}</red1>");
-    }
-
-    public function clearPreviousLine(bool $clearCurrentLine = true): void
-    {
-        if ($this->cursor === null) {
-            return;
-        }
-
-        if ($clearCurrentLine) {
-            $this->cursor->clearLine();
-        }
-
-        $this->cursor->moveUp();
-        $this->cursor->clearLine();
-    }
-
-    public function clearLine(): void
-    {
-        if ($this->cursor === null) {
-            return;
-        }
-
-        $this->cursor->clearLine();
     }
 }
