@@ -29,6 +29,7 @@ readonly class WSService
         try {
             $this->hub->publish(new Update("/{$topic}", JsonUtil::encode([
                 'payload' => $data->toArray(),
+                'topic' => $topic,
             ]), true));
         } catch (Throwable $e) {
             throw BaseException::extend($e);
