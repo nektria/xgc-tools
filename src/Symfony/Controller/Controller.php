@@ -25,9 +25,7 @@ use Xgc\Message\RetryStamp;
 use Xgc\Utils\ArrayDataFetcher;
 use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
-
 use function sprintf;
-
 use const ENT_QUOTES;
 
 readonly class Controller
@@ -84,7 +82,7 @@ readonly class Controller
         return self::CONTAINER->get($class);
     }
 
-    protected function documentResponse(Document $document, int $status = 200): DocumentResponse
+    protected function documentResponse(DocumentInterface $document, int $status = 200): DocumentResponse
     {
         return $this->response($document, $status);
     }
