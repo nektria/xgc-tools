@@ -246,6 +246,11 @@ class Clock
         return $this->dateTime->format('m');
     }
 
+    public function native(): DateTimeImmutable
+    {
+        return $this->dateTime;
+    }
+
     public function rfc1123String(): string
     {
         return $this->dateTime->format('D, d M Y H:i:s') . ' GMT';
