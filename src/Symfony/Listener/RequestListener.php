@@ -91,7 +91,11 @@ abstract class RequestListener implements EventSubscriberInterface
                 try {
                     $out = [];
                     parse_str($content, $out);
-                    $request->request->replace($out);
+                    $fixedOut = [];
+                    foreach ($out as $key => $value) {
+                        $fixedOut[(string) $key] = $value;
+                    }
+                    $request->request->replace($fixedOut);
                 } catch (Throwable) {
                     throw new DomainException('Bad request body.');
                 }

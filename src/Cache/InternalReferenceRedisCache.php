@@ -44,14 +44,6 @@ abstract class InternalReferenceRedisCache extends RedisCache
         }
     }
 
-    protected function removeItem(string $key): void
-    {
-        try {
-            $this->init()->del("{$this->fqn}:{$key}");
-        } catch (Throwable) {
-        }
-    }
-
     /**
      * @return T|null
      */
@@ -77,7 +69,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
 
             return unserialize($item, ['allowed_classes' => true]);
@@ -124,7 +116,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
 
             if ($items === false) {
@@ -186,7 +178,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
 
             $result = [];
@@ -256,7 +248,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
 
             $result = [];
@@ -288,6 +280,14 @@ abstract class InternalReferenceRedisCache extends RedisCache
             return $item;
         } catch (Throwable) {
             return null;
+        }
+    }
+
+    protected function removeItem(string $key): void
+    {
+        try {
+            $this->init()->del("{$this->fqn}:{$key}");
+        } catch (Throwable) {
         }
     }
 

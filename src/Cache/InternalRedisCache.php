@@ -45,7 +45,7 @@ abstract class InternalRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
         } catch (Throwable) {
         }
@@ -60,7 +60,7 @@ abstract class InternalRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
         } catch (Throwable) {
         }
@@ -82,7 +82,7 @@ abstract class InternalRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
 
             $ser = unserialize($item, [
@@ -138,7 +138,7 @@ abstract class InternalRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
         } catch (Throwable) {
         }
@@ -162,7 +162,7 @@ abstract class InternalRedisCache extends RedisCache
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
 
-                throw new RuntimeException($lastError);
+                throw new RuntimeException($lastError ?? '');
             }
         } catch (Throwable) {
         }
