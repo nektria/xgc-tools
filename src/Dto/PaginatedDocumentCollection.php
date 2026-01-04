@@ -27,7 +27,7 @@ readonly class PaginatedDocumentCollection extends Document
     {
         return [
             'pageSize' => $this->pageSize,
-            'items' => $this->items->toArray($context),
+            'items' => $this->items->toArray($context)['items'],
             'page' => $this->page,
             'total' => $this->total,
             'totalPages' => $this->totalPages,
