@@ -104,7 +104,7 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     /**
      * @return T|null
      */
-    public function last()
+    public function last(): ?Document
     {
         return $this->items[$this->count() - 1] ?? null;
     }
@@ -178,6 +178,8 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
             $list[] = $item->toArray($context);
         }
 
-        return $list;
+        return [
+            'items' => $list,
+        ];
     }
 }

@@ -12,22 +12,22 @@ readonly class PaginatedDocumentCollection extends Document
     public int $pageSize;
 
     /**
-     * @param DocumentCollection<T> $list
+     * @param DocumentCollection<T> $items
      */
     public function __construct(
-        public DocumentCollection $list,
+        public DocumentCollection $items,
         public int $page,
         public int $totalPages,
         public int $total,
     ) {
-        $this->pageSize = $list->count();
+        $this->pageSize = $items->count();
     }
 
     public function toArray(?ContextInterface $context = null): array
     {
         return [
             'pageSize' => $this->pageSize,
-            'list' => $this->list->toArray($context),
+            'items' => $this->items->toArray($context),
             'page' => $this->page,
             'total' => $this->total,
             'totalPages' => $this->totalPages,
