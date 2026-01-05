@@ -113,7 +113,7 @@ readonly class Controller
         return 'desktop';
     }
 
-    protected function getFile(string $field): ?string
+    protected function getFile(string $field): ?UploadedFile
     {
         /** @var UploadedFile|null $file */
         $file = $this->request->files->get($field);
@@ -122,7 +122,7 @@ readonly class Controller
             return null;
         }
 
-        return $file->getRealPath();
+        return $file;
     }
 
     /**
@@ -219,7 +219,7 @@ readonly class Controller
         return new DocumentResponse($document, self::CONTAINER->get(ContextInterface::class), $status);
     }
 
-    protected function retrieveFile(string $field): string
+    protected function retrieveFile(string $field): UploadedFile
     {
         $file = $this->getFile($field);
 
