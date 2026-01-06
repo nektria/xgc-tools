@@ -47,7 +47,11 @@ class BaseException extends RuntimeException
     public static function extend(Throwable $e): self
     {
         while ($e instanceof HandlerFailedException) {
-            $e = $e->getPrevious() ?? $e;
+            $tmp = $e->getPrevious();
+            if ($tmp === null) {
+                break;
+            }
+            $e = $tmp;
         }
 
         if ($e instanceof self) {

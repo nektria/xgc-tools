@@ -14,26 +14,38 @@ use function in_array;
 
 class ThrowableDocument implements DocumentInterface
 {
-    /**
-     * @var string[]
-     */
-    private static array $validPrefixTraceFiles = [];
-
     public readonly int $status;
 
     public readonly Throwable $throwable;
 
+    /**
+     * @var string[]
+     */
+    public static array $validPrefixTraceFiles = [
+        '/app/src',
+        '/app/vendor/nektria/php-tools/src'
+    ];
+
     public function __construct(
         Throwable $throwable
     ) {
+        $realThrowable = $throwable;
+        while ($realThrowable instanceof BaseException) {
+            $tmp = $realThrowable->getPrevious();
+            if ($tmp === null) {
+                break;
+            }
+            $realThrowable = $tmp;
+        }
+
         if ($throwable instanceof BaseException) {
             $this->status = $throwable->status;
-        } elseif ($throwable instanceof HttpException) {
-            $this->status = $throwable->getStatusCode();
+        } elseif ($realThrowable instanceof HttpException) {
+            $this->status = $realThrowable->getStatusCode();
         } else {
             $this->status = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
-        $this->throwable = $throwable;
+        $this->throwable = $realThrowable;
     }
 
     public static function addValidPrefixTraceFile(string $filePrefix): void
