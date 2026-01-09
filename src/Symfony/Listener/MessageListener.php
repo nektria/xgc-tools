@@ -68,10 +68,10 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onMessengerException(WorkerMessageFailedEvent $event): void
     {
-        $bus = $this->get(BusInterface::class);
-        $logger = $this->get(LoggerInterface::class);
-        $alertService = $this->get(AlertInterface::class);
-        $processRegistry = $this->get(ProcessRegistry::class);
+        $bus = $this->service(BusInterface::class);
+        $logger = $this->service(LoggerInterface::class);
+        $alertService = $this->service(AlertInterface::class);
+        $processRegistry = $this->service(ProcessRegistry::class);
 
         try {
             $retryStamp = $event->getEnvelope()->last(RetryStamp::class);
@@ -200,8 +200,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onWorkerMessageHandled(WorkerMessageHandledEvent $event): void
     {
-        $logger = $this->get(LoggerInterface::class);
-        $processRegistry = $this->get(ProcessRegistry::class);
+        $logger = $this->service(LoggerInterface::class);
+        $processRegistry = $this->service(ProcessRegistry::class);
 
         $this->messageCompletedAt = Clock::now()->iso8601String();
         $message = $event->getEnvelope()->getMessage();
@@ -258,8 +258,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onWorkerMessageReceived(WorkerMessageReceivedEvent $event): void
     {
-        $processRegistry = $this->get(ProcessRegistry::class);
-        $context = $this->get(ContextInterface::class);
+        $processRegistry = $this->service(ProcessRegistry::class);
+        $context = $this->service(ContextInterface::class);
 
         $message = $event->getEnvelope()->getMessage();
         $exchangeName = '?';
@@ -298,8 +298,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function decreaseCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
@@ -319,8 +319,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function decreasePendingCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
@@ -340,8 +340,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function increaseCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
@@ -359,8 +359,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function increasePendingCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;

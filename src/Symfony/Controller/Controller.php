@@ -66,7 +66,7 @@ readonly class Controller
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        $this->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
+        $this->service(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
     protected function documentResponse(DocumentInterface $document, int $status = 200): DocumentResponse
@@ -78,7 +78,7 @@ readonly class Controller
     {
         return new DocumentResponse(
             new ArrayDocument(),
-            $this->get(ContextInterface::class),
+            $this->service(ContextInterface::class),
             Response::HTTP_NO_CONTENT
         );
     }
@@ -118,7 +118,7 @@ readonly class Controller
     protected function getService(string $class): object
     {
         /** @var T $service */
-        $service = $this->get($class);
+        $service = $this->service($class);
 
         return $service;
     }
@@ -129,7 +129,7 @@ readonly class Controller
      */
     protected function queryResponse(Query $query): DocumentResponse
     {
-        return $this->documentResponse($this->get(BusInterface::class)->dispatchQuery($query));
+        return $this->documentResponse($this->service(BusInterface::class)->dispatchQuery($query));
     }
 
     protected function redirect(string $url, bool $permanent = true): WebResponse
@@ -161,7 +161,7 @@ readonly class Controller
                 $fixedParameters[$key] = $value->toArray(
                     $ignoreContext ?
                         null :
-                        $this->get(ContextInterface::class)
+                        $this->service(ContextInterface::class)
                 );
             } else {
                 $fixedParameters[$key] = $value;
@@ -191,7 +191,7 @@ readonly class Controller
 
         try {
             return new WebResponse(
-                $this->get(Environment::class)->render($view, $fixedParameters),
+                $this->service(Environment::class)->render($view, $fixedParameters),
                 parameters: $fixedParameters
             );
         } catch (Throwable $e) {
@@ -201,7 +201,7 @@ readonly class Controller
 
     protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
     {
-        return new DocumentResponse($document, $this->get(ContextInterface::class), $status);
+        return new DocumentResponse($document, $this->service(ContextInterface::class), $status);
     }
 
     protected function retrieveFile(string $field): UploadedFile

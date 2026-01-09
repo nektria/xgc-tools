@@ -20,12 +20,29 @@ trait ContainerAwareServiceTrait
         $this->containerBag[0] = $containerBag;
     }
 
+    private function initContainerAwareServiceTrait(): void
+    {
+        $this->containerBag = [null];
+    }
+
+    /**
+     * @return array<mixed>|bool|float|int|string|UnitEnum|null
+     */
+    private function parameter(string $name): array | bool | float | int | string | UnitEnum | null
+    {
+        if ($this->containerBag[0] === null) {
+            throw new BaseException('Container not set');
+        }
+
+        return $this->containerBag[0]->getParameter($name);
+    }
+
     /**
      * @template T of object
      * @param class-string<T> $class
      * @return T
      */
-    private function get(string $class): object
+    private function service(string $class): object
     {
         if ($this->containerBag[0] === null) {
             throw new BaseException('Container not set');
@@ -35,22 +52,5 @@ trait ContainerAwareServiceTrait
         $clss = $this->containerBag[0]->get($class);
 
         return $clss;
-    }
-
-    /**
-     * @return array<mixed>|bool|float|int|string|UnitEnum|null
-     */
-    private function getParameter(string $name): array | bool | float | int | string | UnitEnum | null
-    {
-        if ($this->containerBag[0] === null) {
-            throw new BaseException('Container not set');
-        }
-
-        return $this->containerBag[0]->getParameter($name);
-    }
-
-    private function initContainerAwareServiceTrait(): void
-    {
-        $this->containerBag = [null];
     }
 }

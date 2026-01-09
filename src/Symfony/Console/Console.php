@@ -42,7 +42,7 @@ abstract class Console extends BaseCommand
 
     protected function bus(): BusInterface
     {
-        return $this->get(BusInterface::class);
+        return $this->service(BusInterface::class);
     }
 
     protected function clear(): void

@@ -29,7 +29,7 @@ readonly class DefaultBus implements BusInterface
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        $context = $this->get(ContextInterface::class);
+        $context = $this->service(ContextInterface::class);
 
         $stamps = [
             new ContextStamp(
@@ -51,7 +51,7 @@ readonly class DefaultBus implements BusInterface
             $stamps[] = $delayMs;
         }
 
-        $bus = $this->get(MessageBusInterface::class);
+        $bus = $this->service(MessageBusInterface::class);
 
         try {
             $bus->dispatch($command, $stamps);
@@ -66,8 +66,8 @@ readonly class DefaultBus implements BusInterface
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        $context = $this->get(ContextInterface::class);
-        $bus = $this->get(MessageBusInterface::class);
+        $context = $this->service(ContextInterface::class);
+        $bus = $this->service(MessageBusInterface::class);
 
         $stamps = [
             new ContextStamp(
@@ -103,8 +103,8 @@ readonly class DefaultBus implements BusInterface
      */
     public function dispatchQuery(Query $query): DocumentInterface
     {
-        $context = $this->get(ContextInterface::class);
-        $bus = $this->get(MessageBusInterface::class);
+        $context = $this->service(ContextInterface::class);
+        $bus = $this->service(MessageBusInterface::class);
 
         $stamps = [
             new ContextStamp(
