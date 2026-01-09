@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Xgc\Symfony\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -22,8 +21,8 @@ use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
+use Xgc\Symfony\Service\ServiceLoader;
 use Xgc\Utils\ArrayDataFetcher;
-use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
 use function sprintf;
@@ -32,14 +31,13 @@ use const ENT_QUOTES;
 
 readonly class Controller
 {
-    use ContainerBoxTrait;
-
     protected Request $request;
 
     protected ArrayDataFetcher $requestData;
 
     public function __construct(
-        RequestStack $requestStack
+        protected ServiceLoader $serviceLoader,
+        RequestStack $requestStack,
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
 
@@ -60,18 +58,13 @@ readonly class Controller
         }
     }
 
-    public function setContainer(ContainerInterface $container): void
-    {
-        self::CONTAINER->setContainer($container);
-    }
-
     protected function command(
         Command $command,
         ?string $transport = null,
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        self::CONTAINER->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
+        $this->serviceLoader->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
     /**
@@ -81,7 +74,7 @@ readonly class Controller
      */
     protected function container(string $class): object
     {
-        return self::CONTAINER->get($class);
+        return $this->serviceLoader->get($class);
     }
 
     protected function documentResponse(DocumentInterface $document, int $status = 200): DocumentResponse
@@ -93,7 +86,7 @@ readonly class Controller
     {
         return new DocumentResponse(
             new ArrayDocument(),
-            self::CONTAINER->get(ContextInterface::class),
+            $this->serviceLoader->get(ContextInterface::class),
             Response::HTTP_NO_CONTENT
         );
     }
@@ -133,7 +126,7 @@ readonly class Controller
     protected function getService(string $class): object
     {
         /** @var T $service */
-        $service = self::CONTAINER->get($class);
+        $service = $this->serviceLoader->get($class);
 
         return $service;
     }
@@ -144,7 +137,7 @@ readonly class Controller
      */
     protected function queryResponse(Query $query): DocumentResponse
     {
-        return $this->documentResponse(self::CONTAINER->get(BusInterface::class)->dispatchQuery($query));
+        return $this->documentResponse($this->serviceLoader->get(BusInterface::class)->dispatchQuery($query));
     }
 
     protected function redirect(string $url, bool $permanent = true): WebResponse
@@ -176,7 +169,7 @@ readonly class Controller
                 $fixedParameters[$key] = $value->toArray(
                     $ignoreContext ?
                         null :
-                        self::CONTAINER->get(ContextInterface::class)
+                        $this->serviceLoader->get(ContextInterface::class)
                 );
             } else {
                 $fixedParameters[$key] = $value;
@@ -206,7 +199,7 @@ readonly class Controller
 
         try {
             return new WebResponse(
-                self::CONTAINER->get(Environment::class)->render($view, $fixedParameters),
+                $this->serviceLoader->get(Environment::class)->render($view, $fixedParameters),
                 parameters: $fixedParameters
             );
         } catch (Throwable $e) {
@@ -216,7 +209,7 @@ readonly class Controller
 
     protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
     {
-        return new DocumentResponse($document, self::CONTAINER->get(ContextInterface::class), $status);
+        return new DocumentResponse($document, $this->serviceLoader->get(ContextInterface::class), $status);
     }
 
     protected function retrieveFile(string $field): UploadedFile
