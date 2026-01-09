@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Xgc\Dto;
 
-use Xgc\Symfony\Service\ContainerAwareServiceTrait;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\RandomUtil;
 
 class DefaultContext implements ContextInterface
 {
-    use ContainerAwareServiceTrait;
+    use ContainerBoxTrait;
 
     /** @var mixed[] */
     private array $metadata;

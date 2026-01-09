@@ -17,12 +17,12 @@ use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
-use Xgc\Symfony\Service\ContainerAwareServiceTrait;
 use Xgc\Symfony\Service\OutputService;
+use Xgc\Utils\ContainerBoxTrait;
 
 abstract class Console extends BaseCommand
 {
-    use ContainerAwareServiceTrait;
+    use ContainerBoxTrait;
 
     private ?InputInterface $input;
 

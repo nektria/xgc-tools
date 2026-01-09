@@ -30,7 +30,7 @@ use Xgc\Message\ContextStamp;
 use Xgc\Message\Event;
 use Xgc\Message\MessageInterface;
 use Xgc\Message\RetryStamp;
-use Xgc\Symfony\Service\ContainerAwareServiceTrait;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
 
@@ -38,7 +38,7 @@ use function in_array;
 
 abstract class MessageListener implements EventSubscriberInterface
 {
-    use ContainerAwareServiceTrait;
+    use ContainerBoxTrait;
 
     private float $executionStartedAt;
 

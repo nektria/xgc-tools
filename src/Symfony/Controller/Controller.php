@@ -21,8 +21,8 @@ use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
-use Xgc\Symfony\Service\ContainerAwareServiceTrait;
 use Xgc\Utils\ArrayDataFetcher;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
 use function sprintf;
@@ -31,7 +31,7 @@ use const ENT_QUOTES;
 
 readonly class Controller
 {
-    use ContainerAwareServiceTrait;
+    use ContainerBoxTrait;
 
     protected Request $request;
 
@@ -41,7 +41,6 @@ readonly class Controller
         RequestStack $requestStack,
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
-        $this->initContainerAwareServiceTrait();
 
         try {
             $data = [];

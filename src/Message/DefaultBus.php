@@ -12,16 +12,11 @@ use Throwable;
 use Xgc\Dto\ContextInterface;
 use Xgc\Dto\DocumentInterface;
 use Xgc\Exception\BaseException;
-use Xgc\Symfony\Service\ContainerAwareServiceTrait;
+use Xgc\Utils\ContainerBoxTrait;
 
 readonly class DefaultBus implements BusInterface
 {
-    use ContainerAwareServiceTrait;
-
-    public function __construct()
-    {
-        $this->initContainerAwareServiceTrait();
-    }
+    use ContainerBoxTrait;
 
     public function dispatchCommand(
         Command $command,

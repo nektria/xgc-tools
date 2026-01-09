@@ -30,7 +30,7 @@ use Xgc\Exception\RedirectWebException;
 use Xgc\Log\LoggerInterface;
 use Xgc\Log\ProcessRegistry;
 use Xgc\Symfony\Controller\DocumentResponse;
-use Xgc\Symfony\Service\ContainerAwareServiceTrait;
+use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
 use function in_array;
@@ -38,7 +38,7 @@ use function is_string;
 
 abstract class RequestListener implements EventSubscriberInterface
 {
-    use ContainerAwareServiceTrait;
+    use ContainerBoxTrait;
 
     private float $executionTime;
 
