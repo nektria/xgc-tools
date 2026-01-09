@@ -21,7 +21,7 @@ use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
-use Xgc\Symfony\Service\ServiceLoader;
+use Xgc\Symfony\Service\ContainerAwareServiceTrait;
 use Xgc\Utils\ArrayDataFetcher;
 use Xgc\Utils\JsonUtil;
 
@@ -31,15 +31,17 @@ use const ENT_QUOTES;
 
 readonly class Controller
 {
+    use ContainerAwareServiceTrait;
+
     protected Request $request;
 
     protected ArrayDataFetcher $requestData;
 
     public function __construct(
-        protected ServiceLoader $serviceLoader,
         RequestStack $requestStack,
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
+        $this->initContainerAwareServiceTrait();
 
         try {
             $data = [];
@@ -64,17 +66,7 @@ readonly class Controller
         ?DelayStamp $delayMs = null,
         ?RetryStamp $retryOptions = null
     ): void {
-        $this->serviceLoader->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
-    }
-
-    /**
-     * @template T of object
-     * @param class-string<T> $class
-     * @return T
-     */
-    protected function container(string $class): object
-    {
-        return $this->serviceLoader->get($class);
+        $this->get(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
 
     protected function documentResponse(DocumentInterface $document, int $status = 200): DocumentResponse
@@ -86,7 +78,7 @@ readonly class Controller
     {
         return new DocumentResponse(
             new ArrayDocument(),
-            $this->serviceLoader->get(ContextInterface::class),
+            $this->get(ContextInterface::class),
             Response::HTTP_NO_CONTENT
         );
     }
@@ -126,7 +118,7 @@ readonly class Controller
     protected function getService(string $class): object
     {
         /** @var T $service */
-        $service = $this->serviceLoader->get($class);
+        $service = $this->get($class);
 
         return $service;
     }
@@ -137,7 +129,7 @@ readonly class Controller
      */
     protected function queryResponse(Query $query): DocumentResponse
     {
-        return $this->documentResponse($this->serviceLoader->get(BusInterface::class)->dispatchQuery($query));
+        return $this->documentResponse($this->get(BusInterface::class)->dispatchQuery($query));
     }
 
     protected function redirect(string $url, bool $permanent = true): WebResponse
@@ -169,7 +161,7 @@ readonly class Controller
                 $fixedParameters[$key] = $value->toArray(
                     $ignoreContext ?
                         null :
-                        $this->serviceLoader->get(ContextInterface::class)
+                        $this->get(ContextInterface::class)
                 );
             } else {
                 $fixedParameters[$key] = $value;
@@ -199,7 +191,7 @@ readonly class Controller
 
         try {
             return new WebResponse(
-                $this->serviceLoader->get(Environment::class)->render($view, $fixedParameters),
+                $this->get(Environment::class)->render($view, $fixedParameters),
                 parameters: $fixedParameters
             );
         } catch (Throwable $e) {
@@ -209,7 +201,7 @@ readonly class Controller
 
     protected function response(DocumentInterface $document, int $status = 200): DocumentResponse
     {
-        return new DocumentResponse($document, $this->serviceLoader->get(ContextInterface::class), $status);
+        return new DocumentResponse($document, $this->get(ContextInterface::class), $status);
     }
 
     protected function retrieveFile(string $field): UploadedFile

@@ -7,7 +7,7 @@ namespace Xgc\Symfony\Kernel;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use Xgc\Utils\ContainerBoxTrait;
+use Xgc\Symfony\Service\ContainerAwareServiceTrait;
 
 use function in_array;
 
@@ -40,7 +40,7 @@ class ContainerBoxPass implements CompilerPassInterface
                 continue;
             }
 
-            if (in_array(ContainerBoxTrait::class, $this->getAllTraits($class), true)) {
+            if (in_array(ContainerAwareServiceTrait::class, $this->getAllTraits($class), true)) {
                 $definition->addMethodCall('setContainer', [new Reference('service_container')]);
             }
         }

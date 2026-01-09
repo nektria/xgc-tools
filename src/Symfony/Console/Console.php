@@ -17,12 +17,12 @@ use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
+use Xgc\Symfony\Service\ContainerAwareServiceTrait;
 use Xgc\Symfony\Service\OutputService;
-use Xgc\Utils\ContainerBoxTrait;
 
 abstract class Console extends BaseCommand
 {
-    use ContainerBoxTrait;
+    use ContainerAwareServiceTrait;
 
     private ?InputInterface $input;
 
@@ -40,9 +40,9 @@ abstract class Console extends BaseCommand
         $this->output()->write("\007");
     }
 
-    protected function output(): OutputService
+    protected function bus(): BusInterface
     {
-        return $this->output;
+        return $this->get(BusInterface::class);
     }
 
     protected function clear(): void
@@ -70,11 +70,6 @@ abstract class Console extends BaseCommand
         ?RetryStamp $retryOptions = null
     ): void {
         $this->bus()->dispatchCommand($command, $async ? 'system' : null, $delayMs, $retryOptions);
-    }
-
-    protected function bus(): BusInterface
-    {
-        return $this->get(BusInterface::class);
     }
 
     /**
@@ -112,13 +107,6 @@ abstract class Console extends BaseCommand
         return 0;
     }
 
-    abstract protected function play(): void;
-
-    protected function readArgument(string $name): string
-    {
-        return $this->input()->getArgument($name);
-    }
-
     protected function input(): InputInterface
     {
         if ($this->input === null) {
@@ -126,5 +114,17 @@ abstract class Console extends BaseCommand
         }
 
         return $this->input;
+    }
+
+    protected function output(): OutputService
+    {
+        return $this->output;
+    }
+
+    abstract protected function play(): void;
+
+    protected function readArgument(string $name): string
+    {
+        return $this->input()->getArgument($name);
     }
 }
