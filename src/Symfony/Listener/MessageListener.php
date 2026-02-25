@@ -89,6 +89,7 @@ abstract class MessageListener implements EventSubscriberInterface
 
             $transport = null;
             if ($transportStamp !== null) {
+                /** @var string|null $transport */
                 $transport = $transportStamp->getTransportNames()[0];
             }
 
@@ -303,6 +304,7 @@ abstract class MessageListener implements EventSubscriberInterface
 
         $project = $context->project();
         $clzz = $message::class;
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages', '[]'));
         $key = "{$project}_{$clzz}";
         if (!in_array($key, $data, true)) {
@@ -324,6 +326,7 @@ abstract class MessageListener implements EventSubscriberInterface
 
         $project = $context->project();
         $clzz = $message::class;
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages_pending', '[]'));
         $key = "{$project}_{$clzz}";
         if (!in_array($key, $data, true)) {
@@ -345,6 +348,7 @@ abstract class MessageListener implements EventSubscriberInterface
 
         $project = $context->project();
         $clzz = $message::class;
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages', '[]'));
         $key = str_replace('\\', '_', "{$project}_{$clzz}");
         if (!in_array($key, $data, true)) {
@@ -365,6 +369,7 @@ abstract class MessageListener implements EventSubscriberInterface
         $project = $context->project();
         $clzz = $message::class;
         $key = "{$project}_{$clzz}";
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages_pending', '[]'));
         if (!in_array($key, $data, true)) {
             $data[] = $key;
