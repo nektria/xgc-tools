@@ -50,6 +50,7 @@ abstract class ReadModel
         try {
             $results = $this->getRawResults($sql, $params, $groupBy);
 
+            /* @var mixed[]|null */
             return $results[array_key_first($results) ?? ''] ?? null;
         } catch (Throwable $e) {
             throw BaseException::extend($e);
@@ -59,7 +60,7 @@ abstract class ReadModel
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
      * @param string[] $groupBy
-     * @return mixed[]
+     * @return mixed[][]
      */
     protected function getRawResults(string $sql, array $params = [], array $groupBy = []): array
     {
@@ -83,6 +84,7 @@ abstract class ReadModel
             foreach ($newParams as $key => $value) {
                 $query->bindValue($key, $value);
             }
+            /** @var scalar[][] */
             $results = $query->executeQuery()->fetchAllAssociative();
 
             if (count($groupBy) > 0) {
@@ -122,7 +124,7 @@ abstract class ReadModel
     }
 
     /**
-     * @param array<scalar|null> $params
+     * @param array<string, string|int|float|bool|null> $params
      * @return DocumentCollection<T>
      */
     protected function getResults(string $sql, array $params = []): DocumentCollection
