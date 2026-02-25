@@ -29,6 +29,7 @@ class BuildNkVersionConsole extends Console
         try {
             $commit = substr(StringUtil::trim((string) exec('git rev-parse HEAD')), 0, 7);
             $total = exec('git rev-list --count HEAD');
+            /** @var string $branch */
             $branch = $this->input()->getArgument('branch') ?? exec('git rev-parse --abbrev-ref HEAD');
             $version = $branch === 'main' ? "v{$total}" : "v{$total}-{$branch}";
 

@@ -130,14 +130,16 @@ abstract class Console extends BaseCommand
 
     abstract protected function play(): void;
 
-    protected function readArgument(string $name): string
+    protected function readArgument(string $name): ?string
     {
-        return $this->input()->getArgument($name);
+        $value = $this->input()->getArgument($name);
+
+        return !is_string($value) ? null : $value;
     }
 
-    protected function readOption(string $option): ?string
+    protected function readOption(string $name): ?string
     {
-        $value = $this->input()->getOption($option);
+        $value = $this->input()->getOption($name);
 
         return !is_string($value) ? null : $value;
     }

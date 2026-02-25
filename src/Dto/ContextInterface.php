@@ -9,7 +9,7 @@ interface ContextInterface
     public function env(): string;
 
     /**
-     * @return mixed[]
+     * @return array<string, mixed>
      */
     public function extras(): array;
 
