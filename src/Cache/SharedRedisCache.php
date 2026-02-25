@@ -9,6 +9,8 @@ use Xgc\Dto\Clock;
 use Xgc\Dto\ContextInterface;
 use Xgc\Utils\Validate;
 
+use function is_string;
+
 /**
  * @template T
  */
@@ -49,7 +51,7 @@ abstract class SharedRedisCache extends RedisCache
         try {
             $item = $this->init()->get("{$this->fqn}:{$key}");
 
-            if ($item === false) {
+            if (!is_string($item)) {
                 return null;
             }
 

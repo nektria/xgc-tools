@@ -151,8 +151,8 @@ abstract class WriteModel
     }
 
     /**
-     * @param mixed[] $criteria
-     * @param mixed[]|null $orderBy
+     * @param array<string, scalar> $criteria
+     * @param array<string, 'ASC'|'DESC'>|null $orderBy
      * @return T[]
      */
     protected function findBy(array $criteria, ?array $orderBy = null, int $limit = 10000, int $offset = 0): array
@@ -169,7 +169,7 @@ abstract class WriteModel
     }
 
     /**
-     * @param mixed[] $criteria
+     * @param array<string, scalar> $criteria
      * @return T|null
      */
     protected function findOneBy(array $criteria): ?EntityInterface

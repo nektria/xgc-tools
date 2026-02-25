@@ -41,7 +41,7 @@ abstract class ReadModel
     abstract protected function buildDocument(array $params): Document;
 
     /**
-     * @param array<string, string|int|float|bool|null> $params
+     * @param array<string, scalar|null> $params
      * @param string[] $groupBy
      * @return mixed[]|null
      */
@@ -122,7 +122,7 @@ abstract class ReadModel
     }
 
     /**
-     * @param array<string, string|int|float|bool|string[]|null> $params
+     * @param array<scalar|null> $params
      * @return DocumentCollection<T>
      */
     protected function getResults(string $sql, array $params = []): DocumentCollection

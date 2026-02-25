@@ -9,7 +9,7 @@ interface ContextInterface
     public function env(): string;
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, scalar>
      */
     public function extras(): array;
 
@@ -24,7 +24,7 @@ interface ContextInterface
     public function project(): string;
 
     /**
-     * @param mixed[] $extras
+     * @param array<string, scalar> $extras
      */
     public function setExtras(array $extras): void;
 

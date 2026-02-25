@@ -20,10 +20,16 @@ use const JSON_UNESCAPED_UNICODE;
 
 class JsonUtil
 {
-    public static function decode(string $data): mixed
+    /**
+     * @return mixed[]
+     */
+    public static function decode(string $data): array
     {
         try {
-            return json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+            /** @var mixed[] $res */
+            $res = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
+
+            return $res;
         } catch (JsonException $e) {
             throw BaseException::extend($e);
         }

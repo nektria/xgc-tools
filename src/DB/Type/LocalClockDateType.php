@@ -26,26 +26,26 @@ class LocalClockDateType extends Type
             return $value->dateString();
         }
 
-        return (string) $value;
+        return null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?LocalClock
     {
-        if ($value === null) {
+        if (!is_string($value)) {
             return null;
         }
 
         return LocalClock::fromString($value);
     }
 
-    public function getName(): string
-    {
-        return 'local_clock_date';
-    }
-
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'DATE';
+    }
+
+    public function getName(): string
+    {
+        return 'local_clock_date';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool
