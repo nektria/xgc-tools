@@ -191,6 +191,10 @@ abstract class RequestListener implements EventSubscriberInterface
     {
         $route = $event->getRequest()->attributes->get('_route') ?? '';
 
+        if (!is_string($route)) {
+            return;
+        }
+
         if ($route === '') {
             return;
         }
@@ -235,6 +239,7 @@ abstract class RequestListener implements EventSubscriberInterface
         }
 
         try {
+            /** @var array<string, mixed> $requestContent */
             $requestContent = JsonUtil::decode($requestContentRaw);
         } catch (Throwable) {
             return;
@@ -290,7 +295,8 @@ abstract class RequestListener implements EventSubscriberInterface
             $requestContent['dniNie'] = '********';
         }
 
-        $routeParams = $event->getRequest()->attributes->get('_route_params');
+        /** @var array<string, string> $routeParams */
+        $routeParams = $event->getRequest()->attributes->get('_route_params', []);
 
         foreach ($routeParams as $key => $value) {
             if (str_ends_with($key, 'Id')) {
@@ -443,7 +449,9 @@ abstract class RequestListener implements EventSubscriberInterface
         }
 
         if ($response !== null) {
-            $response->headers->set('Access-Control-Allow-Origin', $event->getRequest()->server->get('HTTP_ORIGIN'));
+            /** @var string $httpOrigin */
+            $httpOrigin = $event->getRequest()->server->get('HTTP_ORIGIN');
+            $response->headers->set('Access-Control-Allow-Origin', $httpOrigin);
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
             $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->exposedHeaders()));
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
@@ -453,6 +461,7 @@ abstract class RequestListener implements EventSubscriberInterface
 
     private function isCorsNeeded(RequestEvent | ResponseEvent $event): bool
     {
+        /** @var string|null $origin */
         $origin = $event->getRequest()->server->get('HTTP_ORIGIN');
 
         if ($origin === null) {
@@ -462,6 +471,7 @@ abstract class RequestListener implements EventSubscriberInterface
         $rawAllowedCors = $this->parameter('allowed_cors') ?? '[]';
         $allowedCors = [];
         if (is_string($rawAllowedCors)) {
+            /** @var string[] $allowedCors */
             $allowedCors = JsonUtil::decode($rawAllowedCors);
         }
 
