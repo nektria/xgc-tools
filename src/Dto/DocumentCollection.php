@@ -12,6 +12,7 @@ use Xgc\Exception\BaseException;
 use Xgc\Utils\ArrayUtil;
 
 use function count;
+use function is_scalar;
 
 /**
  * @implements ArrayAccess<int, T>
@@ -54,8 +55,15 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     public function classify(string $field): array
     {
         return ArrayUtil::classify(
-            $this->items,
-            static fn (Document $item) => $item->value($field) ?? 'null'
+            $this,
+            static function (Document $item) use ($field): string {
+                $val = $item->value($field) ?? 'null';
+                if (!is_scalar($val)) {
+                    $val = 'null';
+                }
+
+                return (string) $val;
+            },
         );
     }
 
@@ -123,8 +131,15 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     public function mapify(string $field): array
     {
         return ArrayUtil::mapify(
-            $this->items,
-            static fn (Document $item) => $item->value($field) ?? 'null'
+            $this,
+            static function (Document $item) use ($field): string {
+                $val = $item->value($field) ?? 'null';
+                if (!is_scalar($val)) {
+                    $val = 'null';
+                }
+
+                return (string) $val;
+            },
         );
     }
 
