@@ -109,7 +109,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar>|string $data
+     * @param array<string, mixed>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -129,7 +129,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar>|string $data
+     * @param array<string, mixed>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -149,7 +149,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar>|string $data
+     * @param array<string, mixed>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -363,7 +363,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar>|string $data
+     * @param array<string, mixed>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -401,7 +401,7 @@ readonly class RequestClient
                 } elseif ($value === false) {
                     $value = 'false';
                 } else {
-                    $value = (string) $value;
+                    $value = is_scalar($value) ? (string) $value : null;
                 }
                 if ($params !== '') {
                     $params .= '&';
