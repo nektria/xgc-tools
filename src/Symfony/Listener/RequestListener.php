@@ -85,6 +85,7 @@ abstract class RequestListener implements EventSubscriberInterface
                     $data = JsonUtil::decode($content);
                     $request->request->replace(['*' => $data]);
                 } else {
+                    /** @var array<string, mixed> $data */
                     $data = JsonUtil::decode($content);
                     $request->request->replace($data);
                 }
@@ -177,7 +178,9 @@ abstract class RequestListener implements EventSubscriberInterface
         }
 
         $this->setHeaders($event);
-        $this->executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
+        /** @var float $serverTime */
+        $serverTime = $event->getRequest()->server->get('REQUEST_TIME_FLOAT');
+        $this->executionTime = microtime(true) - $serverTime;
 
         if ($response instanceof DocumentResponse) {
             $this->onResponseCreated($response);
