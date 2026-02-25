@@ -45,7 +45,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[] $data
+     * @param array<string, scalar> $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -66,7 +66,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[] $data
+     * @param array<string, scalar> $data
      * @param array<string, string> $headers
      * @param array<string, string> $filenames
      * @param RequestOptions $options
@@ -108,7 +108,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[]|string $data
+     * @param array<string, scalar>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -128,7 +128,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[]|string $data
+     * @param array<string, scalar>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -148,7 +148,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[]|string $data
+     * @param array<string, scalar>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -176,7 +176,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[] $data
+     * @param array<string, scalar> $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -210,6 +210,8 @@ readonly class RequestClient
                     $value = 'true';
                 } elseif ($value === false) {
                     $value = 'false';
+                } else {
+                    $value = (string) $value;
                 }
                 if ($params !== '') {
                     $params .= '&';
@@ -234,7 +236,9 @@ readonly class RequestClient
 
             $cookies = [];
 
-            foreach ($response->getInfo()['response_headers'] as $header) {
+            /** @var string[] $responseHeaders */
+            $responseHeaders = $response->getInfo('response_headers');
+            foreach ($responseHeaders as $header) {
                 $headerParts = explode(':', $header);
 
                 if ($headerParts[0] === 'Set-Cookie') {
@@ -265,7 +269,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[] $data
+     * @param array<string, scalar> $data
      * @param array<string, string> $headers
      * @param array<string, string> $filenames
      * @param RequestOptions $options
@@ -297,6 +301,8 @@ readonly class RequestClient
                     $value = 'true';
                 } elseif ($value === false) {
                     $value = 'false';
+                } else {
+                    $value = (string) $value;
                 }
                 if ($params !== '') {
                     $params .= '&';
@@ -319,7 +325,9 @@ readonly class RequestClient
 
             $cookies = [];
 
-            foreach ($response->getInfo()['response_headers'] as $header) {
+            /** @var string[] $responseHeaders */
+            $responseHeaders = $response->getInfo('response_headers');
+            foreach ($responseHeaders as $header) {
                 $headerParts = explode(':', $header);
 
                 if ($headerParts[0] === 'Set-Cookie') {
@@ -354,7 +362,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param mixed[]|string $data
+     * @param array<string, scalar>|string $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -391,6 +399,8 @@ readonly class RequestClient
                     $value = 'true';
                 } elseif ($value === false) {
                     $value = 'false';
+                } else {
+                    $value = (string) $value;
                 }
                 if ($params !== '') {
                     $params .= '&';
@@ -415,7 +425,9 @@ readonly class RequestClient
 
             $cookies = [];
 
-            foreach ($response->getInfo()['response_headers'] as $header) {
+            /** @var string[] $responseHeaders */
+            $responseHeaders = $response->getInfo('response_headers');
+            foreach ($responseHeaders as $header) {
                 $headerParts = explode(':', $header);
 
                 if ($headerParts[0] === 'Set-Cookie') {
