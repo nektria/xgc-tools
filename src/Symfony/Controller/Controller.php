@@ -48,12 +48,15 @@ readonly class Controller
             if ($content === '') {
                 $this->request->request->replace();
             } elseif ($content[0] === '[') {
+                /** @var array<string, mixed> $data */
                 $data = JsonUtil::decode($content);
             } else {
+                /** @var array<string, mixed> $data */
                 $data = JsonUtil::decode($content);
             }
 
-            $this->requestData = new ArrayDataFetcher([...$this->request->query->all(), ...$data]);
+            $queryData = $this->request->query->all();
+            $this->requestData = new ArrayDataFetcher([...$queryData, ...$data]);
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
