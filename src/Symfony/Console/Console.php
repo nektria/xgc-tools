@@ -20,6 +20,8 @@ use Xgc\Message\RetryStamp;
 use Xgc\Symfony\Service\OutputService;
 use Xgc\Utils\ContainerBoxTrait;
 
+use function is_string;
+
 abstract class Console extends BaseCommand
 {
     use ContainerBoxTrait;
@@ -107,6 +109,11 @@ abstract class Console extends BaseCommand
         return 0;
     }
 
+    protected function hasOption(string $option): bool
+    {
+        return $this->input()->hasOption($option);
+    }
+
     protected function input(): InputInterface
     {
         if ($this->input === null) {
@@ -126,5 +133,12 @@ abstract class Console extends BaseCommand
     protected function readArgument(string $name): string
     {
         return $this->input()->getArgument($name);
+    }
+
+    protected function readOption(string $option): ?string
+    {
+        $value = $this->input()->getOption($option);
+
+        return !is_string($value) ? null : $value;
     }
 }

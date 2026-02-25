@@ -43,7 +43,7 @@ class SetupResourceConsole extends Console
 
     private function copyDir(string $from, string $to): void
     {
-        $override = (bool) $this->input()->getOption('override');
+        $override = $this->hasOption('override');
 
         $files = scandir($from);
 
@@ -86,7 +86,7 @@ class SetupResourceConsole extends Console
 
     private function fix(string $text): string
     {
-        $resource = (string) $this->input()->getOption('resource');
+        $resource = (string) $this->readOption('resource');
         $camelCaseResource = lcfirst($resource);
         $snakeCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $resource));
         $hypenCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $resource));

@@ -54,19 +54,19 @@ class SetupMessageConsole extends Console
 
     protected function play(): void
     {
-        $isCollection = (bool) $this->input()->getOption('collection');
+        $isCollection = $this->hasOption('collection');
 
-        $resource = (string) $this->input()->getOption('resource');
+        $resource = (string) $this->readOption('resource');
         if ($resource === '') {
             throw new BaseException('Resource name is required.');
         }
 
-        $type = (string) $this->input()->getOption('type');
+        $type = (string) $this->readOption('type');
         if ($type === '') {
             throw new BaseException('Message type is required.');
         }
 
-        $message = (string) $this->input()->getOption('message');
+        $message = (string) $this->readOption('message');
         if ($message === '') {
             throw new BaseException('Message is required.');
         }
@@ -117,8 +117,8 @@ class SetupMessageConsole extends Console
 
     private function fix(string $text): string
     {
-        $resource = (string) $this->input()->getOption('resource');
-        $message = (string) $this->input()->getOption('message');
+        $resource = $this->readOption('resource') ?? '';
+        $message = $this->readOption('message') ?? '';
 
         $camelCaseResource = lcfirst($resource);
         $snakeCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $resource));

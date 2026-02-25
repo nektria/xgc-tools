@@ -198,7 +198,7 @@ abstract class RequestListener implements EventSubscriberInterface
         if ($response instanceof DocumentResponse) {
             $document = $response->document;
 
-            if (!($document instanceof ThrowableDocument)) {
+            if (!$document instanceof ThrowableDocument) {
                 $status = $response->getStatusCode();
             }
         }
@@ -377,7 +377,7 @@ abstract class RequestListener implements EventSubscriberInterface
         if ($response instanceof DocumentResponse) {
             $document = $response->document;
 
-            if (!($document instanceof ThrowableDocument)) {
+            if (!$document instanceof ThrowableDocument) {
                 return;
             }
 
