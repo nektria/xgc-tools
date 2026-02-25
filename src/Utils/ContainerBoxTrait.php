@@ -9,7 +9,7 @@ use UnitEnum;
 
 trait ContainerBoxTrait
 {
-    private ?ContainerBox $container;
+    private ?ContainerBox $container = null;
 
     public function setContainer(?ContainerInterface $container): void
     {
