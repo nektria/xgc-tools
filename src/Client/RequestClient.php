@@ -12,6 +12,7 @@ use Xgc\Utils\FileUtil;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
 
+use function is_scalar;
 use function is_string;
 
 /**
@@ -45,7 +46,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar> $data
+     * @param array<string, mixed> $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -66,7 +67,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar> $data
+     * @param array<string, mixed> $data
      * @param array<string, string> $headers
      * @param array<string, string> $filenames
      * @param RequestOptions $options
@@ -176,7 +177,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar> $data
+     * @param array<string, mixed> $data
      * @param array<string, string> $headers
      * @param RequestOptions $options
      */
@@ -211,7 +212,7 @@ readonly class RequestClient
                 } elseif ($value === false) {
                     $value = 'false';
                 } else {
-                    $value = (string) $value;
+                    $value = is_scalar($value) ? (string) $value : null;
                 }
                 if ($params !== '') {
                     $params .= '&';
@@ -269,7 +270,7 @@ readonly class RequestClient
     }
 
     /**
-     * @param array<string, scalar> $data
+     * @param array<string, mixed> $data
      * @param array<string, string> $headers
      * @param array<string, string> $filenames
      * @param RequestOptions $options
@@ -302,7 +303,7 @@ readonly class RequestClient
                 } elseif ($value === false) {
                     $value = 'false';
                 } else {
-                    $value = (string) $value;
+                    $value = is_scalar($value) ? (string) $value : null;
                 }
                 if ($params !== '') {
                     $params .= '&';
