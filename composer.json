@@ -21,19 +21,19 @@
     "ext-redis": "*",
     "ext-intl": "*",
     "doctrine/orm": "^3.0",
-    "symfony/amqp-messenger": "^8.0",
-    "symfony/console": "^8.0",
-    "symfony/dependency-injection": "^8.0",
-    "symfony/doctrine-messenger": "^8.0",
-    "symfony/http-client": "^8.0",
-    "symfony/http-foundation": "^8.0",
-    "symfony/http-kernel": "^8.0",
-    "symfony/mercure-bundle": "^0.4",
-    "symfony/messenger": "^8.0",
-    "symfony/routing": "^8.0",
-    "symfony/runtime": "^8.0",
-    "symfony/serializer": "^8.0",
-    "symfony/twig-bundle": "^8.0"
+    "symfony/amqp-messenger": "^v8.0",
+    "symfony/console": "^v8.0",
+    "symfony/dependency-injection": "^v8.0",
+    "symfony/doctrine-messenger": "^v8.0",
+    "symfony/http-client": "^v8.0",
+    "symfony/http-foundation": "^v8.0",
+    "symfony/http-kernel": "^v8.0",
+    "symfony/mercure-bundle": "^v0.4",
+    "symfony/messenger": "^v8.0",
+    "symfony/routing": "^v8.0",
+    "symfony/runtime": "^v8.0",
+    "symfony/serializer": "^v8.0",
+    "symfony/twig-bundle": "^v8.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^v3.0",
@@ -50,7 +50,7 @@
     "spaze/phpstan-disallowed-calls": "^v4.0",
     "squizlabs/php_codesniffer": "^4.0",
     "symfony/browser-kit": "^v8.0",
-    "symfony/var-dumper": "^8.0"
+    "symfony/var-dumper": "^v8.0"
   },
   "config": {
     "optimize-autoloader": true,
