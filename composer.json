@@ -21,7 +21,6 @@
     "ext-redis": "*",
     "ext-intl": "*",
     "doctrine/orm": "^3.0",
-    "symfony/amqp-messenger": "^v8.0",
     "symfony/console": "^v8.0",
     "symfony/dependency-injection": "^v8.0",
     "symfony/doctrine-messenger": "^v8.0",
