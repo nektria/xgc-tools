@@ -7,8 +7,6 @@ namespace Xgc\DB\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Xgc\Dto\Clock;
-use Xgc\Dto\LocalClock;
-
 use function is_string;
 
 class ClockDateType extends Type
@@ -19,7 +17,7 @@ class ClockDateType extends Type
             return $value;
         }
 
-        if ($value instanceof LocalClock) {
+        if ($value instanceof Clock) {
             return $value->dateString();
         }
 
