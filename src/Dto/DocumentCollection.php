@@ -49,14 +49,22 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     }
 
     /**
-     * @return array<string, T[]>
+     * @return array<string, DocumentCollection<T>>
      */
     public function classify(string $field): array
     {
-        return ArrayUtil::classify(
+        $tmp = ArrayUtil::classify(
             $this->items,
             static fn (Document $item) => $item->value($field) ?? 'null'
         );
+
+        $ret = [];
+
+        foreach ($tmp as $key => $value) {
+            $ret[$key] = new self($value);
+        }
+
+        return $ret;
     }
 
     public function count(): int

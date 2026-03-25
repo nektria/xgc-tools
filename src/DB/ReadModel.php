@@ -50,7 +50,7 @@ abstract class ReadModel
         try {
             $results = $this->getRawResults($sql, $params, $groupBy);
 
-            return $results[array_key_first($results)] ?? null;
+            return $results[array_key_first($results) ?? ''] ?? null;
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
