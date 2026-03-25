@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Xgc\Utils;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use UnitEnum;
 
 use function define;
 
@@ -15,7 +16,20 @@ trait ContainerBoxTrait
 
     public function setContainer(?ContainerInterface $container): void
     {
-        self::CONTAINER->setContainer($container);
+        /** @var ContainerBox $ctr */
+        $ctr = self::CONTAINER;
+        $ctr->setContainer($container);
+    }
+
+    /**
+     * @return array<mixed>|bool|float|int|string|UnitEnum|null
+     */
+    private function parameter(string $name): array | bool | float | int | string | UnitEnum | null
+    {
+        /** @var ContainerBox $ctr */
+        $ctr = self::CONTAINER;
+
+        return $ctr->getParameter($name);
     }
 
     /**
@@ -23,13 +37,11 @@ trait ContainerBoxTrait
      * @param class-string<T> $class
      * @return T
      */
-    private function get(string $class): object
+    private function service(string $class): object
     {
-        return self::CONTAINER->get($class);
-    }
+        /** @var ContainerBox $ctr */
+        $ctr = self::CONTAINER;
 
-    private function getParameter(string $name): ?string
-    {
-        return self::CONTAINER->getParameter($name);
+        return $ctr->get($class);
     }
 }

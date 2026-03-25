@@ -14,7 +14,7 @@ use Xgc\Exception\MissingArgumentException;
 use function count;
 use function is_array;
 use function is_bool;
-use function is_object;
+use function is_int;
 use function is_string;
 
 readonly class ArrayDataFetcher
@@ -114,7 +114,7 @@ readonly class ArrayDataFetcher
 
     public function getClock(string $field): ?Clock
     {
-        $value = $this->getValue($field);
+        $value = $this->getString($field);
 
         if ($value === null) {
             return null;
@@ -182,7 +182,7 @@ readonly class ArrayDataFetcher
             return null;
         }
 
-        if (is_array($value) || is_object($value)) {
+        if (!is_string($value) && !is_int($value)) {
             throw new InvalidArgumentException($field, $value, 'int');
         }
 
@@ -251,7 +251,7 @@ readonly class ArrayDataFetcher
 
     public function getLocalClock(string $field): ?LocalClock
     {
-        $value = $this->getValue($field);
+        $value = $this->getString($field);
 
         if ($value === null) {
             return null;

@@ -14,10 +14,6 @@ class ClockDateType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
-            return null;
-        }
-
         if (is_string($value)) {
             return $value;
         }
@@ -26,26 +22,26 @@ class ClockDateType extends Type
             return $value->dateString();
         }
 
-        return (string) $value;
+        return null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Clock
     {
-        if ($value === null) {
+        if (!is_string($value)) {
             return null;
         }
 
         return Clock::fromString($value);
     }
 
-    public function getName(): string
-    {
-        return 'clock_date';
-    }
-
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'DATE';
+    }
+
+    public function getName(): string
+    {
+        return 'clock_date';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

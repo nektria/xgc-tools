@@ -14,34 +14,34 @@ class ClockType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
-            return null;
-        }
-
         if (is_string($value)) {
             return $value;
         }
 
-        return (string) $value;
+        if ($value instanceof Clock) {
+            return $value->dateTimeString();
+        }
+
+        return null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?Clock
     {
-        if ($value === null) {
+        if (!is_string($value)) {
             return null;
         }
 
         return Clock::fromString($value);
     }
 
-    public function getName(): string
-    {
-        return 'clock';
-    }
-
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'TIMESTAMP(0) WITHOUT TIME ZONE';
+    }
+
+    public function getName(): string
+    {
+        return 'clock';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

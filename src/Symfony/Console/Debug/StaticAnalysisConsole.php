@@ -23,6 +23,29 @@ class StaticAnalysisConsole extends Console
         $command = new Process(array_merge(['bin/console', 'debug:router', '--format=json']));
         $command->run();
 
+        /**
+         * @var array<string, array{
+         *     path: string,
+         *     pathRegex: string,
+         *     host: string,
+         *     hostRegex: string,
+         *     scheme: string,
+         *     method: string,
+         *     class: string,
+         *     defaults: array{
+         *         _controller: string,
+         *         _format: string,
+         *     },
+         *     requirements: array{
+         *         code: string,
+         *         _locale: string,
+         *     },
+         *     options: array{
+         *         compiler_class: string,
+         *         utf8: bool,
+         *     },
+         * }> $data
+         */
         $data = JsonUtil::decode($command->getOutput());
         $messages = [];
 

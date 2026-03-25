@@ -7,6 +7,8 @@ namespace Xgc\DB\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonType as DoctrineJsonType;
 
+use function is_string;
+
 /**
  * @template T
  */
@@ -26,21 +28,15 @@ abstract class BaseJsonType extends DoctrineJsonType
     }
 
     /**
-     * @param T|null $value
      * @return T|null
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): mixed
     {
-        if ($value === null) {
+        if (!is_string($value)) {
             return null;
         }
 
         return $this->convertToPhp($value);
-    }
-
-    public function getName(): string
-    {
-        return $this->getTypeName();
     }
 
     /**
@@ -49,6 +45,11 @@ abstract class BaseJsonType extends DoctrineJsonType
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'JSONB';
+    }
+
+    public function getName(): string
+    {
+        return $this->getTypeName();
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

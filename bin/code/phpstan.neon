@@ -12,7 +12,7 @@ includes:
     #- '%currentWorkingDirectory%/vendor/ergebnis/phpstan-rules/rules.neon'
 
 parameters:
-    level: 8
+    level: 10
     paths:
         - ../../src
         #- ../../tests
@@ -21,6 +21,9 @@ parameters:
         - '%currentWorkingDirectory%/vendor'
 
     disallowedFunctionCalls:
+        -
+            function: 'dd()'
+            message: 'Do not use dd() in production code'
         -
             function: 'dump()'
             message: 'Do not use dump() in production code'

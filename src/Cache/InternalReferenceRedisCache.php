@@ -10,6 +10,7 @@ use Xgc\Dto\Clock;
 use Xgc\Dto\ContextInterface;
 
 use function count;
+use function is_string;
 
 /**
  * @template T
@@ -59,6 +60,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 return redis.call('get', '{$this->internalRedisCache->fqn}:' .. key2)
             LUA;
 
+            /* @var string|false $item */
             $item = $this->init()->eval($luaScript, [$key], 1);
 
             if ($item === false) {
@@ -70,6 +72,10 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 $this->init()->clearLastError();
 
                 throw new RuntimeException($lastError ?? '');
+            }
+
+            if (!is_string($item)) {
+                return null;
             }
 
             return unserialize($item, ['allowed_classes' => true]);
@@ -110,6 +116,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 return results
             LUA;
 
+            /** @var string[]|false $items */
             $items = $this->init()->eval($luaScript, [$key], 1);
 
             if ($this->init()->getLastError() !== null) {
@@ -168,6 +175,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
                 return results
             LUA;
 
+            /** @var (string|false)[][]|false $items */
             $items = $this->init()->eval($luaScript, $keys, count($keys));
 
             if ($items === false) {
@@ -182,6 +190,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
             }
 
             $result = [];
+
             foreach ($items as $item) {
                 foreach ($item as $subItem) {
                     if ($subItem !== false) {
@@ -238,6 +247,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
 
             LUA;
 
+            /** @var (string|false)[][]|false $items */
             $items = $this->init()->eval($luaScript, $keys, count($keys));
 
             if ($items === false) {
@@ -271,6 +281,7 @@ abstract class InternalReferenceRedisCache extends RedisCache
     protected function getRawItem(string $key): ?string
     {
         try {
+            /** @var string|false $item */
             $item = $this->init()->get("{$this->fqn}:{$key}");
 
             if ($item === false) {

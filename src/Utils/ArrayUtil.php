@@ -8,6 +8,7 @@ use IteratorAggregate;
 
 use function count;
 use function in_array;
+use function is_string;
 
 readonly class ArrayUtil
 {
@@ -106,13 +107,16 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
-     * @param T[] $list
+     * @template T of array
+     * @param array<int, T> $list
      * @return array<string, T>
      */
     public static function mapifyArray(array $list, string $field): array
     {
-        return self::mapify($list, static fn (array $item) => $item[$field] ?? 'null');
+        return self::mapify(
+            $list,
+            static fn (array $item): string => is_string($item[$field]) ? $item[$field] : 'null'
+        );
     }
 
     /**

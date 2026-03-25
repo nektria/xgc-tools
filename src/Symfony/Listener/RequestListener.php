@@ -34,6 +34,7 @@ use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
 use function in_array;
+use function is_string;
 
 abstract class RequestListener implements EventSubscriberInterface
 {
@@ -84,6 +85,7 @@ abstract class RequestListener implements EventSubscriberInterface
                     $data = JsonUtil::decode($content);
                     $request->request->replace(['*' => $data]);
                 } else {
+                    /** @var array<string, mixed> $data */
                     $data = JsonUtil::decode($content);
                     $request->request->replace($data);
                 }
@@ -119,7 +121,7 @@ abstract class RequestListener implements EventSubscriberInterface
 
             $event->setResponse(new DocumentResponse(
                 $document,
-                self::CONTAINER->get(ContextInterface::class),
+                $this->service(ContextInterface::class),
                 $document->status,
             ));
         }
@@ -144,7 +146,7 @@ abstract class RequestListener implements EventSubscriberInterface
 
         $tracer = $request->headers->get('X-Trace');
         if ($tracer !== null) {
-            self::CONTAINER->get(ContextInterface::class)->setTraceId($tracer);
+            $this->service(ContextInterface::class)->setTraceId($tracer);
         }
     }
 
@@ -176,7 +178,9 @@ abstract class RequestListener implements EventSubscriberInterface
         }
 
         $this->setHeaders($event);
-        $this->executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
+        /** @var float $serverTime */
+        $serverTime = $event->getRequest()->server->get('REQUEST_TIME_FLOAT');
+        $this->executionTime = microtime(true) - $serverTime;
 
         if ($response instanceof DocumentResponse) {
             $this->onResponseCreated($response);
@@ -186,6 +190,10 @@ abstract class RequestListener implements EventSubscriberInterface
     public function onKernelTerminate(TerminateEvent $event): void
     {
         $route = $event->getRequest()->attributes->get('_route') ?? '';
+
+        if (!is_string($route)) {
+            return;
+        }
 
         if ($route === '') {
             return;
@@ -202,7 +210,7 @@ abstract class RequestListener implements EventSubscriberInterface
             }
         }
 
-        if (self::CONTAINER->get(ContextInterface::class)->isTest()) {
+        if ($this->service(ContextInterface::class)->isTest()) {
             return;
         }
 
@@ -231,6 +239,7 @@ abstract class RequestListener implements EventSubscriberInterface
         }
 
         try {
+            /** @var array<string, mixed> $requestContent */
             $requestContent = JsonUtil::decode($requestContentRaw);
         } catch (Throwable) {
             return;
@@ -243,7 +252,7 @@ abstract class RequestListener implements EventSubscriberInterface
                 $responseContent = [];
             }
         } else {
-            $responseContent = $document->toArray(self::CONTAINER->get(ContextInterface::class));
+            $responseContent = $document->toArray($this->service(ContextInterface::class));
         }
 
         $queryBody = [];
@@ -286,25 +295,26 @@ abstract class RequestListener implements EventSubscriberInterface
             $requestContent['dniNie'] = '********';
         }
 
-        $routeParams = $event->getRequest()->attributes->get('_route_params');
+        /** @var array<string, string> $routeParams */
+        $routeParams = $event->getRequest()->attributes->get('_route_params', []);
 
         foreach ($routeParams as $key => $value) {
             if (str_ends_with($key, 'Id')) {
                 $key = substr($key, 0, -2);
             }
 
-            self::CONTAINER->get(ProcessRegistry::class)->addValue($key, $value);
+            $this->service(ProcessRegistry::class)->addValue($key, $value);
         }
 
-        self::CONTAINER->get(ProcessRegistry::class)->addValue('path', $route);
-        self::CONTAINER->get(ProcessRegistry::class)->addValue('context', 'request');
+        $this->service(ProcessRegistry::class)->addValue('path', $route);
+        $this->service(ProcessRegistry::class)->addValue('context', 'request');
 
         if ($logLevel !== LogLevel::NONE) {
             if ($status < 400) {
                 if ($event->getRequest()->getMethod() !== Request::METHOD_GET) {
                     $isDebug = false;
                 } else {
-                    $isDebug = self::CONTAINER->get(ContextInterface::class)->isDebug();
+                    $isDebug = $this->service(ContextInterface::class)->isDebug();
                 }
 
                 if ($logLevel !== null) {
@@ -312,7 +322,7 @@ abstract class RequestListener implements EventSubscriberInterface
                 }
 
                 if ($isDebug) {
-                    self::CONTAINER->get(LoggerInterface::class)->debug(
+                    $this->service(LoggerInterface::class)->debug(
                         [
                             'headers' => $headers,
                             'httpRequest' => [
@@ -330,7 +340,7 @@ abstract class RequestListener implements EventSubscriberInterface
                         in_array($route, $this->ignoreLogs(), true)
                     );
                 } else {
-                    self::CONTAINER->get(LoggerInterface::class)->info([
+                    $this->service(LoggerInterface::class)->info([
                         'headers' => $headers,
                         'httpRequest' => [
                             'requestMethod' => $event->getRequest()->getMethod(),
@@ -344,7 +354,7 @@ abstract class RequestListener implements EventSubscriberInterface
                     ], [], $resume);
                 }
             } elseif ($status < 500) {
-                self::CONTAINER->get(LoggerInterface::class)->warning([
+                $this->service(LoggerInterface::class)->warning([
                     'headers' => $headers,
                     'httpRequest' => [
                         'requestMethod' => $event->getRequest()->getMethod(),
@@ -357,8 +367,8 @@ abstract class RequestListener implements EventSubscriberInterface
                     'size' => $length,
                 ], [], $resume);
             } else {
-                self::CONTAINER->get(LoggerInterface::class)->temporalLogs();
-                self::CONTAINER->get(LoggerInterface::class)->error([
+                $this->service(LoggerInterface::class)->temporalLogs();
+                $this->service(LoggerInterface::class)->error([
                     'headers' => $headers,
                     'httpRequest' => [
                         'requestMethod' => $event->getRequest()->getMethod(),
@@ -381,7 +391,7 @@ abstract class RequestListener implements EventSubscriberInterface
             }
 
             if ($document->status >= 500) {
-                self::CONTAINER->get(AlertInterface::class)->publishThrowable(
+                $this->service(AlertInterface::class)->publishThrowable(
                     $document->throwable,
                     input: new ArrayDocument($requestContent),
                 );
@@ -439,7 +449,9 @@ abstract class RequestListener implements EventSubscriberInterface
         }
 
         if ($response !== null) {
-            $response->headers->set('Access-Control-Allow-Origin', $event->getRequest()->server->get('HTTP_ORIGIN'));
+            /** @var string $httpOrigin */
+            $httpOrigin = $event->getRequest()->server->get('HTTP_ORIGIN');
+            $response->headers->set('Access-Control-Allow-Origin', $httpOrigin);
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
             $response->headers->set('Access-Control-Expose-Headers', implode(', ', $this->exposedHeaders()));
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
@@ -449,14 +461,19 @@ abstract class RequestListener implements EventSubscriberInterface
 
     private function isCorsNeeded(RequestEvent | ResponseEvent $event): bool
     {
+        /** @var string|null $origin */
         $origin = $event->getRequest()->server->get('HTTP_ORIGIN');
 
         if ($origin === null) {
             return true;
         }
 
-        $rawAllowedCors = $this->getParameter('allowed_cors') ?? '[]';
-        $allowedCors = JsonUtil::decode($rawAllowedCors);
+        $rawAllowedCors = $this->parameter('allowed_cors') ?? '[]';
+        $allowedCors = [];
+        if (is_string($rawAllowedCors)) {
+            /** @var string[] $allowedCors */
+            $allowedCors = JsonUtil::decode($rawAllowedCors);
+        }
 
         return in_array('*', $allowedCors, true) || in_array($origin, $allowedCors, true);
     }

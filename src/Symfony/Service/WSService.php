@@ -8,7 +8,6 @@ use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Throwable;
 use Xgc\Dto\Document;
-use Xgc\Exception\BaseException;
 use Xgc\Utils\JsonUtil;
 
 readonly class WSService
@@ -33,7 +32,7 @@ readonly class WSService
                 'topic' => $data['topic'] ?? $topic,
             ]), true));
         } catch (Throwable $e) {
-            throw BaseException::extend($e);
+            // throw BaseException::extend($e);
         }
     }
 }

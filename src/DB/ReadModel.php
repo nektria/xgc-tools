@@ -35,21 +35,37 @@ abstract class ReadModel
     }
 
     /**
-     * @param mixed[] $params
+     * @param array<string, string|int|float|bool|null> $params
      * @return T
      */
-    abstract protected function buildDocument(array $params): Document;
+    protected function buildDocument(array $params): Document
+    {
+        throw new BaseException('`buildDocument` Not implemented');
+    }
 
     /**
-     * @param array<string, string|int|float|bool|null> $params
+     * @param array<string, string|int|float|bool|null>[] $params
+     * @return T
+     */
+    protected function buildGroupedDocument(array $params): Document
+    {
+        throw new BaseException('`buildGroupedDocument` Not implemented');
+    }
+
+    /**
+     * @param array<string, string|int|float|bool|string[]|null> $params
      * @param string[] $groupBy
-     * @return mixed[]|null
+     * @return ($groupBy is non-empty-array
+     *             ? array<string, string|int|float|bool|null>[]
+     *             : array<string, string|int|float|bool|null>
+     *         )|null
      */
     protected function getRawResult(string $sql, array $params = [], array $groupBy = []): ?array
     {
         try {
             $results = $this->getRawResults($sql, $params, $groupBy);
 
+            /* @var array<string, string|int|float|bool|null>|null */
             return $results[array_key_first($results) ?? ''] ?? null;
         } catch (Throwable $e) {
             throw BaseException::extend($e);
@@ -59,7 +75,11 @@ abstract class ReadModel
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
      * @param string[] $groupBy
-     * @return mixed[]
+     * @return array<string, string|int|float|bool|null>[]
+     * @return ($groupBy is non-empty-array
+     *              ? array<string, array<int, array<string, string|int|float|bool|null>>>
+     *              : array<int, array<string, string|int|float|bool|null>>
+     *         )
      */
     protected function getRawResults(string $sql, array $params = [], array $groupBy = []): array
     {
@@ -83,9 +103,12 @@ abstract class ReadModel
             foreach ($newParams as $key => $value) {
                 $query->bindValue($key, $value);
             }
+
+            /** @var array<int, array<string, string|int|float|bool|null>> $results */
             $results = $query->executeQuery()->fetchAllAssociative();
 
             if (count($groupBy) > 0) {
+                /** @var array<string, array<int, array<string, string|int|float|bool|null>>> $newResults */
                 $newResults = [];
                 foreach ($results as $item) {
                     $key = '';
@@ -107,31 +130,51 @@ abstract class ReadModel
     }
 
     /**
-     * @param array<string, string|int|float|bool|null> $params
+     * @param array<string, string|int|float|bool|string[]|null> $params
      * @return T|null
      */
     protected function getResult(string $sql, array $params = []): ?Document
     {
-        $result = $this->getRawResult($sql, $params, $this->groupResults());
+        $groups = $this->groupResults();
+        $result = $this->getRawResult($sql, $params, $groups);
 
         if ($result === null) {
             return null;
         }
 
-        return $this->buildDocument($result);
+        if (count($groups) > 0) {
+            /** @var array<string, string|int|float|bool|null>[] $tmp */
+            $tmp = $result;
+
+            return $this->buildGroupedDocument($tmp);
+        }
+
+        /** @var array<string, string|int|float|bool|null> $tmp2 */
+        $tmp2 = $result;
+
+        return $this->buildDocument($tmp2);
     }
 
     /**
-     * @param array<string, string|int|float|bool|string[]|null> $params
+     * @param array<string, string|int|float|bool|null> $params
      * @return DocumentCollection<T>
      */
     protected function getResults(string $sql, array $params = []): DocumentCollection
     {
-        $results = $this->getRawResults($sql, $params, $this->groupResults());
+        $groups = $this->groupResults();
+        $results = $this->getRawResults($sql, $params, $groups);
         $parsed = [];
 
-        foreach ($results as $item) {
-            $parsed[] = $this->buildDocument($item);
+        if (count($groups) > 0) {
+            /** @var array<string, array<int, array<string, string|int|float|bool|null>>> $results */
+            foreach ($results as $item) {
+                $parsed[] = $this->buildGroupedDocument($item);
+            }
+        } else {
+            /** @var array<int, array<string, string|int|float|bool|null>> $results */
+            foreach ($results as $item) {
+                $parsed[] = $this->buildDocument($item);
+            }
         }
 
         return new DocumentCollection($parsed);

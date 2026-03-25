@@ -10,6 +10,7 @@ use Xgc\Dto\Clock;
 use Xgc\Dto\ContextInterface;
 
 use function is_bool;
+use function is_string;
 
 /**
  * @template T
@@ -78,6 +79,10 @@ abstract class InternalRedisCache extends RedisCache
                 return null;
             }
 
+            if (!is_string($item)) {
+                return null;
+            }
+
             if ($this->init()->getLastError() !== null) {
                 $lastError = $this->init()->getLastError();
                 $this->init()->clearLastError();
@@ -117,6 +122,10 @@ abstract class InternalRedisCache extends RedisCache
                         $results[$key] = null;
                     }
                 } else {
+                    if (!is_string($items[$index])) {
+                        continue;
+                    }
+
                     $results[$key] = unserialize($items[$index], [
                         'allowed_classes' => true,
                     ]);

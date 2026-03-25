@@ -11,7 +11,7 @@ class DefaultContext implements ContextInterface
 {
     use ContainerBoxTrait;
 
-    /** @var mixed[] */
+    /** @var array<string, scalar> */
     private array $metadata;
 
     private string $traceId;
@@ -30,7 +30,7 @@ class DefaultContext implements ContextInterface
     }
 
     /**
-     * @return mixed[]
+     * @return array<string, scalar>
      */
     public function extras(): array
     {
@@ -63,7 +63,7 @@ class DefaultContext implements ContextInterface
     }
 
     /**
-     * @param mixed[] $extras
+     * @param array<string, scalar> $extras
      */
     public function setExtras(array $extras): void
     {

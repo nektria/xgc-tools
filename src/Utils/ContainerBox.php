@@ -12,9 +12,9 @@ use function is_array;
 
 class ContainerBox
 {
-    private static ?self $instance = null;
-
     private ?ContainerInterface $container = null;
+
+    private static ?self $instance = null;
 
     final public static function instance(): self
     {
@@ -40,7 +40,10 @@ class ContainerBox
         return $service;
     }
 
-    public function getParameter(string $name): ?string
+    /**
+     * @return array<mixed>|bool|float|int|string|UnitEnum|null
+     */
+    public function getParameter(string $name): array | bool | float | int | string | UnitEnum | null
     {
         if ($this->container === null) {
             throw new BaseException('Container not set.');

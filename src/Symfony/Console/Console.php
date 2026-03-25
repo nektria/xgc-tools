@@ -20,6 +20,8 @@ use Xgc\Message\RetryStamp;
 use Xgc\Symfony\Service\OutputService;
 use Xgc\Utils\ContainerBoxTrait;
 
+use function is_string;
+
 abstract class Console extends BaseCommand
 {
     use ContainerBoxTrait;
@@ -40,9 +42,9 @@ abstract class Console extends BaseCommand
         $this->output()->write("\007");
     }
 
-    protected function output(): OutputService
+    protected function bus(): BusInterface
     {
-        return $this->output;
+        return $this->service(BusInterface::class);
     }
 
     protected function clear(): void
@@ -70,11 +72,6 @@ abstract class Console extends BaseCommand
         ?RetryStamp $retryOptions = null
     ): void {
         $this->bus()->dispatchCommand($command, $async ? 'system' : null, $delayMs, $retryOptions);
-    }
-
-    protected function bus(): BusInterface
-    {
-        return $this->get(BusInterface::class);
     }
 
     /**
@@ -112,11 +109,9 @@ abstract class Console extends BaseCommand
         return 0;
     }
 
-    abstract protected function play(): void;
-
-    protected function readArgument(string $name): string
+    protected function hasOption(string $option): bool
     {
-        return $this->input()->getArgument($name);
+        return $this->input()->hasOption($option);
     }
 
     protected function input(): InputInterface
@@ -126,5 +121,26 @@ abstract class Console extends BaseCommand
         }
 
         return $this->input;
+    }
+
+    protected function output(): OutputService
+    {
+        return $this->output;
+    }
+
+    abstract protected function play(): void;
+
+    protected function readArgument(string $name): ?string
+    {
+        $value = $this->input()->getArgument($name);
+
+        return !is_string($value) ? null : $value;
+    }
+
+    protected function readOption(string $name): ?string
+    {
+        $value = $this->input()->getOption($name);
+
+        return !is_string($value) ? null : $value;
     }
 }

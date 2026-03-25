@@ -14,10 +14,6 @@ class LocalClockType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
-            return null;
-        }
-
         if (is_string($value)) {
             return $value;
         }
@@ -26,26 +22,26 @@ class LocalClockType extends Type
             return $value->dateTimeString();
         }
 
-        return (string) $value;
+        return null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?LocalClock
     {
-        if ($value === null) {
+        if (!is_string($value)) {
             return null;
         }
 
         return LocalClock::fromString($value);
     }
 
-    public function getName(): string
-    {
-        return 'local_clock';
-    }
-
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'TIMESTAMP(0) WITHOUT TIME ZONE';
+    }
+
+    public function getName(): string
+    {
+        return 'local_clock';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

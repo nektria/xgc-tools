@@ -7,7 +7,6 @@ namespace Xgc\Symfony\Listener;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\DBAL\Exception\DriverException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpReceivedStamp;
 use Symfony\Component\Messenger\Event\SendMessageToTransportsEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
@@ -68,10 +67,10 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onMessengerException(WorkerMessageFailedEvent $event): void
     {
-        $bus = $this->get(BusInterface::class);
-        $logger = $this->get(LoggerInterface::class);
-        $alertService = $this->get(AlertInterface::class);
-        $processRegistry = $this->get(ProcessRegistry::class);
+        $bus = $this->service(BusInterface::class);
+        $logger = $this->service(LoggerInterface::class);
+        $alertService = $this->service(AlertInterface::class);
+        $processRegistry = $this->service(ProcessRegistry::class);
 
         try {
             $retryStamp = $event->getEnvelope()->last(RetryStamp::class);
@@ -89,6 +88,7 @@ abstract class MessageListener implements EventSubscriberInterface
 
             $transport = null;
             if ($transportStamp !== null) {
+                /** @var string|null $transport */
                 $transport = $transportStamp->getTransportNames()[0];
             }
 
@@ -143,10 +143,6 @@ abstract class MessageListener implements EventSubscriberInterface
             }
 
             $exchangeName = 'unknown';
-            $exchangeStamp = $event->getEnvelope()->last(AmqpReceivedStamp::class);
-            if ($exchangeStamp !== null) {
-                $exchangeName = $exchangeStamp->getAmqpEnvelope()->getExchangeName();
-            }
 
             $logger->temporalLogs();
             $logger->exception(
@@ -200,8 +196,8 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onWorkerMessageHandled(WorkerMessageHandledEvent $event): void
     {
-        $logger = $this->get(LoggerInterface::class);
-        $processRegistry = $this->get(ProcessRegistry::class);
+        $logger = $this->service(LoggerInterface::class);
+        $processRegistry = $this->service(ProcessRegistry::class);
 
         $this->messageCompletedAt = Clock::now()->iso8601String();
         $message = $event->getEnvelope()->getMessage();
@@ -211,10 +207,6 @@ abstract class MessageListener implements EventSubscriberInterface
         }
 
         $exchangeName = 'unknown';
-        $exchangeStamp = $event->getEnvelope()->last(AmqpReceivedStamp::class);
-        if ($exchangeStamp !== null) {
-            $exchangeName = $exchangeStamp->getAmqpEnvelope()->getExchangeName() ?? 'unknown';
-        }
 
         $logLevel = $this->assignLogLevel($this->normalizeClass($message::class));
 
@@ -258,15 +250,11 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onWorkerMessageReceived(WorkerMessageReceivedEvent $event): void
     {
-        $processRegistry = $this->get(ProcessRegistry::class);
-        $context = $this->get(ContextInterface::class);
+        $processRegistry = $this->service(ProcessRegistry::class);
+        $context = $this->service(ContextInterface::class);
 
         $message = $event->getEnvelope()->getMessage();
-        $exchangeName = '?';
-        $exchangeStamp = $event->getEnvelope()->last(AmqpReceivedStamp::class);
-        if ($exchangeStamp !== null) {
-            $exchangeName = $exchangeStamp->getAmqpEnvelope()->getExchangeName() ?? '?';
-        }
+        $exchangeName = 'unknown';
 
         $processRegistry->clear();
         $processRegistry->getMetadata()->updateField('context', 'messenger');
@@ -298,11 +286,12 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function decreaseCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages', '[]'));
         $key = "{$project}_{$clzz}";
         if (!in_array($key, $data, true)) {
@@ -319,11 +308,12 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function decreasePendingCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages_pending', '[]'));
         $key = "{$project}_{$clzz}";
         if (!in_array($key, $data, true)) {
@@ -340,11 +330,12 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function increaseCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages', '[]'));
         $key = str_replace('\\', '_', "{$project}_{$clzz}");
         if (!in_array($key, $data, true)) {
@@ -359,12 +350,13 @@ abstract class MessageListener implements EventSubscriberInterface
 
     private function increasePendingCounter(MessageInterface $message): void
     {
-        $context = $this->get(ContextInterface::class);
-        $sharedVariableCache = $this->get(SharedVariableCache::class);
+        $context = $this->service(ContextInterface::class);
+        $sharedVariableCache = $this->service(SharedVariableCache::class);
 
         $project = $context->project();
         $clzz = $message::class;
         $key = "{$project}_{$clzz}";
+        /** @var string[] $data */
         $data = JsonUtil::decode($sharedVariableCache->readString('bus_messages_pending', '[]'));
         if (!in_array($key, $data, true)) {
             $data[] = $key;

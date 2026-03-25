@@ -12,8 +12,8 @@ class InvalidArgumentException extends BaseException
     {
         parent::__construct(
             $condition === null
-                ? "Invalid field '{$field}' with value '{$this->getShortVaalue($value)}'."
-                : "Invalid field '{$field} ({$condition})' with value '{$this->getShortVaalue($value)}'.",
+                ? "Invalid field '{$field}' with value '{$this->getShortValue($value)}'."
+                : "Invalid field '{$field} ({$condition})' with value '{$this->getShortValue($value)}'.",
             status: 400,
             extras: [
                 'field' => $field,
@@ -23,7 +23,7 @@ class InvalidArgumentException extends BaseException
         );
     }
 
-    private function getShortVaalue(mixed $value): mixed
+    private function getShortValue(mixed $value): string
     {
         $type = gettype($value);
 
@@ -33,7 +33,7 @@ class InvalidArgumentException extends BaseException
             'resource' => 'resource',
             'resource (closed)' => 'resource (closed)',
             'NULL' => 'null',
-            default => $value,
+            default => $type,
         };
     }
 }

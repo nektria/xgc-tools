@@ -23,7 +23,10 @@ parameters:
     symfony:
         containerXmlPath: '%currentWorkingDirectory%/var/cache/dev/App_KernelDevDebugContainer.xml'
 
-    disallowedNamespaces:
+    disallowedFunctionCalls:
+        -
+            function: 'dd()'
+            message: 'Do not use dd() in production code'
         -
             class: 'DateTime'
             message: 'Use Clock or LocalClock instead of DateTime'

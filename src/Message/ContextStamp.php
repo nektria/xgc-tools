@@ -9,7 +9,7 @@ use Symfony\Component\Messenger\Stamp\StampInterface;
 readonly class ContextStamp implements StampInterface
 {
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, scalar> $data
      */
     public function __construct(
         public string $traceId,

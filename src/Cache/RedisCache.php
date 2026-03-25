@@ -10,12 +10,13 @@ use Xgc\Dto\ContextInterface;
 use Xgc\Exception\BaseException;
 
 use function count;
+use function is_int;
 
 abstract class RedisCache
 {
-    private static ?Redis $connection = null;
-
     public readonly string $fqn;
+
+    private static ?Redis $connection = null;
 
     private readonly string $redisDsn;
 
@@ -30,27 +31,9 @@ abstract class RedisCache
         $this->redisDsn = $redisDsn;
     }
 
-    protected function decr(string $key): void
-    {
-        try {
-            $this->init()->decr($key);
-        } catch (Throwable $e) {
-            throw BaseException::extend($e);
-        }
-    }
-
     public function empty(): void
     {
         // empty
-    }
-
-    protected function incr(string $key): void
-    {
-        try {
-            $this->init()->incr($key);
-        } catch (Throwable $e) {
-            throw BaseException::extend($e);
-        }
     }
 
     /**
@@ -71,14 +54,38 @@ abstract class RedisCache
                     if ($size === 0 && count($keys) > 0) {
                         try {
                             $memoryUsage = $this->init()->rawcommand('MEMORY', 'USAGE', $keys[0]);
-                            $size += $memoryUsage;
+                            if (is_int($memoryUsage)) {
+                                $size += $memoryUsage;
+                            }
                         } catch (Throwable) {
                         }
                     }
                 }
-            } while ((int) $it > 0);
+
+                if (!is_int($it)) {
+                    break;
+                }
+            } while ($it > 0);
 
             return [$count, $size * $count];
+        } catch (Throwable $e) {
+            throw BaseException::extend($e);
+        }
+    }
+
+    protected function decr(string $key): void
+    {
+        try {
+            $this->init()->decr($key);
+        } catch (Throwable $e) {
+            throw BaseException::extend($e);
+        }
+    }
+
+    protected function incr(string $key): void
+    {
+        try {
+            $this->init()->incr($key);
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
