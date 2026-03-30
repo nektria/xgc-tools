@@ -12,7 +12,6 @@ use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
-use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 use Throwable;
 use Xgc\Alert\AlertInterface;
 use Xgc\Cache\SharedVariableCache;
@@ -23,12 +22,10 @@ use Xgc\Enums\LogLevel;
 use Xgc\Exception\BaseException;
 use Xgc\Log\LoggerInterface;
 use Xgc\Log\ProcessRegistry;
-use Xgc\Message\BusInterface;
 use Xgc\Message\Command;
 use Xgc\Message\ContextStamp;
 use Xgc\Message\Event;
 use Xgc\Message\MessageInterface;
-use Xgc\Message\RetryStamp;
 use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 use Xgc\Utils\StringUtil;
@@ -67,14 +64,11 @@ abstract class MessageListener implements EventSubscriberInterface
 
     public function onMessengerException(WorkerMessageFailedEvent $event): void
     {
-        $bus = $this->service(BusInterface::class);
         $logger = $this->service(LoggerInterface::class);
         $alertService = $this->service(AlertInterface::class);
         $processRegistry = $this->service(ProcessRegistry::class);
 
         try {
-            $retryStamp = $event->getEnvelope()->last(RetryStamp::class);
-            $transportStamp = $event->getEnvelope()->last(TransportNamesStamp::class);
             $this->messageCompletedAt = Clock::now()->iso8601String();
             $message = $event->getEnvelope()->getMessage();
 
@@ -83,40 +77,7 @@ abstract class MessageListener implements EventSubscriberInterface
             }
 
             $maxRetries = 1;
-            $error = BaseException::extendAndThrow($event->getThrowable());
             $this->decreaseCounter($message);
-
-            $transport = null;
-            if ($transportStamp !== null) {
-                /** @var string|null $transport */
-                $transport = $transportStamp->getTransportNames()[0];
-            }
-
-            if ($error->retryWhenAsync) {
-                $maxRetries = 10;
-                $nextTry = 1;
-                $intervalMs = 60000;
-
-                if ($retryStamp !== null) {
-                    $maxRetries = $retryStamp->maxRetries;
-                    $nextTry = $retryStamp->currentTry + 1;
-                    $intervalMs = $retryStamp->intervalMs;
-                }
-
-                if ($message instanceof Command) {
-                    $bus->dispatchCommand(
-                        $message,
-                        transport: $transport,
-                        retryOptions: new RetryStamp($nextTry, $maxRetries, $intervalMs),
-                    );
-                } else {
-                    $bus->dispatchEvent(
-                        $message,
-                        transport: $transport,
-                        retryOptions: new RetryStamp($nextTry, $maxRetries, $intervalMs),
-                    );
-                }
-            }
 
             $data = JsonUtil::deserializeMessage($message);
             $exception = $event->getThrowable();
