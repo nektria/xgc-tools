@@ -19,7 +19,6 @@ use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
 use Xgc\Symfony\Service\OutputService;
 use Xgc\Utils\ContainerBoxTrait;
-
 use function is_string;
 
 abstract class Console extends BaseCommand
@@ -111,7 +110,7 @@ abstract class Console extends BaseCommand
 
     protected function hasOption(string $option): bool
     {
-        return $this->input()->hasOption($option);
+        return $this->input()->getOption($option) !== 'null';
     }
 
     protected function input(): InputInterface
