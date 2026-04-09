@@ -1,5 +1,5 @@
 {
-  "name": "nektria/xgc-tools",
+  "name": "nektria/php-tools",
   "type": "library",
   "description": "Xgc PHP tools",
   "minimum-stability": "stable",

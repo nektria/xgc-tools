@@ -22,7 +22,7 @@ class ThrowableDocument implements DocumentInterface
      */
     public static array $validPrefixTraceFiles = [
         '/app/src',
-        '/app/vendor/nektria/xgc-tools/src'
+        '/app/vendor/nektria/php-tools/src'
     ];
 
     public function __construct(
