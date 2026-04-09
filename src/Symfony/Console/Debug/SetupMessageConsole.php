@@ -92,7 +92,7 @@ class SetupMessageConsole extends Console
             throw new BaseException('Message type is invalid.');
         }
 
-        if ($isCollection) {
+        if ($isCollection && $type === 'Query') {
             $this->copyFile(
                 "{$fromPath}/__MESSAGE__Collection.php",
                 "./src/Message/{$resource}/{$message}.php"
