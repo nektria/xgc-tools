@@ -80,14 +80,14 @@ class SetupMessageConsole extends Console
         }
 
         if ($type === 'Query') {
-            $fromPath = 'vendor/nektria/php-tools/assets/message/Query';
-            $fromPathHandler = 'vendor/nektria/php-tools/assets/message/QueryHandler';
+            $fromPath = 'vendor/nektria/xgc-tools/assets/message/Query';
+            $fromPathHandler = 'vendor/nektria/xgc-tools/assets/message/QueryHandler';
         } elseif ($type === 'Command') {
-            $fromPath = 'vendor/nektria/php-tools/assets/message/Command';
-            $fromPathHandler = 'vendor/nektria/php-tools/assets/message/CommandHandler';
+            $fromPath = 'vendor/nektria/xgc-tools/assets/message/Command';
+            $fromPathHandler = 'vendor/nektria/xgc-tools/assets/message/CommandHandler';
         } elseif ($type === 'Event') {
-            $fromPath = 'vendor/nektria/php-tools/assets/message/Event';
-            $fromPathHandler = 'vendor/nektria/php-tools/assets/message/EventHandler';
+            $fromPath = 'vendor/nektria/xgc-tools/assets/message/Event';
+            $fromPathHandler = 'vendor/nektria/xgc-tools/assets/message/EventHandler';
         } else {
             throw new BaseException('Message type is invalid.');
         }
