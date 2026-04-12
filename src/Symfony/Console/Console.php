@@ -19,6 +19,7 @@ use Xgc\Message\Query;
 use Xgc\Message\RetryStamp;
 use Xgc\Symfony\Service\OutputService;
 use Xgc\Utils\ContainerBoxTrait;
+
 use function is_string;
 
 abstract class Console extends BaseCommand
