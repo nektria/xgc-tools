@@ -13,7 +13,7 @@ use Xgc\Message\MessageHandler;
 readonly class __MESSAGE__Handler extends MessageHandler
 {
     public function __construct(
-        private __ENTITY__ReadModel $__ENTITY_CC__IdReadModel,
+        private __ENTITY__ReadModel $__ENTITY_CC__ReadModel,
     )
     {
     }

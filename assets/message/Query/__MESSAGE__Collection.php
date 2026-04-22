@@ -9,7 +9,7 @@ use Xgc\Dto\DocumentCollection;
 use Xgc\Message\Query;
 
 /**
- * @implements Query<DocumentCollection(__ENTITY__)>
+ * @implements Query<DocumentCollection<__ENTITY__>>
  */
 readonly class __MESSAGE__ implements Query
 {
