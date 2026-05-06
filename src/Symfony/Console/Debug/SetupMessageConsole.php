@@ -50,10 +50,18 @@ class SetupMessageConsole extends Console
             InputOption::VALUE_NONE,
             'if it is a collection message.',
         );
+
+        $this->addOption(
+            'paginated',
+            'p',
+            InputOption::VALUE_NONE,
+            'if it is a paginated message.',
+        );
     }
 
     protected function play(): void
     {
+        $isPaginated = $this->hasOption('paginated');
         $isCollection = $this->hasOption('collection');
 
         $resource = (string) $this->readOption('resource');
@@ -99,6 +107,15 @@ class SetupMessageConsole extends Console
             );
             $this->copyFile(
                 "{$fromPathHandler}/__MESSAGE__CollectionHandler.php",
+                "./src/MessageHandler/{$resource}/{$message}Handler.php"
+            );
+        } elseif ($isPaginated && $type === 'Query') {
+            $this->copyFile(
+                "{$fromPath}/__MESSAGE__Paginated.php",
+                "./src/Message/{$resource}/{$message}.php"
+            );
+            $this->copyFile(
+                "{$fromPathHandler}/__MESSAGE__PaginatedHandler.php",
                 "./src/MessageHandler/{$resource}/{$message}Handler.php"
             );
         } else {

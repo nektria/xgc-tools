@@ -109,7 +109,7 @@ readonly class Logger implements LoggerInterface
             ];
 
             $data = array_merge($payload, $data);
-            fwrite($this->data['channel'], JsonUtil::encode($data) . PHP_EOL);
+            fwrite($this->data['channel'], JsonUtil::encode($data, pretty: true) . PHP_EOL);
         } catch (Throwable) {
         }
     }

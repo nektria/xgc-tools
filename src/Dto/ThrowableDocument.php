@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 use Xgc\Exception\BaseException;
+
 use function count;
 use function in_array;
 
