@@ -122,8 +122,8 @@ class SetupMessageConsole extends Console
 
         $camelCaseResource = lcfirst($resource);
         $snakeCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $resource));
-        $hypenCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $resource));
-        $pathResource = $hypenCaseResource;
+        $hyphenCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $resource));
+        $pathResource = $hyphenCaseResource;
         if (!str_ends_with($pathResource, 's')) {
             $pathResource .= 's';
         }
@@ -143,7 +143,7 @@ class SetupMessageConsole extends Console
                 $resource,
                 $camelCaseResource,
                 $snakeCaseResource,
-                $hypenCaseResource,
+                $hyphenCaseResource,
                 $pathResource,
                 $message,
             ],

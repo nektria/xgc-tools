@@ -89,8 +89,8 @@ class SetupResourceConsole extends Console
         $resource = (string) $this->readOption('resource');
         $camelCaseResource = lcfirst($resource);
         $snakeCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $resource));
-        $hypenCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $resource));
-        $pathResource = $hypenCaseResource;
+        $hyphenCaseResource = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $resource));
+        $pathResource = $hyphenCaseResource;
         if (!str_ends_with($pathResource, 's')) {
             $pathResource .= 's';
         }
@@ -113,7 +113,7 @@ class SetupResourceConsole extends Console
                 $resource,
                 $camelCaseResource,
                 $snakeCaseResource,
-                $hypenCaseResource,
+                $hyphenCaseResource,
                 $pathResource,
             ],
             $text
