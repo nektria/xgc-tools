@@ -10,7 +10,6 @@ use IteratorAggregate;
 use Traversable;
 use Xgc\Exception\BaseException;
 use Xgc\Utils\ArrayUtil;
-
 use function count;
 use function is_scalar;
 
@@ -183,9 +182,6 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
         return new self(array_reverse($this->items));
     }
 
-    /**
-     * @return mixed[]
-     */
     public function toArray(?ContextInterface $context = null): array
     {
         $list = [];
