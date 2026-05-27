@@ -29,6 +29,11 @@ abstract class ReadModel
         $this->manager = $manager;
     }
 
+    public static function setDefaultPageSize(int $pageSize): void
+    {
+        self::$defaultPageSize = $pageSize;
+    }
+
     /**
      * @return string[]
      */
