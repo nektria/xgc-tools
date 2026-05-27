@@ -43,7 +43,7 @@ abstract class ReadModel
     }
 
     /**
-     * @param mixed[] $params
+     * @param (scalar|null)[] $params
      * @return T
      */
     protected function buildDocument(array $params): Document
@@ -86,6 +86,7 @@ abstract class ReadModel
         $results = $this->getRawResults($sql, $params, $this->groupResults());
         $parsed = [];
 
+        /** @var array<int, array<string, string|int|float|bool|null>> $results */
         foreach ($results as $item) {
             $parsed[] = $this->buildDocument($item);
         }
