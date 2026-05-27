@@ -10,6 +10,7 @@ use IteratorAggregate;
 use Traversable;
 use Xgc\Exception\BaseException;
 use Xgc\Utils\ArrayUtil;
+
 use function count;
 use function is_scalar;
 
@@ -21,7 +22,7 @@ use function is_scalar;
 readonly class DocumentCollection extends Document implements IteratorAggregate, ArrayAccess, Countable
 {
     /**
-     * @param T[] $items
+     * @param array<int, T> $items
      */
     public function __construct(
         private array $items
@@ -40,7 +41,7 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     }
 
     /**
-     * @param T[] $items
+     * @param array<int, T> $items
      * @return DocumentCollection<T>
      */
     public static function new(array $items): self
@@ -55,7 +56,14 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     {
         $tmp = ArrayUtil::classify(
             $this->items,
-            static fn (Document $item) => $item->value($field) ?? 'null'
+            static function (Document $item) use ($field): string {
+                $value = $item->value($field) ?? 'null';
+                if (!is_scalar($value)) {
+                    $value = 'null';
+                }
+
+                return (string) $value;
+            }
         );
 
         $ret = [];

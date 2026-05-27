@@ -13,7 +13,7 @@ use function is_string;
 readonly class ArrayUtil
 {
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $list
      * @param T $item
      * @return T[]
@@ -33,7 +33,7 @@ readonly class ArrayUtil
      * @template T
      * @param array<int, T>|IteratorAggregate<int, T> $list
      * @param callable(T): string $callback
-     * @return array<string, T[]>
+     * @return array<string, array<int, T>>
      */
     public static function classify(array | IteratorAggregate $list, callable $callback): array
     {
@@ -48,7 +48,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $array1
      * @param T[] $array2
      * @return T[]
@@ -59,7 +59,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $new
      * @param T[] $old
      * @return array{
@@ -76,7 +76,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $smallOne
      * @param T[] $bigOne
      */
@@ -120,7 +120,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $list
      * @param T $item
      * @return T[]
@@ -138,7 +138,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $array1
      * @param T[] $array2
      */
@@ -150,7 +150,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $list
      * @return T[]
      */
