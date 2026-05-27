@@ -72,6 +72,7 @@ abstract class ReadModel
     ): PaginatedDocumentCollection {
         $page ??= 1;
         $limit ??= self::$defaultPageSize;
+        $limit = min(999, $limit);
         $offset = ($page - 1) * $limit;
 
         $sql = StringUtil::trim($sql);
