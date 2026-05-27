@@ -9,28 +9,25 @@ namespace Xgc\Dto;
  */
 readonly class PaginatedDocumentCollection extends Document
 {
-    public int $pageSize;
-
     /**
      * @param DocumentCollection<T> $items
      */
     public function __construct(
         public DocumentCollection $items,
         public int $page,
-        public int $totalPages,
-        public int $total,
+        public int $pageSize,
+        public int $totalItems,
     ) {
-        $this->pageSize = $items->count();
     }
 
     public function toArray(?ContextInterface $context = null): array
     {
-        return [
-            'pageSize' => $this->pageSize,
-            'items' => $this->items->toArray($context)['items'],
-            'page' => $this->page,
-            'totalItems' => $this->total,
-            'totalPages' => $this->totalPages,
-        ];
+        $data = $this->items->toArray($context);
+        $data['page'] = $this->page;
+        $data['pageSize'] = $this->pageSize;
+        $data['totalItems'] = $this->totalItems;
+        $data['totalPages'] = (int) ceil($this->totalItems / $this->pageSize);
+
+        return $data;
     }
 }
