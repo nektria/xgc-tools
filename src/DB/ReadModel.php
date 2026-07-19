@@ -26,7 +26,8 @@ abstract class ReadModel
 
     public function __construct(
         protected readonly EntityManagerInterface $manager,
-    ) {}
+    ) {
+    }
 
     public static function setDefaultPageSize(int $pageSize): void
     {
@@ -34,7 +35,7 @@ abstract class ReadModel
     }
 
     /**
-     * @param array<string, scalar|null> $params
+     * @param array<string, scalar> $params
      * @return T
      */
     protected function buildDocument(array $params): Document
@@ -99,7 +100,7 @@ abstract class ReadModel
 
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
-     * @return array<string, scalar|null>|null
+     * @return array<string, scalar>|null
      */
     protected function getRawResult(string $sql, array $params = []): ?array
     {
@@ -114,7 +115,7 @@ abstract class ReadModel
 
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
-     * @return array<int, array<string, scalar|null>>
+     * @return array<int, array<string, scalar>>
      */
     protected function getRawResults(string $sql, array $params = []): array
     {
@@ -134,7 +135,7 @@ abstract class ReadModel
                 $query->bindValue($key, $value);
             }
 
-            /** @var array<int, array<string, scalar|null>> $data */
+            /** @var array<int, array<string, scalar>> $data */
             $data = $query->executeQuery()->fetchAllAssociative();
 
             return $data;
