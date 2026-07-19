@@ -20,17 +20,6 @@ use const FILTER_VALIDATE_EMAIL;
  */
 class Validate
 {
-    /*
-     * @param string[] $fields
-     *
-    public static function classFieldsReturnsNotNull(object $object, string $className, array $fields): void
-    {
-        foreach ($fields as $field) {
-            self::checkClassFieldReturnsNotNull($object, $className, $field);
-        }
-    }
-     * */
-
     public static function color(string $field, string $value): void
     {
         if (preg_match('/#([a-f0-9]{3}){1,2}\b/i', $value) === false) {
@@ -47,14 +36,14 @@ class Validate
         }
     }
 
-    // Strings
-
     public static function email(string $field, string $value): void
     {
         if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
             throw new InvalidArgumentException($field, $value, 'email');
         }
     }
+
+    // Strings
 
     public static function greaterOrEqualThan(
         string $field,
@@ -302,6 +291,25 @@ class Validate
     {
         if ($value === null) {
             throw new InvalidArgumentException($field, $value, condition: $condition);
+        }
+    }
+
+    public static function pagination(int $page, int $maxResults): void
+    {
+        if ($maxResults < 1 || $maxResults >= 1000) {
+            throw new InvalidArgumentException(
+                'maxResults',
+                $maxResults,
+                condition: 'AND maxResults >= 1 AND maxResults < 1000'
+            );
+        }
+
+        if ($page < 1) {
+            throw new InvalidArgumentException(
+                'page',
+                $page,
+                condition: 'page >= 1'
+            );
         }
     }
 

@@ -33,14 +33,14 @@ readonly class ValidateOpt
         }
     }
 
-    // numbers
-
     public static function greaterOrEqualThan(string $field, int | float | null $number, int | float $limit): void
     {
         if ($number !== null) {
             Validate::greaterOrEqualThan($field, $number, $limit);
         }
     }
+
+    // numbers
 
     /**
      * @param CtTimeFormat $in
@@ -212,8 +212,6 @@ readonly class ValidateOpt
         }
     }
 
-    // coordinates
-
     public static function naturalNumber(string $field, int | float | null $number): void
     {
         if ($number !== null) {
@@ -221,11 +219,18 @@ readonly class ValidateOpt
         }
     }
 
+    // coordinates
+
     public static function notEmpty(string $field, ?string $value): void
     {
         if ($value !== null) {
             Validate::notEmpty($field, $value);
         }
+    }
+
+    public static function pagination(?int $page, ?int $maxResults): void
+    {
+        Validate::pagination($page ?? 1, $maxResults ?? 1);
     }
 
     public static function percentileNumber(string $field, int | float | null $number): void

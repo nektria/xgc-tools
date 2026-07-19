@@ -60,5 +60,8 @@
     "allow-plugins": {
       "symfony/runtime": true
     }
+  },
+  "scripts": {
+    "check": "bin/code/validate --fix --v"
   }
 }

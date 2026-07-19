@@ -100,6 +100,46 @@ abstract class ReadModel
 
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
+     * @return PaginatedDocumentCollection<T>
+     */
+    protected function getPaginatedResult(
+        string $sql,
+        ?int $page = null,
+        ?int $limit = null,
+        array $params = []
+    ): PaginatedDocumentCollection {
+        $page ??= 1;
+        $limit ??= self::$defaultPageSize;
+        $limit = min(999, $limit);
+        $offset = ($page - 1) * $limit;
+
+        $sql = StringUtil::trim($sql);
+        if (!str_starts_with($sql, 'SELECT')) {
+            $sql = "{$this->source()} {$sql}";
+        }
+
+        $sqls = explode('FROM', $sql);
+        $sql = "{$sqls[0]}, COUNT(*) OVER() AS __total__ FROM {$sqls[1]} LIMIT :__limit__ OFFSET :__offset__";
+        $params['__limit__'] = $limit;
+        $params['__offset__'] = $offset;
+        $results = $this->getRawResults($sql, $params, $this->groupResults());
+        $parsed = [];
+
+        /** @var array<int, array<string, string|int|float|bool|null>> $results */
+        foreach ($results as $item) {
+            $parsed[] = $this->buildDocument($item);
+        }
+
+        return new PaginatedDocumentCollection(
+            new DocumentCollection($parsed),
+            $page,
+            $limit,
+            (int) ($results[0]['__total__'] ?? 0),
+        );
+    }
+
+    /**
+     * @param array<string, string|int|float|bool|string[]|null> $params
      * @return array<string, scalar|null>|null
      */
     protected function getRawResult(string $sql, array $params = []): ?array

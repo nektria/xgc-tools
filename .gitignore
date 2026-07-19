@@ -1,8 +1,7 @@
 *.DS_Store
 *.iws
 .fleet
-.idea/tasks.xml
-.idea/workspace.xml
+.idea
 .php-cs-fixer.cache
 .php_cs.cache
 .phpactor.json

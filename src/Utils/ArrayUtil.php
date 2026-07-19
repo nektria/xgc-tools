@@ -14,7 +14,7 @@ use function is_string;
 readonly class ArrayUtil
 {
     /**
-     * @template T of int|float|string|bool|null|Stringable
+     * @template T of scalar|Stringable
      * @param T[] $list
      * @param T $item
      * @return T[]
@@ -49,7 +49,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T of int|float|string|bool|null|Stringable
+     * @template T of scalar|Stringable
      * @param T[] $array1
      * @param T[] $array2
      * @return T[]
@@ -60,7 +60,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T of int|float|string|bool|null|Stringable
+     * @template T of scalar|Stringable
      * @param T[] $new
      * @param T[] $old
      * @return array{
@@ -77,7 +77,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T of int|float|string|bool|null|Stringable
+     * @template T of scalar|Stringable
      * @param T[] $smallOne
      * @param T[] $bigOne
      */
@@ -121,7 +121,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T
+     * @template T of scalar
      * @param T[] $list
      * @param T $item
      * @return T[]
@@ -139,7 +139,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T of int|float|string|bool|null|Stringable
+     * @template T of scalar|Stringable
      * @param T[] $array1
      * @param T[] $array2
      */
@@ -151,7 +151,7 @@ readonly class ArrayUtil
     }
 
     /**
-     * @template T of int|float|string|bool|null|Stringable
+     * @template T of scalar|Stringable
      * @param T[] $list
      * @return T[]
      */
