@@ -13,7 +13,7 @@ use Xgc\Utils\FileUtil;
 class SetupMessageConsole extends Console
 {
     public function __construct(
-        private readonly ContextInterface $context
+        private readonly ContextInterface $context,
     ) {
         parent::__construct('debug:setup:message');
     }
@@ -103,26 +103,26 @@ class SetupMessageConsole extends Console
         if ($isCollection && $type === 'Query') {
             $this->copyFile(
                 "{$fromPath}/__MESSAGE__Collection.php",
-                "./src/Message/{$resource}/{$message}.php"
+                "./src/Message/{$resource}/{$message}.php",
             );
             $this->copyFile(
                 "{$fromPathHandler}/__MESSAGE__CollectionHandler.php",
-                "./src/MessageHandler/{$resource}/{$message}Handler.php"
+                "./src/MessageHandler/{$resource}/{$message}Handler.php",
             );
         } elseif ($isPaginated && $type === 'Query') {
             $this->copyFile(
                 "{$fromPath}/__MESSAGE__Paginated.php",
-                "./src/Message/{$resource}/{$message}.php"
+                "./src/Message/{$resource}/{$message}.php",
             );
             $this->copyFile(
                 "{$fromPathHandler}/__MESSAGE__PaginatedHandler.php",
-                "./src/MessageHandler/{$resource}/{$message}Handler.php"
+                "./src/MessageHandler/{$resource}/{$message}Handler.php",
             );
         } else {
             $this->copyFile("{$fromPath}/__MESSAGE__.php", "./src/Message/{$resource}/{$message}.php");
             $this->copyFile(
                 "{$fromPathHandler}/__MESSAGE__Handler.php",
-                "./src/MessageHandler/{$resource}/{$message}Handler.php"
+                "./src/MessageHandler/{$resource}/{$message}Handler.php",
             );
         }
     }

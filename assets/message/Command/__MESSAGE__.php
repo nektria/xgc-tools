@@ -10,8 +10,7 @@ readonly class __MESSAGE__ implements Command
 {
     public function __construct(
         public string $__ENTITY_CC__Id,
-    ) {
-    }
+    ) {}
 
     public function ref(): string
     {

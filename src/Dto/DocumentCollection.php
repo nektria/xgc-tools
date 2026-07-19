@@ -12,7 +12,6 @@ use Xgc\Exception\BaseException;
 use Xgc\Utils\ArrayUtil;
 
 use function count;
-use function is_scalar;
 
 /**
  * @implements ArrayAccess<int, T>
@@ -22,31 +21,11 @@ use function is_scalar;
 readonly class DocumentCollection extends Document implements IteratorAggregate, ArrayAccess, Countable
 {
     /**
-     * @param T[] $items
+     * @param array<int, T> $items
      */
     public function __construct(
-        private array $items
+        private array $items,
     ) {
-    }
-
-    /**
-     * @template X of Document
-     * @param DocumentCollection<X> $a
-     * @param DocumentCollection<X> $b
-     * @return DocumentCollection<X>
-     */
-    public static function merge(self $a, self $b): self
-    {
-        return new self([...$a->items, ...$b->items]);
-    }
-
-    /**
-     * @param T[] $items
-     * @return DocumentCollection<T>
-     */
-    public static function new(array $items): self
-    {
-        return new self($items);
     }
 
     /**
@@ -56,7 +35,7 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
     {
         $tmp = ArrayUtil::classify(
             $this->items,
-            static fn (Document $item) => $item->value($field) ?? 'null'
+            static fn (Document $item) => $item->value($field) ?? 'null',
         );
 
         $ret = [];
@@ -134,14 +113,29 @@ readonly class DocumentCollection extends Document implements IteratorAggregate,
         return ArrayUtil::mapify(
             $this,
             static function (Document $item) use ($field): string {
-                $val = $item->value($field) ?? 'null';
-                if (!is_scalar($val)) {
-                    $val = 'null';
-                }
-
-                return (string) $val;
+                return $item->value($field) ?? 'null';
             },
         );
+    }
+
+    /**
+     * @template X of Document
+     * @param DocumentCollection<X> $a
+     * @param DocumentCollection<X> $b
+     * @return DocumentCollection<X>
+     */
+    public static function merge(self $a, self $b): self
+    {
+        return new self([...$a->items, ...$b->items]);
+    }
+
+    /**
+     * @param array<int, T> $items
+     * @return DocumentCollection<T>
+     */
+    public static function new(array $items): self
+    {
+        return new self($items);
     }
 
     public function offsetExists(mixed $offset): bool

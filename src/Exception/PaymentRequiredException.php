@@ -12,8 +12,8 @@ class PaymentRequiredException extends BaseException
             'Payment is required for this feature',
             status: 402,
             extras: [
-                'type' => 'PAYMENT_REQUIRED'
-            ]
+                'type' => 'PAYMENT_REQUIRED',
+            ],
         );
     }
 }

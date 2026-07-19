@@ -52,12 +52,12 @@ foreach ($files as $file) {
     $down = str_replace('\\\'', '\'', $down);
 
     file_put_contents(
-        $basedir . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . trim($file, '.ph') . '.sql',
-        $up,
+            $basedir . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . trim($file, '.ph') . '.sql',
+            $up,
     );
 
     file_put_contents(
-        $basedir . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . 'Rollback' . trim($file, '.ph') . '.sql',
-        $down,
+            $basedir . DIRECTORY_SEPARATOR . 'sql' . DIRECTORY_SEPARATOR . 'Rollback' . trim($file, '.ph') . '.sql',
+            $down,
     );
 }

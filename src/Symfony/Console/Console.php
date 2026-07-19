@@ -69,7 +69,7 @@ abstract class Console extends BaseCommand
         Command $command,
         bool $async = false,
         ?DelayStamp $delayMs = null,
-        ?RetryStamp $retryOptions = null
+        ?RetryStamp $retryOptions = null,
     ): void {
         $this->bus()->dispatchCommand($command, $async ? 'system' : null, $delayMs, $retryOptions);
     }

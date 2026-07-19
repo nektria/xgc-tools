@@ -20,7 +20,7 @@ class __ENTITY__ReadModel extends ReadModel
         return $this->getResult(
             'WHERE id=:__ENTITY_CC__Id',
             [
-                '__ENTITY_CC__Id' => $__ENTITY_CC__Id
+                '__ENTITY_CC__Id' => $__ENTITY_CC__Id,
             ],
         );
     }

@@ -10,6 +10,7 @@ use UnitEnum;
 use function define;
 
 define('CONTAINER_BOX', ContainerBox::instance());
+
 trait ContainerBoxTrait
 {
     private const ContainerBox CONTAINER = CONTAINER_BOX;

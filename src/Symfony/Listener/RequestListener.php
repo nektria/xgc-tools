@@ -337,7 +337,7 @@ abstract class RequestListener implements EventSubscriberInterface
                         ],
                         [],
                         $resume,
-                        in_array($route, $this->ignoreLogs(), true)
+                        in_array($route, $this->ignoreLogs(), true),
                     );
                 } else {
                     $this->service(LoggerInterface::class)->info([

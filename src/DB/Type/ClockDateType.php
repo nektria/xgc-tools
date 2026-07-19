@@ -34,14 +34,14 @@ class ClockDateType extends Type
         return Clock::fromString($value);
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
-    {
-        return 'DATE';
-    }
-
     public function getName(): string
     {
         return 'clock_date';
+    }
+
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    {
+        return 'DATE';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

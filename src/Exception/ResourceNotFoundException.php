@@ -16,8 +16,8 @@ class ResourceNotFoundException extends BaseException
             extras: [
                 'resource' => $resourceType,
                 'ref' => $ref,
-                'type' => 'RESOURCE_NOT_FOUND'
-            ]
+                'type' => 'RESOURCE_NOT_FOUND',
+            ],
         );
     }
 }

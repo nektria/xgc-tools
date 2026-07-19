@@ -26,7 +26,7 @@ interface LoggerInterface
         array $payload,
         array $labels,
         string $message,
-        bool $ignoreRedis = false
+        bool $ignoreRedis = false,
     ): void;
 
     /**

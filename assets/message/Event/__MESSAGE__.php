@@ -10,8 +10,7 @@ readonly class __MESSAGE__ implements Event
 {
     public function __construct(
         public string $__ENTITY_CC__Id,
-    ) {
-    }
+    ) {}
 
     public function ref(): string
     {

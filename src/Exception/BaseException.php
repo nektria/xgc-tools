@@ -61,12 +61,8 @@ class BaseException extends RuntimeException
         return new self($e->getMessage(), extras: [], previous: $e);
     }
 
-    public static function extendAndThrow(Throwable $e): self
+    public static function extendAndThrow(Throwable $e): never
     {
-        try {
-            throw self::extend($e);
-        } catch (BaseException $newException) {
-            return $newException;
-        }
+        throw self::extend($e);
     }
 }

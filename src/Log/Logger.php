@@ -72,7 +72,7 @@ readonly class Logger implements LoggerInterface
             return;
         }
 
-        $error = BaseException::extendAndThrow($throwable);
+        $error = BaseException::extend($throwable);
 
         if (!$error->convertToLog) {
             return;
@@ -91,7 +91,7 @@ readonly class Logger implements LoggerInterface
                     ...[
                         'app' => $this->context->project(),
                         'env' => $this->context->env(),
-                    ]
+                    ],
                 ],
                 'logging.googleapis.com/trace_sampled' => false,
             ];
@@ -182,7 +182,7 @@ readonly class Logger implements LoggerInterface
         array $payload,
         array $labels,
         string $message,
-        LogLevel $level
+        LogLevel $level,
     ): array {
         $data = [
             'message' => $message,

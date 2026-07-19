@@ -9,7 +9,7 @@ use Xgc\Utils\FileUtil;
 readonly class FileService
 {
     public function __construct(
-        private string $projectDir
+        private string $projectDir,
     ) {
     }
 

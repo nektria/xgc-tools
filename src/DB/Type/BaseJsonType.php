@@ -39,17 +39,17 @@ abstract class BaseJsonType extends DoctrineJsonType
         return $this->convertToPhp($value);
     }
 
+    public function getName(): string
+    {
+        return $this->getTypeName();
+    }
+
     /**
      * @param mixed[] $column
      */
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
         return 'JSONB';
-    }
-
-    public function getName(): string
-    {
-        return $this->getTypeName();
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

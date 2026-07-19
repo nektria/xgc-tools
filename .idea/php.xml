@@ -18,6 +18,7 @@
   <component name="PhpCodeSniffer">
     <phpcs_settings>
       <PhpCSConfiguration beautifier_path="$PROJECT_DIR$/vendor/bin/phpcbf" tool_path="$PROJECT_DIR$/vendor/bin/phpcs" />
+      <phpcs_by_interpreter asDefaultInterpreter="true" interpreter_id="04a04b6f-dfb9-48e7-bdbd-813025b02867" beautifier_path="$PROJECT_DIR$/vendor/bin/phpcbf" tool_path="/Users/xgc1986/Code/Lea/xgc-tools/vendor/bin/phpcs" timeout="30000" />
     </phpcs_settings>
   </component>
   <component name="PhpIncludePathManager">
@@ -130,9 +131,13 @@
       <path value="$PROJECT_DIR$/vendor/symfony/doctrine-messenger" />
       <path value="$PROJECT_DIR$/vendor/symfony/amqp-messenger" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php83" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-deepclone" />
+      <path value="$PROJECT_DIR$/vendor/ergebnis/agent-detector" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/git-state" />
+      <path value="$PROJECT_DIR$/vendor/sebastian/file-filter" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.4" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.5" />
   <component name="PhpStan">
     <PhpStan_settings>
       <PhpStanConfiguration tool_path="$PROJECT_DIR$/vendor/bin/phpstan" />

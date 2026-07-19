@@ -11,7 +11,7 @@ readonly class RetryStamp implements StampInterface
     public function __construct(
         public int $currentTry,
         public int $maxRetries,
-        public int $intervalMs
+        public int $intervalMs,
     ) {
     }
 }

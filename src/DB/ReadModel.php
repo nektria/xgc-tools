@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Throwable;
 use Xgc\Dto\Document;
 use Xgc\Dto\DocumentCollection;
+use Xgc\Dto\PaginatedDocumentCollection;
 use Xgc\Exception\BaseException;
 use Xgc\Utils\StringUtil;
 
@@ -19,75 +20,105 @@ use function is_array;
  */
 abstract class ReadModel
 {
-    protected private(set) EntityManagerInterface $manager;
+    public const int MAX_RESULTS = 1024;
 
-    public function __construct(EntityManagerInterface $manager)
+    private static int $defaultPageSize = 100;
+
+    public function __construct(
+        protected readonly EntityManagerInterface $manager,
+    ) {
+    }
+
+    public static function setDefaultPageSize(int $pageSize): void
     {
-        $this->manager = $manager;
+        self::$defaultPageSize = $pageSize;
     }
 
     /**
-     * @return string[]
-     */
-    public function groupResults(): array
-    {
-        return [];
-    }
-
-    /**
-     * @param array<string, string|int|float|bool|null> $params
+     * @param array<string, scalar|null> $params
      * @return T
      */
     protected function buildDocument(array $params): Document
     {
-        throw new BaseException('`buildDocument` Not implemented');
-    }
-
-    /**
-     * @param array<string, string|int|float|bool|null>[] $params
-     * @return T
-     */
-    protected function buildGroupedDocument(array $params): Document
-    {
-        throw new BaseException('`buildGroupedDocument` Not implemented');
+        throw new BaseException(
+            'source() should be implemented in the child class when using getResult(), ' .
+            'getResults() or getPaginatedResult().',
+        );
     }
 
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
-     * @param string[] $groupBy
-     * @return ($groupBy is non-empty-array
-     *             ? array<string, string|int|float|bool|null>[]
-     *             : array<string, string|int|float|bool|null>
-     *         )|null
+     * @param array<string, 'ASC'|'DESC'> $orderBy
+     * @return DocumentCollection<T>
      */
-    protected function getRawResult(string $sql, array $params = [], array $groupBy = []): ?array
+    protected function getNewResults(
+        string $sql,
+        array $params = [],
+        array $orderBy = [],
+        ?int $limit = null,
+    ): DocumentCollection {
+        $sql = $this->buildSQL($sql, $params, $orderBy, null, $limit, false);
+        $results = $this->getRawResults($sql, $params);
+        $parsed = [];
+
+        foreach ($results as $item) {
+            $parsed[] = $this->buildDocument($item);
+        }
+
+        return new DocumentCollection($parsed);
+    }
+
+    /**
+     * @param array<string, string|int|float|bool|string[]|null> $params
+     * @param array<string, 'ASC'|'DESC'> $orderBy
+     * @return PaginatedDocumentCollection<T>
+     */
+    protected function getPaginatedResults(
+        string $sql,
+        array $orderBy,
+        ?int $page = null,
+        ?int $limit = null,
+        array $params = [],
+    ): PaginatedDocumentCollection {
+        $page ??= 1;
+        $limit ??= self::$defaultPageSize;
+        $sql = $this->buildSQL($sql, $params, $orderBy, $page, $limit, true);
+        $results = $this->getRawResults($sql, $params);
+        $parsed = [];
+
+        foreach ($results as $item) {
+            $parsed[] = $this->buildDocument($item);
+        }
+
+        return new PaginatedDocumentCollection(
+            new DocumentCollection($parsed),
+            $page,
+            $limit,
+            (int) ($results[0]['__total__'] ?? 0),
+        );
+    }
+
+    /**
+     * @param array<string, string|int|float|bool|string[]|null> $params
+     * @return array<string, scalar|null>|null
+     */
+    protected function getRawResult(string $sql, array $params = []): ?array
     {
         try {
-            $results = $this->getRawResults($sql, $params, $groupBy);
+            $results = $this->getRawResults($sql, $params);
 
-            /* @var array<string, string|int|float|bool|null>|null */
             return $results[array_key_first($results) ?? ''] ?? null;
         } catch (Throwable $e) {
-            throw BaseException::extend($e);
+            BaseException::extendAndThrow($e);
         }
     }
 
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
-     * @param string[] $groupBy
-     * @return array<string, string|int|float|bool|null>[]
-     * @return ($groupBy is non-empty-array
-     *              ? array<string, array<int, array<string, string|int|float|bool|null>>>
-     *              : array<int, array<string, string|int|float|bool|null>>
-     *         )
+     * @return array<int, array<string, scalar|null>>
      */
-    protected function getRawResults(string $sql, array $params = [], array $groupBy = []): array
+    protected function getRawResults(string $sql, array $params = []): array
     {
-        $sql = StringUtil::trim($sql);
-        if (!str_starts_with($sql, 'SELECT')) {
-            $sql = "{$this->source()} {$sql}";
-        }
-
         $newParams = [];
         foreach ($params as $key => $value) {
             if (is_array($value)) {
@@ -104,26 +135,10 @@ abstract class ReadModel
                 $query->bindValue($key, $value);
             }
 
-            /** @var array<int, array<string, string|int|float|bool|null>> $results */
-            $results = $query->executeQuery()->fetchAllAssociative();
+            /** @var array<int, array<string, scalar|null>> $data */
+            $data = $query->executeQuery()->fetchAllAssociative();
 
-            if (count($groupBy) > 0) {
-                /** @var array<string, array<int, array<string, string|int|float|bool|null>>> $newResults */
-                $newResults = [];
-                foreach ($results as $item) {
-                    $key = '';
-                    foreach ($groupBy as $group) {
-                        $key .= $item[$group];
-                    }
-
-                    $newResults[$key] ??= [];
-                    $newResults[$key][] = $item;
-                }
-
-                $results = $newResults;
-            }
-
-            return $results;
+            return $data;
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
@@ -131,54 +146,78 @@ abstract class ReadModel
 
     /**
      * @param array<string, string|int|float|bool|string[]|null> $params
+     * @param array<string, 'ASC'|'DESC'> $orderBy
      * @return T|null
      */
-    protected function getResult(string $sql, array $params = []): ?Document
+    protected function getResult(string $sql, array $params = [], array $orderBy = []): ?Document
     {
-        $groups = $this->groupResults();
-        $result = $this->getRawResult($sql, $params, $groups);
+        $sql = $this->buildSQL($sql, $params, $orderBy, null, 1, false);
+        $result = $this->getRawResult($sql, $params);
 
         if ($result === null) {
             return null;
         }
 
-        if (count($groups) > 0) {
-            /** @var array<string, string|int|float|bool|null>[] $tmp */
-            $tmp = $result;
+        return $this->buildDocument($result);
+    }
 
-            return $this->buildGroupedDocument($tmp);
-        }
-
-        /** @var array<string, string|int|float|bool|null> $tmp2 */
-        $tmp2 = $result;
-
-        return $this->buildDocument($tmp2);
+    protected function source(): string
+    {
+        throw new BaseException(
+            'source() should be implemented in the child class when using getResult(), ' .
+            'getResults() or getPaginatedResult().',
+        );
     }
 
     /**
-     * @param array<string, string|int|float|bool|null> $params
-     * @return DocumentCollection<T>
+     * @param array<string, string|int|float|bool|string[]|null> $params
+     * @param array<string, 'ASC'|'DESC'> $orderBy
      */
-    protected function getResults(string $sql, array $params = []): DocumentCollection
-    {
-        $groups = $this->groupResults();
-        $results = $this->getRawResults($sql, $params, $groups);
-        $parsed = [];
+    private function buildSQL(
+        string $where,
+        array &$params,
+        array $orderBy,
+        ?int $page,
+        ?int $limit,
+        bool $pagination,
+    ): string {
+        $source = $this->source();
 
-        if (count($groups) > 0) {
-            /** @var array<string, array<int, array<string, string|int|float|bool|null>>> $results */
-            foreach ($results as $item) {
-                $parsed[] = $this->buildGroupedDocument($item);
+        $ob = '';
+        if (count($orderBy) > 0) {
+            $ob = 'ORDER BY ';
+            foreach ($orderBy as $key => $value) {
+                $ob .= "{$key} {$value}, ";
             }
-        } else {
-            /** @var array<int, array<string, string|int|float|bool|null>> $results */
-            foreach ($results as $item) {
-                $parsed[] = $this->buildDocument($item);
-            }
+            $ob = rtrim($ob, ', ');
         }
 
-        return new DocumentCollection($parsed);
-    }
+        if (str_contains($source, '::QUERY::')) {
+            $source = str_replace('::QUERY::', $where, $source);
+        } else {
+            $source = "{$source} {$where}";
+        }
 
-    abstract protected function source(): string;
+        $l = '';
+        $o = '';
+        if ($limit !== null) {
+            $l = 'LIMIT :__limit__';
+            $params['__limit__'] = $limit === 9999 ? 9999 : max(1, min(self::MAX_RESULTS, $limit));
+            if ($pagination) {
+                $sources = explode('FROM', $source);
+                $source = "{$sources[0]}, COUNT(*) OVER() AS __total__ FROM {$sources[1]}";
+            }
+
+            if ($page !== null) {
+                $offset = max(0, ($page - 1) * $limit);
+                $o = 'OFFSET :__offset__';
+                $params['__offset__'] = $offset;
+            }
+        } elseif (!str_contains($source, 'LIMIT')) {
+            $l = 'LIMIT :__limit__';
+            $params['__limit__'] = max(1, min(self::MAX_RESULTS, self::$defaultPageSize));
+        }
+
+        return StringUtil::trim("{$source} {$ob} {$l} {$o}");
+    }
 }

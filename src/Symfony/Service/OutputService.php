@@ -22,7 +22,7 @@ class OutputService
     private ?OutputInterface $output;
 
     public function __construct(
-        private readonly string $projectDir
+        private readonly string $projectDir,
     ) {
         $createdAt = Clock::now()->toLocal('Europe/Madrid');
         $this->logFile = "{$this->projectDir}/tmp/{$createdAt->dateTimeString()}.log";

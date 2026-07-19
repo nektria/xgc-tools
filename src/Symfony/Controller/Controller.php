@@ -66,7 +66,7 @@ readonly class Controller
         Command $command,
         ?string $transport = null,
         ?DelayStamp $delayMs = null,
-        ?RetryStamp $retryOptions = null
+        ?RetryStamp $retryOptions = null,
     ): void {
         $this->service(BusInterface::class)->dispatchCommand($command, $transport, $delayMs, $retryOptions);
     }
@@ -81,7 +81,7 @@ readonly class Controller
         return new DocumentResponse(
             new ArrayDocument(),
             $this->service(ContextInterface::class),
-            Response::HTTP_NO_CONTENT
+            Response::HTTP_NO_CONTENT,
         );
     }
 
@@ -139,12 +139,12 @@ readonly class Controller
         $content = sprintf(
             '<!DOCTYPE html><html><head><meta charset="UTF-8" /><meta http-equiv="refresh" content="0;url=\'%1$s\'" />
             <title>Redirecting to %1$s</title></head><body>Redirecting to <a href="%1$s">%1$s</a>.</body></html>',
-            htmlspecialchars($url, ENT_QUOTES, 'UTF-8')
+            htmlspecialchars($url, ENT_QUOTES, 'UTF-8'),
         );
 
         $response = new WebResponse(
             $content,
-            status: $permanent ? Response::HTTP_MOVED_PERMANENTLY : Response::HTTP_FOUND
+            status: $permanent ? Response::HTTP_MOVED_PERMANENTLY : Response::HTTP_FOUND,
         );
         $response->headers->set('Location', $url);
         $response->headers->set('Content-Type', 'text/html; charset=utf-8');
@@ -163,7 +163,7 @@ readonly class Controller
                 $fixedParameters[$key] = $value->toArray(
                     $ignoreContext ?
                         null :
-                        $this->service(ContextInterface::class)
+                        $this->service(ContextInterface::class),
                 );
             } else {
                 $fixedParameters[$key] = $value;
@@ -194,7 +194,7 @@ readonly class Controller
         try {
             return new WebResponse(
                 $this->service(Environment::class)->render($view, $fixedParameters),
-                parameters: $fixedParameters
+                parameters: $fixedParameters,
             );
         } catch (Throwable $e) {
             throw BaseException::extend($e);

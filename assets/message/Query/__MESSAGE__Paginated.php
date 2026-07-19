@@ -13,6 +13,5 @@ use Xgc\Message\Query;
  */
 readonly class __MESSAGE__ implements Query
 {
-    public function __construct() {
-    }
+    public function __construct() {}
 }

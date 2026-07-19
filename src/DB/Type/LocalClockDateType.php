@@ -38,14 +38,14 @@ class LocalClockDateType extends Type
         return LocalClock::fromString($value);
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
-    {
-        return 'DATE';
-    }
-
     public function getName(): string
     {
         return 'local_clock_date';
+    }
+
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    {
+        return 'DATE';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

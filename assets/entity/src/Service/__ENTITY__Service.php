@@ -12,8 +12,7 @@ readonly class __ENTITY__Service
 {
     public function __construct(
         private __ENTITY__WriteModel $__ENTITY_CC__WriteModel,
-    ) {
-    }
+    ) {}
 
     public function delete(__ENTITY__ $__ENTITY_CC__): void
     {

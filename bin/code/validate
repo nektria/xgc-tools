@@ -8,11 +8,17 @@ declare(strict_types=1);
 class Runner
 {
     private string $CLEAR_LINE = "\x1b[2K";
+
     private string $GRAY_DIMM = "\033[90m";
+
     private string $GREEN = "\033[32m";
+
     private string $LINE_UP = "\x1b[1A";
+
     private string $LINE_UP_AND_CLEAR_LINE = "\x1b[1A\x1b[2K";
+
     private string $RED = "\033[31m";
+
     private string $RESET = "\033[0m";
 
     /**
@@ -21,14 +27,10 @@ class Runner
     private array $lastCommands = [];
 
     public function __construct(
-        private readonly bool $fix = false,
-        private readonly bool $verbose = false,
-        private readonly ?string $docker = null,
-        private readonly ?string $phpstan = null,
-        private readonly ?string $phpCsFixer = null,
-    )
-    {
-    }
+            private readonly bool $fix = false,
+            private readonly bool $verbose = false,
+            private readonly ?string $docker = null,
+    ) {}
 
     public function execute(string $program): void
     {
@@ -38,7 +40,6 @@ class Runner
 
         $result = match ($program) {
             'PHP-CS-Fixer' => $this->executePhpCSFixer(),
-            'PHPCS' => $this->executePhpCS(),
             'PHPStan' => $this->executePhpStan(),
             default => throw new RuntimeException('Unknown program'),
         };
@@ -70,45 +71,6 @@ class Runner
     /**
      * @return string[]
      */
-    private function executePhpCS(): array
-    {
-        $result = 0;
-        $output = [];
-
-        $command = 'vendor/bin/phpcs src --standard=PSR12';
-        if ($this->fix) {
-            $this->run('vendor/bin/phpcbf src --standard=PSR12');
-        }
-
-        $this->run($command, $output, $result);
-
-        if ($result === 0) {
-            return [];
-        }
-
-        if (!$this->verbose) {
-            $errors = [];
-            foreach ($output as $line) {
-                $parts = explode('FILE: ', $line);
-                if (count($parts) !== 2) {
-                    continue;
-                }
-
-                $line = explode('/src/', $line)[1];
-                $errors[] = "  - src/{$line}";
-            }
-
-            if (count($errors) > 0) {
-                return $errors;
-            }
-        }
-
-        return $output;
-    }
-
-    /**
-     * @return string[]
-     */
     private function executePhpCSFixer(): array
     {
         $result = 0;
@@ -118,7 +80,8 @@ class Runner
             $this->run('vendor/bin/php-cs-fixer fix src --allow-risky=yes --using-cache=no --show-progress=none --config=bin/code/php-cs-fixer.php 2>/dev/null');
         }
 
-        $this->run('vendor/bin/php-cs-fixer fix src --allow-risky=yes --using-cache=no --show-progress=none --dry-run --config=bin/code/php-cs-fixer.php 2>/dev/null', $output, $result);
+        $this->run('vendor/bin/php-cs-fixer fix src --allow-risky=yes --using-cache=no --show-progress=none --dry-run --config=bin/code/php-cs-fixer.php 2>/dev/null',
+                $output, $result);
 
         if ($result === 0) {
             return [];
@@ -149,7 +112,8 @@ class Runner
     {
         $result = 0;
         $output = [];
-        $this->run('php -d memory_limit=-1 vendor/bin/phpstan analyze -c bin/code/phpstan.neon --no-progress', $output, $result);
+        $this->run('php -d memory_limit=-1 vendor/bin/phpstan analyze -c bin/code/phpstan.neon --no-progress', $output,
+                $result);
 
         if ($result === 0) {
             return [];
@@ -178,7 +142,7 @@ class Runner
      */
     private function run(string $command, ?array &$output = null, ?int &$result = null): void
     {
-        $this->lastCommands []= $command;
+        $this->lastCommands [] = $command;
 
         if ($this->docker === null) {
             exec($command, $output, $result);
@@ -213,12 +177,9 @@ foreach ($argv as $arg) {
 }
 
 $runner = new Runner(
-    fix: $fix,
-    verbose: $verbose,
-    docker: $docker,
-    phpstan: $phpStan,
-    phpCsFixer: $phpCsFixer,
+        fix: $fix,
+        verbose: $verbose,
+        docker: $docker,
 );
 $runner->execute('PHP-CS-Fixer');
-$runner->execute('PHPCS');
 $runner->execute('PHPStan');

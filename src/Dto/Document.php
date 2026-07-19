@@ -6,11 +6,11 @@ namespace Xgc\Dto;
 
 readonly abstract class Document implements DocumentInterface
 {
-    public function value(string $name): mixed
+    public function value(string $name): ?string
     {
         if (property_exists($this, $name)) {
             /* @phpstan-ignore-next-line */
-            return $this->$name;
+            return (string) $this->$name;
         }
 
         return null;

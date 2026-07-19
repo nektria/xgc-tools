@@ -13,14 +13,14 @@ interface BusInterface
         Command $command,
         ?string $transport = null,
         ?DelayStamp $delayMs = null,
-        ?RetryStamp $retryOptions = null
+        ?RetryStamp $retryOptions = null,
     ): void;
 
     public function dispatchEvent(
         Event $command,
         ?string $transport = null,
         ?DelayStamp $delayMs = null,
-        ?RetryStamp $retryOptions = null
+        ?RetryStamp $retryOptions = null,
     ): void;
 
     /**

@@ -256,7 +256,7 @@ readonly class RequestClient
                 $content,
                 $headers,
                 $respHeaders,
-                $cookies
+                $cookies,
             );
         } catch (Throwable $e) {
             throw BaseException::extend($e);
@@ -349,7 +349,7 @@ readonly class RequestClient
                 $content,
                 $headers,
                 $respHeaders,
-                $cookies
+                $cookies,
             );
         } catch (Throwable $e) {
             throw BaseException::extend($e);

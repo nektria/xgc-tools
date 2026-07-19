@@ -12,7 +12,7 @@ class DomainException extends BaseException
         string $message,
         ?array $extras = null,
         array $options = [],
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         parent::__construct($message, 409, $extras, $options, $previous);
     }

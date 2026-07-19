@@ -152,11 +152,11 @@ class Clock
         $diff = $this->dateTime->diff($from->dateTime);
 
         $absDiff = match ($in) {
-            'seconds' => $diff->s + ($diff->i * 60) + ($diff->h * 3600) + ((int) $diff->days * 86400),
-            'minutes' => $diff->i + ($diff->h * 60) + ((int) $diff->days * 1440),
-            'hours' => $diff->h + ((int) $diff->days * 24),
-            'days' => (int) $diff->days,
-            'weeks' => (int) ((int) $diff->days / 7),
+            'seconds' => $diff->s + ($diff->i * 60) + ($diff->h * 3600) + ($diff->days * 86400),
+            'minutes' => $diff->i + ($diff->h * 60) + ($diff->days * 1440),
+            'hours' => $diff->h + ($diff->days * 24),
+            'days' => $diff->days,
+            'weeks' => (int) ($diff->days / 7),
             'months' => $diff->m + ($diff->y * 12),
             default => $diff->y
         };

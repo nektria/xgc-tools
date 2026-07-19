@@ -13,7 +13,7 @@ use Xgc\Utils\FileUtil;
 class SetupResourceConsole extends Console
 {
     public function __construct(
-        private readonly ContextInterface $context
+        private readonly ContextInterface $context,
     ) {
         parent::__construct('debug:setup:resource');
     }
@@ -31,7 +31,7 @@ class SetupResourceConsole extends Console
             'r',
             InputOption::VALUE_REQUIRED,
             'Resource name.',
-            ''
+            '',
         );
     }
 
@@ -116,7 +116,7 @@ class SetupResourceConsole extends Console
                 $hypenCaseResource,
                 $pathResource,
             ],
-            $text
+            $text,
         );
     }
 }

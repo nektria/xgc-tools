@@ -13,8 +13,8 @@ class MissingArgumentException extends BaseException
             status: 400,
             extras: [
                 'field' => $field,
-                'type' => 'MISSING_ARGUMENT'
-            ]
+                'type' => 'MISSING_ARGUMENT',
+            ],
         );
     }
 }

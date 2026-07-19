@@ -129,7 +129,7 @@ readonly class ValidateOpt
         string $field,
         ?Clock $value,
         ?Clock $limit,
-        string $in = 'seconds'
+        string $in = 'seconds',
     ): void {
         if ($value !== null && $limit !== null) {
             Validate::lessOrEqualThanClock($field, $value, $limit, $in);
@@ -143,7 +143,7 @@ readonly class ValidateOpt
         string $field,
         ?LocalClock $value,
         ?LocalClock $limit,
-        string $in = 'seconds'
+        string $in = 'seconds',
     ): void {
         if ($value !== null && $limit !== null) {
             Validate::lessOrEqualThanLocalClock($field, $value, $limit, $in);
@@ -174,7 +174,7 @@ readonly class ValidateOpt
         string $field,
         ?LocalClock $value,
         ?LocalClock $limit,
-        string $in = 'seconds'
+        string $in = 'seconds',
     ): void {
         if ($value !== null && $limit !== null) {
             Validate::lessThanLocalClock($field, $value, $limit, $in);

@@ -110,7 +110,7 @@ readonly class DiscordAlert implements AlertInterface
         ?DocumentInterface $input = null,
     ): void {
         $input ??= new ArrayDocument([]);
-        $error = BaseException::extendAndThrow($throwable);
+        $error = BaseException::extend($throwable);
 
         if ($error->getPrevious() instanceof NotFoundHttpException) {
             return;

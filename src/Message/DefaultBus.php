@@ -22,7 +22,7 @@ readonly class DefaultBus implements BusInterface
         Command $command,
         ?string $transport = null,
         ?DelayStamp $delayMs = null,
-        ?RetryStamp $retryOptions = null
+        ?RetryStamp $retryOptions = null,
     ): void {
         $context = $this->service(ContextInterface::class);
 
@@ -30,7 +30,7 @@ readonly class DefaultBus implements BusInterface
             new ContextStamp(
                 traceId: $context->traceId(),
                 context: '',
-                data: $context->extras()
+                data: $context->extras(),
             ),
         ];
 
@@ -59,7 +59,7 @@ readonly class DefaultBus implements BusInterface
         Event $command,
         ?string $transport = null,
         ?DelayStamp $delayMs = null,
-        ?RetryStamp $retryOptions = null
+        ?RetryStamp $retryOptions = null,
     ): void {
         $context = $this->service(ContextInterface::class);
         $bus = $this->service(MessageBusInterface::class);
@@ -68,7 +68,7 @@ readonly class DefaultBus implements BusInterface
             new ContextStamp(
                 traceId: $context->traceId(),
                 context: '',
-                data: $context->extras()
+                data: $context->extras(),
             ),
         ];
 
@@ -105,7 +105,7 @@ readonly class DefaultBus implements BusInterface
             new ContextStamp(
                 traceId: $context->traceId(),
                 context: '',
-                data: $context->extras()
+                data: $context->extras(),
             ),
         ];
 

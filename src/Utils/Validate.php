@@ -79,7 +79,7 @@ class Validate
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: ">= {$limit->dateTimeString()}"
+                condition: ">= {$limit->dateTimeString()}",
             );
         }
     }
@@ -97,7 +97,7 @@ class Validate
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: ">= {$limit->dateTimeString()}"
+                condition: ">= {$limit->dateTimeString()}",
             );
         }
     }
@@ -125,7 +125,7 @@ class Validate
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: "> {$limit->dateTimeString()}"
+                condition: "> {$limit->dateTimeString()}",
             );
         }
     }
@@ -143,7 +143,7 @@ class Validate
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: "> {$limit->dateTimeString()}"
+                condition: "> {$limit->dateTimeString()}",
             );
         }
     }
@@ -183,7 +183,7 @@ class Validate
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: "<= {$limit->dateTimeString()}"
+                condition: "<= {$limit->dateTimeString()}",
             );
         }
     }
@@ -195,13 +195,13 @@ class Validate
         string $field,
         LocalClock $value,
         LocalClock $limit,
-        string $in = 'seconds'
+        string $in = 'seconds',
     ): void {
         if ($value->isAfter($limit, $in)) {
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: "<= {$limit->dateTimeString()}"
+                condition: "<= {$limit->dateTimeString()}",
             );
         }
     }
@@ -222,7 +222,7 @@ class Validate
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: "< {$limit->dateTimeString()}"
+                condition: "< {$limit->dateTimeString()}",
             );
         }
     }
@@ -234,13 +234,13 @@ class Validate
         string $field,
         LocalClock $value,
         LocalClock $limit,
-        string $in = 'seconds'
+        string $in = 'seconds',
     ): void {
         if ($value->isAfterOrEqual($limit, $in)) {
             throw new InvalidArgumentException(
                 $field,
                 $value->dateTimeString(),
-                condition: "< {$limit->dateTimeString()}"
+                condition: "< {$limit->dateTimeString()}",
             );
         }
     }

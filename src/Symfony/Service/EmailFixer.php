@@ -11,7 +11,7 @@ class EmailFixer
     private bool $fixEmail;
 
     public function __construct(
-        string $fixEmail
+        string $fixEmail,
     ) {
         $this->fixEmail = $fixEmail === 'true';
     }

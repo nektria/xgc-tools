@@ -135,7 +135,7 @@ abstract class MessageListener implements EventSubscriberInterface
                     input: new ArrayDocument([
                         'message' => $this->normalizeClass($class),
                         'body' => $data,
-                    ])
+                    ]),
                 );
             }
 

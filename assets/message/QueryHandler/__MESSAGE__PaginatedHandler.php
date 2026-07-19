@@ -15,9 +15,7 @@ readonly class __MESSAGE__Handler extends MessageHandler
 {
     public function __construct(
         private __ENTITY__ReadModel $__ENTITY_CC__ReadModel,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param __MESSAGE__ $message
