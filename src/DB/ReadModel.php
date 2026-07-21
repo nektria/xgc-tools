@@ -26,7 +26,8 @@ abstract class ReadModel
 
     public function __construct(
         protected readonly EntityManagerInterface $manager,
-    ) {}
+    ) {
+    }
 
     public static function setDefaultPageSize(int $pageSize): void
     {

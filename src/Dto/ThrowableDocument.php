@@ -23,11 +23,11 @@ class ThrowableDocument implements DocumentInterface
      */
     public static array $validPrefixTraceFiles = [
         '/app/src',
-        '/app/vendor/nektria/php-tools/src',
+        '/app/vendor/nektria/php-tools/src'
     ];
 
     public function __construct(
-        Throwable $throwable,
+        Throwable $throwable
     ) {
         $realThrowable = $throwable;
         while ($realThrowable instanceof BaseException) {
@@ -66,7 +66,11 @@ class ThrowableDocument implements DocumentInterface
             $extras = $this->throwable->extras;
         }
 
-        if ($this->status >= 500 && $context?->isProd() === true) {
+        if (
+            $this->status >= 500
+            && $context?->isProd() === true
+            && $context->traceId() !== '00000000-0000-4000-8000-000000000000'
+        ) {
             $extras = null;
             $message = 'Internal Server Error';
         }
