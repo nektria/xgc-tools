@@ -62,6 +62,15 @@ class DefaultContext implements ContextInterface
         return $this->project;
     }
 
+    public function projectKey(): string
+    {
+        if ($this->env === 'prod') {
+            return $this->project;
+        }
+
+        return "{$this->env}-{$this->project()}";
+    }
+
     /**
      * @param array<string, scalar> $extras
      */

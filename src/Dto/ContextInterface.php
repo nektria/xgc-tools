@@ -23,6 +23,8 @@ interface ContextInterface
 
     public function project(): string;
 
+    public function projectKey(): string;
+
     /**
      * @param array<string, scalar> $extras
      */
