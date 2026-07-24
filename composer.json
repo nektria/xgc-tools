@@ -20,6 +20,7 @@
     "ext-fileinfo": "*",
     "ext-redis": "*",
     "ext-intl": "*",
+    "ext-openswoole": "*",
     "doctrine/orm": "^3.0",
     "openswoole/core": "^26.0",
     "swoole-bundle/swoole-bundle": "^v0.30",
