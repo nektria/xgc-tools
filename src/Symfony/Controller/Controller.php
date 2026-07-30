@@ -25,6 +25,7 @@ use Xgc\Utils\ArrayDataFetcher;
 use Xgc\Utils\ContainerBoxTrait;
 use Xgc\Utils\JsonUtil;
 
+use function PhpCsFixer\Fixer\PhpUnit\createConfigurationDefinition;
 use function sprintf;
 
 use const ENT_QUOTES;
@@ -42,6 +43,7 @@ readonly class Controller
     ) {
         $this->request = $requestStack->getCurrentRequest() ?? new Request();
 
+        $all = $this->request->request->all();
         try {
             $data = [];
             $content = $this->request->getContent();
@@ -56,7 +58,7 @@ readonly class Controller
             }
 
             $queryData = $this->request->query->all();
-            $this->requestData = new ArrayDataFetcher([...$queryData, ...$data]);
+            $this->requestData = new ArrayDataFetcher([...$queryData, ...$data, ...$all]);createConfigurationDefinition()
         } catch (Throwable $e) {
             throw BaseException::extend($e);
         }
